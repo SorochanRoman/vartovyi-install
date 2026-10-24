@@ -1,0 +1,1442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f5f8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1015" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="../../assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<title>Vartovyi · Guide</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f4f5f8; --surface: #ffffff; --surface-2: #eef0f4; --text: #151821; --muted: #626b7c; --faint: #98a1b0;
+    --line: #e3e6ec; --accent: #3461e6; --accent-soft: rgba(52, 97, 230, .10);
+    --ok: #15924a; --ok-soft: rgba(21, 146, 74, .12); --bad: #d42f2f; --bad-soft: rgba(212, 47, 47, .10);
+    --warn: #c47508; --warn-soft: rgba(215, 130, 10, .13); --info: #2563eb; --info-soft: rgba(37, 99, 235, .12);
+    --teal: #0c8f84; --teal-soft: rgba(12, 143, 132, .14);
+    --shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 1px 3px rgba(16, 24, 40, .07);
+    --shadow-lg: 0 14px 30px -8px rgba(16, 24, 40, .22), 0 4px 10px -4px rgba(16, 24, 40, .10);
+    --radius: 14px; --radius-sm: 10px; --top: 56px; --tabbar: 58px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1015; --surface: #171a21; --surface-2: #20242d; --text: #e8ebf1; --muted: #9ba3b3; --faint: #6c7483;
+      --line: #2a2f3a; --accent: #87a4ff; --accent-soft: rgba(135, 164, 255, .14);
+      --ok: #3fd08a; --ok-soft: rgba(63, 208, 138, .14); --bad: #ff7a7a; --bad-soft: rgba(255, 122, 122, .14);
+      --warn: #f5b93e; --warn-soft: rgba(245, 185, 62, .14); --info: #6aa8ff; --info-soft: rgba(106, 168, 255, .16);
+      --teal: #36d3c1; --teal-soft: rgba(54, 211, 193, .15);
+      --shadow: 0 1px 2px rgba(0, 0, 0, .45); --shadow-lg: 0 16px 34px -10px rgba(0, 0, 0, .7), 0 4px 10px -4px rgba(0, 0, 0, .5);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  button, input, select { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left)); }
+  .muted { color: var(--muted); }
+  .topbar { position: sticky; top: 0; z-index: 30; background: var(--bg); background: color-mix(in srgb, var(--bg) 84%, transparent); -webkit-backdrop-filter: saturate(1.5) blur(14px); backdrop-filter: saturate(1.5) blur(14px); border-bottom: 1px solid var(--line); }
+  .topbar .wrap { display: flex; align-items: center; gap: 12px; height: var(--top); }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 17px; letter-spacing: -.01em; text-decoration: none; flex: none; }
+  .brand svg { color: var(--accent); flex: none; }
+  .nav { display: flex; gap: 2px; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav a { text-decoration: none; color: var(--muted); font-size: 14px; padding: 6px 12px; border-radius: 999px; white-space: nowrap; transition: background .15s, color .15s; }
+  .nav a:hover { color: var(--text); background: var(--surface-2); }
+  .nav a[aria-current="page"] { color: var(--text); background: var(--surface); box-shadow: var(--shadow); font-weight: 600; }
+  @media (max-width: 480px) { .brand span { display: none; } .nav a { padding: 6px 10px; font-size: 13.5px; } }
+  .logout { flex: none; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 13.5px; padding: 5px 12px; min-height: 34px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+  .logout:hover { color: var(--text); background: var(--surface-2); }
+  .logout:disabled { opacity: .55; cursor: default; }
+  .pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 600; line-height: 1.2; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+  .st-error { color: var(--bad); background: var(--bad-soft); }
+  .st-found { color: var(--ok); background: var(--ok-soft); }
+  .st-have, .st-downloading { color: var(--ok); background: var(--ok-soft); }
+  .st-rejected, .st-none, .st-unchecked { color: var(--muted); background: var(--surface-2); }
+  /* Постер проявляється, коли завантажився (без «миготіння» заглушки); уже бачені за сесію — одразу. */
+  .pimg { opacity: 0; transition: opacity .18s ease; }
+  .pimg.ok { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { .pimg { transition: none; } }
+  .ph { position: absolute; inset: 0; display: grid; place-items: center; color: rgba(255, 255, 255, .92); font-weight: 700; letter-spacing: .02em; text-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
+  .bar { height: 4px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--info); border-radius: inherit; transition: width .4s; }
+  .empty { text-align: center; padding: 56px 16px; color: var(--muted); }
+  .empty b { display: block; color: var(--text); font-size: 17px; margin-bottom: 4px; }
+  .topbar { padding-top: env(safe-area-inset-top); }
+  .tabbar { display: none; }
+  @media (max-width: 700px) {
+    .topbar .nav { display: none; }
+    .topbar .logout { margin-left: auto; }
+    .tabbar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; padding: 6px max(8px, env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-right)); background: var(--bg); background: color-mix(in srgb, var(--surface) 88%, transparent); -webkit-backdrop-filter: saturate(1.5) blur(18px); backdrop-filter: saturate(1.5) blur(18px); border-top: 1px solid var(--line); }
+    .tabbar a { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 46px; justify-content: center; text-decoration: none; color: var(--faint); font-size: 11px; font-weight: 600; -webkit-tap-highlight-color: transparent; }
+    .tabbar a[aria-current="page"] { color: var(--accent); }
+    body { padding-bottom: calc(var(--tabbar) + env(safe-area-inset-bottom)); }
+  }
+  #ptr { position: fixed; left: 50%; top: calc(var(--top) + env(safe-area-inset-top)); z-index: 37; width: 36px; height: 36px; margin: 8px 0 0 -18px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); color: var(--accent); box-shadow: var(--shadow); font-size: 18px; font-weight: 700; opacity: 0; transform: translateY(-56px); pointer-events: none; transition: transform .2s, opacity .2s; }
+  #ptr.pulling { transition: none; }
+  #ptr .arrow { transition: transform .15s; }
+  #ptr.ready .arrow { transform: rotate(180deg); }
+  #ptr.busy .arrow { display: none; }
+  #ptr.busy::after { content: ""; width: 18px; height: 18px; box-sizing: border-box; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: ptr-spin .7s linear infinite; }
+  @keyframes ptr-spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { #ptr, #ptr .arrow { transition: none; } #ptr.busy::after { animation-duration: 2s; } }
+  #offline { position: fixed; left: 0; right: 0; top: calc(var(--top) + env(safe-area-inset-top)); z-index: 36; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px max(16px, env(safe-area-inset-right)) 10px max(16px, env(safe-area-inset-left)); background: var(--surface); background: linear-gradient(var(--bad-soft), var(--bad-soft)), var(--surface); color: var(--text); border-bottom: 1px solid var(--bad); box-shadow: var(--shadow); font-size: 14px; line-height: 1.4; }
+  #offline .msg { flex: 1 1 220px; }
+  #offline button { flex: none; min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--bad); background: var(--surface); color: var(--bad); font-weight: 600; cursor: pointer; }
+
+  .langsw { flex: none; display: inline-flex; align-items: center; gap: 2px; font-size: 12.5px; font-weight: 600; color: var(--faint, #98a1b0); }
+  .langsw a { text-decoration: none; color: var(--muted, #626b7c); padding: 4px 6px; min-height: 30px; display: inline-flex; align-items: center; border-radius: 6px; }
+  .langsw a:hover { color: var(--text, inherit); }
+  .langsw a[aria-current="true"] { color: var(--text, inherit); text-decoration: underline; text-underline-offset: 3px; }
+  @media (max-width: 700px) { .topbar .langsw { margin-left: auto; } .topbar .langsw + .logout { margin-left: 0; } }
+
+
+  @supports (-webkit-touch-callout: none) { input, select, textarea { font-size: 16px !important; } }
+
+  :root { --code-bg: #1b2130; --code-ink: #e6ebf1; --code-dim: #8d9bb0; --code-var: #ffc46b; --jump: 56px; }
+  @media (prefers-color-scheme: dark) { :root { --code-bg: #0a0c11; --code-ink: #dfe5ee; } }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  .gpage { padding-block: 20px 56px; }
+  .gpage a { color: var(--accent); text-underline-offset: 2px; }
+  .ghead { display: grid; gap: 8px; margin-bottom: 24px; max-width: 76ch; }
+  .eyebrow { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .ghead h1 { margin: 0; font-size: clamp(24px, 4vw, 32px); line-height: 1.15; letter-spacing: -.02em; text-wrap: balance; }
+  .lede { margin: 0; color: var(--muted); }
+  .pswitch { display: inline-flex; gap: 4px; padding: 4px; border-radius: var(--radius-sm); background: var(--surface-2); margin-bottom: 20px; flex-wrap: wrap; }
+  .pswitch button { border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 14px; padding: 6px 12px; border-radius: 8px; cursor: pointer; min-height: 36px; }
+  .pswitch button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow); font-weight: 600; }
+  body[data-platform="synology"] [data-platform]:not([data-platform~="synology"]),
+  body[data-platform="linux"] [data-platform]:not([data-platform~="linux"]),
+  body[data-platform="pi"] [data-platform]:not([data-platform~="pi"]) { display: none !important; }
+
+  .layout { display: grid; grid-template-columns: 236px minmax(0, 1fr); gap: 40px; align-items: start; }
+  .side { position: sticky; top: calc(var(--top) + env(safe-area-inset-top) + 16px); max-height: calc(100vh - var(--top) - env(safe-area-inset-top) - 32px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding: 2px 4px 8px 2px; }
+  nav.steps { display: grid; gap: 2px; }
+  nav.steps .grp { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); padding: 16px 10px 6px; }
+  nav.steps .grp:first-child { padding-top: 0; }
+  nav.steps a { display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 5px 10px; border-radius: var(--radius-sm); color: var(--muted); text-decoration: none; font-size: 14px; line-height: 1.3; }
+  nav.steps a:hover { background: var(--surface-2); color: var(--text); }
+  nav.steps a[aria-current="step"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow); font-weight: 600; }
+  .n { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 11.5px; font-weight: 700; font-variant-numeric: tabular-nums; border: 1.5px solid var(--line); color: var(--muted); background: var(--surface); }
+  .n.ref span { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .55; }
+  a[aria-current="step"] .n { border-color: var(--accent); color: var(--accent); }
+  a.done .n { background: var(--ok); border-color: var(--ok); color: #fff; }
+  a.done .n span { display: none; }
+  a.done .n::after { content: "✓"; font-size: 12px; }
+
+  .jump { display: none; }
+  .gmain { min-width: 0; display: grid; gap: 48px; }
+  .gmain > *, section > * { min-width: 0; }
+  section { display: grid; gap: 12px; scroll-margin-top: calc(var(--top) + env(safe-area-inset-top) + 16px); }
+  h2 { display: flex; align-items: center; gap: 12px; margin: 0; font-size: clamp(21px, 3vw, 25px); line-height: 1.2; letter-spacing: -.015em; text-wrap: balance; }
+  h2 .k { flex: none; min-width: 34px; height: 34px; padding: 0 8px; border-radius: 10px; display: inline-grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-size: 16px; font-weight: 800; letter-spacing: 0; font-variant-numeric: tabular-nums; }
+  h3 { margin: 14px 0 0; font-size: 17px; line-height: 1.3; scroll-margin-top: calc(var(--top) + env(safe-area-inset-top) + 16px); }
+  .stephead { display: grid; gap: 6px; }
+  .lead { color: var(--muted); }
+  p, li { max-width: 74ch; overflow-wrap: break-word; }
+  p { margin: 0; }
+  ol, ul { margin: 0; padding-left: 1.35em; display: grid; gap: 6px; }
+  li > ul, li > ol { margin-top: 6px; }
+  b { font-weight: 650; }
+  code { font: .87em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--surface-2); padding: .1em .35em; border-radius: 5px; overflow-wrap: anywhere; }
+  .menu { font-weight: 600; background: var(--accent-soft); padding: .05em .4em; border-radius: 5px; overflow-wrap: anywhere; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  .share-ico { display: inline-block; vertical-align: -3px; color: var(--accent); }
+
+  .pre { position: relative; background: var(--code-bg); color: var(--code-ink); border-radius: var(--radius-sm); border: 1px solid var(--line); }
+  .pre pre { margin: 0; padding: 14px 16px; overflow-x: auto; font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; -webkit-overflow-scrolling: touch; }
+  .pre .copy + pre { padding-top: 42px; }
+  .pre .c { color: var(--code-dim); }
+  .copy { position: absolute; top: 8px; right: 8px; z-index: 1; font-size: 12px; font-weight: 600; min-height: 28px; background: rgba(255, 255, 255, .1); color: var(--code-ink); border: 1px solid rgba(255, 255, 255, .16); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+  .copy:hover { background: rgba(255, 255, 255, .18); }
+
+  .note { border-left: 3px solid var(--accent); background: var(--surface); box-shadow: var(--shadow); padding: 12px 14px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; max-width: 78ch; }
+  .note.warn { border-left-color: var(--warn); background: var(--warn-soft); box-shadow: none; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 18px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .card > *, .check > *, .vars > * { min-width: 0; }
+  .card .big { font-size: 18px; font-weight: 700; line-height: 1.3; }
+  .variants { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 12px; }
+  .variant { align-content: start; }
+  .variant .tag { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+
+  .tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; overflow-wrap: break-word; }
+  tbody tr:last-child td { border-bottom: 0; }
+  th { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); background: var(--surface-2); }
+  .tag-ok, .tag-no { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-right: 4px; }
+  .tag-ok { background: var(--ok-soft); color: var(--ok); }
+  .tag-no { background: var(--bad-soft); color: var(--bad); }
+
+  .vars { display: grid; gap: 12px; }
+  .vars .h { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; justify-content: space-between; }
+  .vars .h b { font-size: 16px; }
+  .vars .h span { color: var(--muted); font-size: 13.5px; }
+  .vgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 140px), 1fr)); gap: 10px 14px; }
+  .vgrid label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); min-width: 0; }
+  .vgrid input { width: 100%; min-width: 0; min-height: 40px; font: 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--text); }
+  .v { color: var(--accent); font-weight: 600; }
+  .v.unset { background: var(--warn-soft); color: var(--warn); border-radius: 3px; padding: 0 .2em; }
+  .pre .v { color: var(--code-var); font-weight: 400; }
+  .pre .v.unset { background: #4a2a22; color: #ffb4a3; }
+  .progress { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; font-size: 13.5px; color: var(--muted); }
+  .gbar { flex: 1 1 160px; max-width: 360px; height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+  .gbar i { display: block; height: 100%; width: 0; background: var(--ok); border-radius: inherit; transition: width .25s; }
+  .reset { border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 13px; padding: 5px 12px; min-height: 34px; border-radius: 999px; cursor: pointer; }
+  .reset:hover { color: var(--text); background: var(--surface-2); }
+
+  .check { background: var(--ok-soft); border: 1px solid color-mix(in srgb, var(--ok) 30%, transparent); border-radius: var(--radius-sm); padding: 12px 14px; display: grid; gap: 4px; }
+  .check .t { font-weight: 700; color: var(--ok); margin-bottom: 2px; }
+  .check label { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; cursor: pointer; padding: 4px 0; max-width: 74ch; }
+  .check label > span { overflow-wrap: break-word; }
+  .check input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--ok); }
+  .check label:has(input:checked) > span { color: var(--muted); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--muted) 60%, transparent); }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .side { display: none; }
+    .jump { display: flex; align-items: center; gap: 10px; position: sticky; top: calc(var(--top) + env(safe-area-inset-top)); z-index: 20; min-height: var(--jump); padding: 8px 0; margin-bottom: 16px; background: var(--bg); background: color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter: saturate(1.5) blur(14px); backdrop-filter: saturate(1.5) blur(14px); }
+    .jump label { flex: none; font-size: 13px; font-weight: 600; color: var(--muted); }
+    .jump select { flex: 1; min-width: 0; min-height: 40px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--text); font-size: 15px; box-shadow: var(--shadow); }
+    section, h3 { scroll-margin-top: calc(var(--top) + env(safe-area-inset-top) + var(--jump) + 12px); }
+    .gmain { gap: 40px; }
+  }
+  @media (max-width: 640px) {
+    .tbl { overflow: visible; }
+    .tbl thead { display: none; }
+    .tbl tr { display: block; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    .tbl tbody tr:last-child { border-bottom: 0; }
+    .tbl td { display: block; padding: 2px 0; border: 0; }
+    .tbl td:first-child { font-weight: 600; }
+    .tbl td[data-l]::before { content: attr(data-l) " · "; color: var(--muted); font-size: 12.5px; font-weight: 600; }
+    .card { padding: 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .gbar i { transition: none; } }
+  @media print {
+    .topbar, .sitebar, .tabbar, .side, .jump, .copy, .reset, .vgrid, #ptr, #offline { display: none !important; }
+    body { background: #fff; color: #000; padding: 0; }
+    .layout { display: block; }
+    .gmain { display: block; }
+    section { margin-bottom: 28px; }
+    .card, .note, .check, .tbl { box-shadow: none; }
+    .pre { background: #f5f5f5; color: #000; border-color: #ccc; }
+    .pre .c, .pre .v { color: #444; }
+    .pre pre { white-space: pre-wrap; overflow: visible; padding-top: 12px !important; }
+    h2, h3 { break-after: avoid; }
+    .check, tr { break-inside: avoid; }
+  }
+
+  .sitebar { position: sticky; top: 0; z-index: 30; padding-top: env(safe-area-inset-top); background: var(--bg); background: color-mix(in srgb, var(--bg) 84%, transparent); -webkit-backdrop-filter: saturate(1.5) blur(14px); backdrop-filter: saturate(1.5) blur(14px); border-bottom: 1px solid var(--line); }
+  .sitebar .wrap { display: flex; justify-content: space-between; align-items: center; min-height: 56px; }
+  .sitebar .langsw { display: inline-flex; align-items: center; min-height: 36px; padding: 6px 10px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; }
+  .sitebar .langsw:hover { color: var(--text); background: var(--surface-2); }
+  @media (max-width: 480px) { .sitebar .brand span { display: inline; } }
+  @media (max-width: 700px) { body { padding-bottom: env(safe-area-inset-bottom); } }
+</style>
+</head>
+<body data-platform="synology">
+<header class="sitebar"><div class="wrap"><a class="brand" href="../"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2.5 4 5.6v6.1c0 4.9 3.4 8.6 8 9.8 4.6-1.2 8-4.9 8-9.8V5.6L12 2.5Z" fill="currentColor" opacity=".16"/><path d="M12 2.5 4 5.6v6.1c0 4.9 3.4 8.6 8 9.8 4.6-1.2 8-4.9 8-9.8V5.6L12 2.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.2 12.3a4.4 4.4 0 0 1 7.6 0 4.4 4.4 0 0 1-7.6 0Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12.3" r="1.4" fill="currentColor"/></svg><span>Vartovyi</span></a><a class="langsw" href="../../guide/" hreflang="uk" lang="uk">УКР</a></div></header>
+<div class="wrap gpage">
+  <header class="ghead">
+    <div class="eyebrow"><span data-platform="synology">Guide · Synology DSM 7.2+</span><span data-platform="linux pi">Guide · Docker on Linux and Raspberry Pi</span></div>
+    <h1><span data-platform="synology">Installing Vartovyi on a Synology NAS</span><span data-platform="linux pi">Installing Vartovyi</span></h1>
+    <p class="lede">Steps 0–8 are the first installation: each ends with a check — tick the items and don’t move on until all of them are ticked (the ticks are kept in this browser). Steps 9–13 are updates, iPhone, Discover, other trackers and push; the reference is at the end.</p>
+    <p class="lede" data-platform="synology">If you are reading this on the NAS itself, the container is already running (steps 0–6 are behind you) — go to step 7, the setup wizard (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/setup</code>).</p>
+    <p class="lede" data-platform="linux pi">If you are reading this in Vartovyi itself, the containers are already running (steps 0–6 are behind you) — go to step 7, the setup wizard (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/setup</code>).</p>
+  </header>
+
+  <div class="pswitch" role="group" aria-label="Platform"><button type="button" data-set-platform="synology" aria-pressed="true">Synology</button><button type="button" data-set-platform="linux" aria-pressed="false">Linux</button><button type="button" data-set-platform="pi" aria-pressed="false">Raspberry Pi</button></div>
+
+  <div class="jump"><label for="jump">Step</label><select id="jump" aria-label="Go to step"><optgroup label="Installation"><option value="s0" data-t-synology="0. NAS and packages" data-t-linux="0. Preparation">0. NAS and packages</option><option value="s1" data-t-synology="1. Plex" data-t-linux="1. Plex">1. Plex</option><option value="s2" data-t-synology="2. Toloka" data-t-linux="2. Toloka">2. Toloka</option><option value="s3" data-t-synology="3. Telegram" data-t-linux="3. Telegram">3. Telegram</option><option value="s4" data-t-synology="4. Torrent client" data-t-linux="4. Torrent client">4. Torrent client</option><option value="s5" data-t-synology="5. Folders on the NAS" data-t-linux="5. Folders">5. Folders on the NAS</option><option value="s6" data-t-synology="6. Container Manager" data-t-linux="6. Starting the containers">6. Container Manager</option><option value="s7" data-t-synology="7. Setup wizard" data-t-linux="7. Setup wizard">7. Setup wizard</option><option value="s8" data-t-synology="8. Checking that it works" data-t-linux="8. Checking that it works">8. Checking that it works</option></optgroup><optgroup label="After installation"><option value="s9" data-t-synology="9. Updates and changes" data-t-linux="9. Updates and changes">9. Updates and changes</option><option value="s10" data-t-synology="10. App on iPhone" data-t-linux="10. App on iPhone">10. App on iPhone</option><option value="s11" data-t-synology="11. Discover (TMDB)" data-t-linux="11. Discover (TMDB)">11. Discover (TMDB)</option><option value="trackers" data-t-synology="12. Other trackers" data-t-linux="12. Other trackers">12. Other trackers</option><option value="push" data-t-synology="13. Notifications and push" data-t-linux="13. Notifications and push">13. Notifications and push</option></optgroup><optgroup label="Reference"><option value="daily" data-t-synology="Day to day" data-t-linux="Day to day">Day to day</option><option value="access" data-t-synology="Access and password" data-t-linux="Access and password">Access and password</option><option value="trouble" data-t-synology="Common problems" data-t-linux="Common problems">Common problems</option><option value="manual" data-t-synology="Without the wizard" data-t-linux="Without the wizard">Without the wizard</option></optgroup></select></div>
+
+  <div class="layout">
+  <aside class="side">
+  <nav class="steps" id="nav" aria-label="Guide steps">
+    <div class="grp">Installation</div><a href="#s0" data-step="0"><span class="n"><span>0</span></span><span class="t"><span data-platform="synology">NAS and packages</span><span data-platform="linux pi">Preparation</span></span></a><a href="#s1" data-step="1"><span class="n"><span>1</span></span><span class="t">Plex</span></a><a href="#s2" data-step="2"><span class="n"><span>2</span></span><span class="t">Toloka</span></a><a href="#s3" data-step="3"><span class="n"><span>3</span></span><span class="t">Telegram</span></a><a href="#s4" data-step="4"><span class="n"><span>4</span></span><span class="t">Torrent client</span></a><a href="#s5" data-step="5"><span class="n"><span>5</span></span><span class="t"><span data-platform="synology">Folders on the NAS</span><span data-platform="linux pi">Folders</span></span></a><a href="#s6" data-step="6"><span class="n"><span>6</span></span><span class="t"><span data-platform="synology">Container Manager</span><span data-platform="linux pi">Starting the containers</span></span></a><a href="#s7" data-step="7"><span class="n"><span>7</span></span><span class="t">Setup wizard</span></a><a href="#s8" data-step="8"><span class="n"><span>8</span></span><span class="t">Checking that it works</span></a>
+    <div class="grp">After installation</div><a href="#s9"><span class="n"><span>9</span></span><span class="t">Updates and changes</span></a><a href="#s10" data-step="10"><span class="n"><span>10</span></span><span class="t">App on iPhone</span></a><a href="#s11"><span class="n"><span>11</span></span><span class="t">Discover (TMDB)</span></a><a href="#trackers"><span class="n"><span>12</span></span><span class="t">Other trackers</span></a><a href="#push"><span class="n"><span>13</span></span><span class="t">Notifications and push</span></a>
+    <div class="grp">Reference</div><a href="#daily"><span class="n ref"><span></span></span><span class="t">Day to day</span></a><a href="#access"><span class="n ref"><span></span></span><span class="t">Access and password</span></a><a href="#trouble"><span class="n ref"><span></span></span><span class="t">Common problems</span></a><a href="#manual"><span class="n ref"><span></span></span><span class="t">Without the wizard</span></a>
+  </nav>
+  </aside>
+
+  <main class="gmain">
+    <div class="card vars" id="vars">
+      <div class="h"><b>Your details</b><span>Fill in once: the values are put into the commands and addresses below and kept in this browser. No passwords needed here.</span></div>
+      <div class="vgrid">
+        <label for="v-ip"><span data-platform="synology">NAS IP address</span><span data-platform="linux pi">Server IP address</span><input id="v-ip" data-k="ip" placeholder="192.168.1.10" autocomplete="off"></label>
+        <label for="v-port"><span data-platform="synology">Vartovyi port on the NAS</span><span data-platform="linux pi">Vartovyi port</span><input id="v-port" data-k="port" placeholder="8080" inputmode="numeric" autocomplete="off"></label>
+        <label for="v-admin" data-platform="synology">Your DSM user (admin, for SSH)<input id="v-admin" data-k="admin" placeholder="admin" autocomplete="off"></label>
+        <label for="v-svc" data-platform="synology">User for Download Station<input id="v-svc" data-k="svc" placeholder="vartovyi" autocomplete="off"></label>
+        <label for="v-vol" data-platform="synology">Volume with the docker shared folder<input id="v-vol" data-k="vol" placeholder="volume1" autocomplete="off"></label>
+        <label for="v-share" data-platform="synology">Shared folder with videos<input id="v-share" data-k="share" placeholder="video" autocomplete="off"></label>
+        <label for="v-dir" data-platform="linux pi">Folder with compose.linux.yml<input id="v-dir" data-k="dir" placeholder="~/vartovyi" autocomplete="off"></label>
+        <label for="v-media" data-platform="linux pi">Media folder (MEDIA_DIR)<input id="v-media" data-k="media" placeholder="/srv/media" autocomplete="off"></label>
+        <label for="v-shows">Folder for shows<input id="v-shows" data-k="shows" placeholder="video/Series" autocomplete="off"></label>
+        <label for="v-movies">Folder for movies<input id="v-movies" data-k="movies" placeholder="video/Movies" autocomplete="off"></label>
+      </div>
+      <div class="progress"><div class="gbar"><i id="barFill"></i></div><span id="progressText">0 of 0 checks</span><button class="reset" id="reset" type="button">Reset ticks</button></div>
+    </div>
+
+    <!-- 0 -->
+    <section id="s0" data-step="0">
+      <div class="stephead"><h2><span class="k">0</span><span data-platform="synology">NAS and packages</span><span data-platform="linux pi">Preparation</span></h2>
+      <p class="lead" data-platform="synology">Check that the NAS is suitable and install three packages.</p>
+      <p class="lead" data-platform="linux pi">A Linux machine that stays on, Docker with Compose and the server’s IP address.</p></div>
+
+      <div data-platform="synology">
+      <div class="card">
+        <div class="big">You don’t need to install Docker separately.</div>
+        <p>On Synology, Docker comes as the <b>Container Manager</b> package from the Package Center. It already contains both the Docker engine and running from <code>docker-compose.yml</code> (the “Project” section). Nothing has to be installed over SSH.</p>
+      </div>
+
+      <div class="tbl"><table>
+        <thead><tr><th>DSM version</th><th>Package</th><th>What to do</th></tr></thead>
+        <tbody>
+          <tr><td>7.2 and newer</td><td data-l="Package">Container Manager</td><td data-l="What to do"><span class="tag-ok">suitable</span> this guide is written for it</td></tr>
+          <tr><td>7.0–7.1</td><td data-l="Package">Docker</td><td data-l="What to do"><span class="tag-no">update</span> there is no “Project” section; <span class="menu">Control Panel → Update &amp; Restore</span></td></tr>
+          <tr><td>6.x</td><td data-l="Package">Docker</td><td data-l="What to do"><span class="tag-no">update</span> not covered by this guide</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Is the model suitable</h3>
+      <p>Open <span class="menu">Control Panel → Info Center → General</span> and look at the “CPU” line.</p>
+      <ul>
+        <li><b>Intel or AMD</b> (the <code>+</code> and <code>xs</code> series, for example DS220+, DS923+, DS1621+) — suitable.</li>
+        <li><b>ARM</b> (Realtek, for example DS223, DS124, DS223j) — Container Manager is not available on every ARM model. If it is in the Package Center, Vartovyi will run too: the image is built for <code>amd64</code> and <code>arm64</code>.</li>
+        <li>If Container Manager is not in the Package Center, the model doesn’t support it, and Vartovyi won’t run on this NAS.</li>
+      </ul>
+
+      <h3>Install the packages</h3>
+      <ol>
+        <li><b>Container Manager.</b> On first launch it offers to create the <code>docker</code> shared folder — accept.</li>
+        <li><b>Download Station.</b> Vartovyi adds torrents through it. Not needed if you use qBittorrent or Transmission (step 4).</li>
+        <li><b>Plex Media Server</b>, if it isn’t installed yet. Sign in to your plex.tv account in it.</li>
+      </ol>
+      <p>You will need the local IP address of the NAS, below <code><span class="v" data-v="ip">&lt;NAS_IP&gt;</span></code>, for example <code>192.168.1.10</code>. It is in <span class="menu">Control Panel → Network → Network Interface</span>. Better reserve it in the router so it doesn’t change.</p>
+
+      <div class="check"><div class="t">✅ Check</div>
+        <label><input type="checkbox" id="c0a"><span>DSM 7.2 or newer, the CPU is suitable.</span></label>
+        <label><input type="checkbox" id="c0b"><span>The DSM main menu has Container Manager and Download Station (or qBittorrent or Transmission is already running).</span></label>
+        <label><input type="checkbox" id="c0c"><span>File Station has the <code>docker</code> shared folder.</span></label>
+        <label><input type="checkbox" id="c0d"><span>I know the IP address of the NAS.</span></label>
+      </div>
+      </div>
+
+      <div data-platform="linux pi">
+      <h3>What you need</h3>
+      <ul>
+        <li><b>A 64-bit Linux machine that stays on</b>: a mini PC, a home server, a NAS without DSM or a Raspberry Pi 3, 4 or 5. Any distribution Docker runs on will do: Debian, Ubuntu, Raspberry Pi OS, Fedora and others.</li>
+        <li><b>Plex Media Server</b>, signed in to your plex.tv account. Plex must see the same files Vartovyi downloads: the simplest is Plex on the same machine (installed on it, or in Docker with <code><span class="v" data-v="media">/srv/media</span></code> mounted under the same path). Plex on another machine in the same network works too: share <code><span class="v" data-v="media">/srv/media</span></code> over SMB or NFS and add the shared folder to Plex libraries (step 4).</li>
+        <li><b>A fixed local IP address</b> of the machine, below <code><span class="v" data-v="ip">&lt;NAS_IP&gt;</span></code>, for example <code>192.168.1.10</code>. The command <code>hostname -I</code> shows it (the first address). Reserve it in the router (DHCP reservation) so it doesn’t change.</li>
+        <li><b>A terminal on the machine</b>: a keyboard and a screen, or SSH from your computer: <code>ssh &lt;user&gt;@<span class="v" data-v="ip">&lt;NAS_IP&gt;</span></code>. All commands below are run there as your usual user, not as root.</li>
+      </ul>
+
+      <h3>Install Docker</h3>
+      <p>Vartovyi runs in Docker with Docker Compose. First check whether they are already installed:</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>docker compose version</pre></div>
+      <p>If it prints a version (for example <code>Docker Compose version v2.29.1</code>), skip to the check. Otherwise install Docker with the official script and allow your user to run it without <code>sudo</code>. The first line installs <code>curl</code>, which minimal images may lack; it is for Debian, Ubuntu and Raspberry Pi OS (on Fedora: <code>sudo dnf install -y curl</code>):</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>sudo apt update &amp;&amp; sudo apt install -y curl
+curl -fsSL https://get.docker.com | sh
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER</pre></div>
+      <p><b>Log out and back in</b> (or close SSH and connect again) so the new group applies, then run <code>docker compose version</code> again. If it says <code>permission denied</code> about <code>docker.sock</code>, the group hasn’t applied yet: log out once more or reboot (<code>sudo reboot</code>).</p>
+      </div>
+
+      <div data-platform="pi">
+      <h3>Raspberry Pi</h3>
+      <ul>
+        <li><b>A 64-bit OS is required.</b> Raspberry Pi OS (64-bit), the Lite version is enough. Check with the two commands below: the first must print <code>aarch64</code>, the second <code>arm64</code>. <code>armv7l</code> or <code>armhf</code> means a 32-bit system (a 32-bit Raspberry Pi OS on a Pi 4 or 5 runs a 64-bit kernel, so <code>uname -m</code> alone can say <code>aarch64</code>; <code>dpkg</code> shows the system itself) — Vartovyi doesn’t run on it; reinstall a 64-bit OS with <a href="https://www.raspberrypi.com/software/" target="_blank" rel="noopener">Raspberry Pi Imager</a>.</li>
+        <li><b>A USB SSD instead of the SD card</b> for the Vartovyi folder and the media: the SQLite database and torrents wear out SD cards quickly. The simplest is to write the OS straight to the SSD with Raspberry Pi Imager and boot from it (Pi 4 and Pi 5 boot from USB out of the box): then the default folders <code>~/vartovyi</code> and <code>/srv/media</code> are on the SSD already. If the system stays on the SD card and the SSD is mounted, for example, at <code>/mnt/ssd</code>, enter <code>/mnt/ssd/vartovyi</code> and <code>/mnt/ssd/media</code> in “Your details”.</li>
+        <li><b>The SSD in ext4.</b> Writing the OS to the SSD (above) formats it as ext4 already. A separately mounted SSD must be ext4 too: exFAT and NTFS don’t keep Linux owners, so <code>chown</code> fails (“Operation not permitted”) or changes nothing, and downloads stall. Reformat it as ext4 (this erases the disk); if it must stay exFAT or NTFS, mount it with the options <code>uid=1000,gid=1000</code> (in <code>/etc/fstab</code>).</li>
+        <li><b>The official power supply</b> (Pi 4: 5V 3A, Pi 5: 5V 5A) and <b>a case with cooling</b>: with a weak power supply the SSD drops out, and an overheating Pi slows itself down (throttling), and downloads slow down with it.</li>
+      </ul>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>uname -m
+dpkg --print-architecture</pre></div>
+      </div>
+
+      <div class="check" data-platform="linux pi"><div class="t">✅ Check</div>
+        <label><input type="checkbox" id="c0a-linux"><span><code>docker compose version</code> prints a version.</span></label>
+        <label><input type="checkbox" id="c0b-linux"><span>I know the server IP address.</span></label>
+      </div>
+      <div class="check" data-platform="pi"><div class="t">✅ Check · Raspberry Pi</div>
+        <label><input type="checkbox" id="c0c-linux"><span><code>uname -m</code> prints <code>aarch64</code> and <code>dpkg --print-architecture</code> prints <code>arm64</code>; the Vartovyi folder is on an SSD.</span></label>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section id="s1" data-step="1">
+      <div class="stephead"><h2><span class="k">1</span>Plex</h2>
+      <p class="lead">You need the account token and the server address. You will enter them in the wizard at step 7.</p></div>
+      <p><b>Token.</b> Open Plex Web, go to any movie or show, press <span class="menu">⋯ → Get Info → View XML</span>. The address bar of the page that opens has the parameter <code>X-Plex-Token=…</code>. Copy the value after <code>=</code>. Take the token of the <b>server owner</b>: “Delete watched” and fixing matches in Plex only work with it.</p>
+      <p><b>Server address</b> — <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:32400</code>. Not <code>localhost</code>: from the container that is a different machine.</p>
+      <p><b>Watchlist.</b> Add a few shows and movies to your Plex watchlist. This is the list Vartovyi will track.</p>
+      <div class="check"><div class="t">✅ Check</div>
+        <label><input type="checkbox" id="c1a"><span>The address <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:32400/library/sections?X-Plex-Token=&lt;token&gt;</code> in the browser returns XML with the list of libraries.</span></label>
+        <label><input type="checkbox" id="c1b"><span>The watchlist has at least one show or movie.</span></label>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section id="s2" data-step="2">
+      <div class="stephead"><h2><span class="k">2</span>Toloka</h2>
+      <p class="lead">A toloka.to login and password are required for the wizard: Toloka is the main tracker, and Vartovyi searches for releases and downloads .torrent files under this account.</p></div>
+      <p>Make sure the account is active and has no limits on downloading torrents. Other trackers (from the Prowlarr catalog, including Ukrainian ones such as Mazepa) are added later on the “Trackers” page — <a href="#trackers">step 12</a>.</p>
+      <div class="note"><b>If signing in shows a captcha</b> or you don’t want to keep the password on the server, hand over a ready session from the browser. Sign in at toloka.to, open DevTools (F12) → Network, reload the page, pick any request to <code>toloka.to</code> and copy the whole value of the <code>Cookie</code> header from Request Headers. In the wizard choose “Browser cookie” and paste it. When the session expires, an alert arrives, and the cookie has to be copied again.</div>
+      <div class="check"><div class="t">✅ Check</div>
+        <label><input type="checkbox" id="c2a"><span>Signing in at toloka.to with this account works, or the cookie is copied.</span></label>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section id="s3" data-step="3">
+      <div class="stephead"><h2><span class="k">3</span>Telegram</h2>
+      <p class="lead">A bot that will send messages about new episodes.</p></div>
+      <ol>
+        <li><b>Create a bot.</b> Send <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a> the <code>/newbot</code> command, set a name and a username. The reply contains a token like <code>123456789:AAF…</code>.</li>
+        <li><b>Find out your chat_id.</b> Write to <a href="https://t.me/userinfobot" target="_blank" rel="noopener">@userinfobot</a>, it replies with the <code>Id</code> number. The bot will only respond to this chat_id.</li>
+        <li><b>Open your bot and press Start.</b> Without this the bot cannot write to you first.</li>
+      </ol>
+      <h3>Bot commands</h3>
+      <p>The command menu is the “/” button next to the input field in the chat with the bot:</p>
+      <ul>
+        <li><code>/check</code> — check the trackers now; the bot replies with a summary.</li>
+        <li><code>/watchlist</code> — the list of titles, 8 per page, with a short state (🔔 awaiting a decision, ⬇️ downloading, ✅ in Plex — together with watched and deleted, 🔎 searching… or not suitable); “‹ ›” flip pages in the same message.</li>
+        <li><code>/status</code> — Vartovyi status: titles, the last and the next check, free space.</li>
+      </ul>
+      <p>A title button in <code>/watchlist</code> opens its card: the state and, for a show, a line per season (“S2 · 8/10 in Plex · 2 on trackers · ⬇️ 1 downloading”). <b>🔎 Search now</b> searches for the title on all trackers, like on the title page (once per 5 min). <b>📥 Download season</b> (for a movie — <b>📥 Download</b>) lets you pick a season (“S1 ✅” — in Plex or watched and deleted, “S3 · 2 releases”), then up to 5 known releases, best first (“Toloka · 1080p WEB-DL · 12.3 GB · S02E01–E10”), and <b>⬇️ N</b> buttons: the release is added to the torrent client with the same checks as on the site (space, title folder), and the result appears in the same message. No releases — “No releases with season N found yet” and <b>🔎 Search now</b>. Releases already downloaded are marked “✅ downloaded” and have no button; “‹ Back to the list” returns to the list. If a search takes longer than a minute, it continues in the background — open the card again a minute later.</p>
+      <div class="check"><div class="t">✅ Check</div>
+        <label><input type="checkbox" id="c3a"><span>The bot token is saved.</span></label>
+        <label><input type="checkbox" id="c3b"><span>I know my chat_id.</span></label>
+        <label><input type="checkbox" id="c3c"><span>Start is pressed in the chat with the bot.</span></label>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section id="s4" data-step="4">
+      <div class="stephead"><h2><span class="k">4</span>Torrent client</h2>
+      <p class="lead" data-platform="synology">The program that will download torrents: Download Station, qBittorrent or Transmission. In the wizard (step 7) you choose it at the “Torrent client” step, and set two folders there: one for shows and one for movies.</p>
+      <p class="lead" data-platform="linux pi">The program that will download torrents. On Linux and Raspberry Pi it is qBittorrent, which starts together with Vartovyi at step 6.</p></div>
+      <div data-platform="linux pi">
+      <div class="card">
+        <div class="big">qBittorrent is already included.</div>
+        <p>On Linux and Raspberry Pi <code>compose.yml</code> (step 6) already contains qBittorrent next to Vartovyi: nothing to install now. In the wizard choose <b>qBittorrent</b>; the address <code>http://qbittorrent:8090</code> is filled in. The login is <code>admin</code>, the password is the one you set at step 6.</p>
+      </div>
+      <p>Downloads go to <code><span class="v" data-v="media">/srv/media</span>/Series</code> and <code><span class="v" data-v="media">/srv/media</span>/Movies</code> (you create them at step 5) — add these two folders to Plex libraries: <code>Series</code> to a “TV Shows” library, <code>Movies</code> to a “Movies” library. Plex on the host sees them under the same path. If Plex itself runs in Docker, mount <code><span class="v" data-v="media">/srv/media</span></code> into its container under the same path too.</p>
+      <p><b>Plex on another machine</b> (another server, a NAS, a computer) doesn’t see <code><span class="v" data-v="media">/srv/media</span></code> by itself. Share the media folder over the network (SMB with Samba, or NFS), mount or open the share on the Plex machine and add its <code>Series</code> and <code>Movies</code> folders to the libraries. The library path then differs from <code><span class="v" data-v="media">/srv/media</span></code>, so the wizard shows the Plex warning “No Plex library found” for these folders — that is expected: the downloads still appear in Plex.</p>
+      <p><b>Already have qBittorrent or Transmission?</b> Remove the <code>qbittorrent</code> service from <code>compose.yml</code> and enter the address of your client in the wizard (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:&lt;port&gt;</code>); the folders are paths as your client sees them. How to prepare each client is below.</p>
+      </div>
+      <p data-platform="synology">If you don’t know what to choose, take <b>Download Station</b>: it is a Synology package and needs nothing but a DSM user. qBittorrent or Transmission make sense if you already use them.</p>
+      <p><b>Destination folders</b> must be the same ones Plex scans. Then downloaded episodes appear in the library, and Vartovyi won’t notify about them again. Inside them Vartovyi creates a separate folder for each title (<a href="#folders">Title folders</a>).</p>
+
+      <div data-platform="synology">
+      <h3>Download Station</h3>
+      <p>A separate DSM user under which Vartovyi will add torrents.</p>
+      <ol>
+        <li><span class="menu">Control Panel → User &amp; Group → Create</span>, a name, for example, <code><span class="v" data-v="svc">vartovyi</span></code>.</li>
+        <li>The <b>Permissions</b> tab: for the shared folder with videos (for example, <code><span class="v" data-v="share">video</span></code>) — “Read/Write”.</li>
+        <li>The <b>Applications</b> tab: for <b>Download Station</b> and <b>File Station</b> — “Allow”. File Station is needed to create a folder for each title; without it releases go to the root of the folder, and “Status” shows a warning.</li>
+        <li>Don’t turn on two-factor authentication for this user, otherwise the API cannot sign in.</li>
+      </ol>
+      <p><b>Destination folders</b> are given relative to the root of the shared folders, without <code>/<span class="v" data-v="vol">volume1</span></code>. If shows live in <code>/<span class="v" data-v="vol">volume1</span>/<span class="v" data-v="shows">video/Series</span></code>, write <code><span class="v" data-v="shows">video/Series</span></code> in the wizard.</p>
+      <div class="note warn"><b>The DSM address is <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:5000</code>.</b> The HTTPS address <code>:5001</code> with Synology’s default self-signed certificate won’t be accepted from the container. If HTTP-to-HTTPS redirection is on in <span class="menu">Control Panel → Network → DSM Settings</span>, turn it off or install a trusted certificate.</div>
+      </div>
+
+      <h3>qBittorrent</h3>
+      <ol>
+        <li>Turn on the Web UI in qBittorrent: <span class="menu">Options → Web UI</span>, the “Web User Interface (Remote control)” checkbox.</li>
+        <li>Look up the <b>port</b> there (in the linuxserver Docker image — the <code>WEBUI_PORT</code> variable, 8090 in the example below) and set a <b>login and password</b>. You will enter them in the wizard.</li>
+        <li>The address for the wizard: <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:&lt;port&gt;</code>, for example <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:8090</code>.</li>
+      </ol>
+      <p><b>Folders</b> are given the way qBittorrent itself sees them: if it runs in Docker — the path inside its container, for example <code>/downloads/Series</code><span data-platform="synology">, not <code>/<span class="v" data-v="vol">volume1</span>/…</code></span>. qBittorrent can’t check whether such folders exist, so the wizard shows “this client cannot check folders”: see that they exist in qBittorrent’s saving settings. Leave the torrent content layout “Original” or “Create subfolder” (not “Don’t create subfolder”).</p>
+      <p>After a wrong login or password Vartovyi doesn’t try to sign in again for 15 minutes: after a few failed attempts qBittorrent bans the IP and may ban your browser too if the IP is the same.</p>
+
+      <h3>Transmission</h3>
+      <ol>
+        <li>RPC address: <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:9091/transmission/rpc</code>. Port 9091 is the default; if you changed it, enter yours.</li>
+        <li>Transmission only lets addresses from <code>rpc-whitelist</code> into RPC. Either add the home network and Docker subnets there (for example, <code>192.168.1.*,172.*.*.*</code>), or turn the whitelist off (<code>&quot;rpc-whitelist-enabled&quot;: false</code>) and set an RPC login and password (<code>rpc-authentication-required</code>, <code>rpc-username</code>, <code>rpc-password</code>). Edit Transmission’s <code>settings.json</code> while it is stopped: on exit it overwrites the file.</li>
+        <li>Enter the login and password in the wizard only if they are set in Transmission, otherwise leave the fields empty.</li>
+      </ol>
+      <p><b>Folders</b> — the way Transmission sees them, for example <code>/downloads/Series</code>. The wizard checks that they exist.</p>
+
+      <div data-platform="synology">
+      <h3>qBittorrent in Docker next to Vartovyi</h3>
+      <p>qBittorrent from the linuxserver image is a separate project in Container Manager (name <code>qbittorrent</code>, path <code>docker/qbittorrent</code>), created the same way as in step 6; the Vartovyi compose doesn’t change. The shared folder with videos <code>/<span class="v" data-v="vol">volume1</span>/<span class="v" data-v="share">video</span></code> is mounted in qBittorrent as <code>/downloads</code>, and Plex sees the same folder. In the wizard you then enter the address <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:8090</code> and the folders <code>/downloads/Series</code> and <code>/downloads/Movies</code>.</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    restart: unless-stopped
+    environment:
+      - PUID=1026        <span class="c"># uid of a user with rights to the video folder (id &lt;user&gt; over SSH)</span>
+      - PGID=100
+      - TZ=Europe/Kyiv
+      - WEBUI_PORT=8090
+    ports:
+      - "8090:8090"      <span class="c"># Web UI</span>
+      - "6881:6881"
+      - "6881:6881/udp"
+    volumes:
+      - /<span class="v" data-v="vol">volume1</span>/docker/qbittorrent/config:/config
+      - /<span class="v" data-v="vol">volume1</span>/<span class="v" data-v="share">video</span>:/downloads   <span class="c"># the same folder Plex scans</span></pre></div>
+      <p>Create the folders <code>docker/qbittorrent/config</code> and <code>video/Series</code>, <code>video/Movies</code> in File Station beforehand. On first start the linuxserver image writes a temporary password for the <code>admin</code> user to the <code>qbittorrent</code> container log: sign in to the Web UI with it and set your own password in <span class="menu">Options → Web UI</span>.</p>
+      <div class="note"><b>The Plex warning.</b> The wizard compares the folders with the Plex libraries by path. For <code>/downloads/Series</code> it often finds no match, because Plex sees the same files as <code>/<span class="v" data-v="vol">volume1</span>/<span class="v" data-v="share">video</span>/Series</code>, and says “No Plex library found”. If the folder really is in a Plex library, this warning can be ignored. To avoid it, mount the folder into Plex (if it runs in Docker too) under the same path as in qBittorrent.</div>
+      </div>
+
+      <h3 id="space">Free space</h3>
+      <p>Free space is shown in the release message, checked before downloading (if there isn’t enough, “Download” won’t add the task), it drives the 💾 low-space warning and the “Free space” card on the “Status” page. In the wizard you choose the source at the “Free space” step:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Source</th><th>When to use</th></tr></thead>
+        <tbody>
+          <tr><td><b>Synology via DSM</b> (<code>synology</code>)</td><td>For Download Station: free space of the volume with the shared folder. With another client it usually gives “space unknown”: the path <code>/downloads/Series</code> doesn’t match any DSM shared folder.</td></tr>
+          <tr><td><b>The torrent client itself</b> (<code>client</code>)</td><td>For qBittorrent and Transmission. Transmission reports space for each folder separately, qBittorrent — one number for the disk of its default save folder. For Download Station it is the same as “Synology via DSM”.</td></tr>
+          <tr><td><b>Folder in the Vartovyi container</b> (<code>path</code>)</td><td>When the client doesn’t report space or reports it inaccurately: Vartovyi itself looks at the disk space of a mounted folder.</td></tr>
+          <tr><td><b>Don’t show</b> (<code>none</code>)</td><td>Space is not shown anywhere, downloads are not blocked for lack of space, there are no 💾 warnings. The “Free space” card says “not configured”.</td></tr>
+        </tbody>
+      </table></div>
+      <p data-platform="linux pi">On Linux and Raspberry Pi choose <b>Folder in the Vartovyi container</b> with the path <code><span class="v" data-v="media">/srv/media</span></code>: <code>compose.yml</code> already mounts the media folder into Vartovyi under the same path (read-only), and the wizard suggests it.</p>
+      <div data-platform="synology">
+      <p>For “Folder in the Vartovyi container” mount a folder from the same disk the downloads go to into the Vartovyi container, and enter its path in the container (here <code>/media</code>) in the wizard. Read-only is enough:</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>    volumes:
+      - /<span class="v" data-v="vol">volume1</span>/docker/vartovyi/data:/data
+      - /<span class="v" data-v="vol">volume1</span>/docker/vartovyi/config:/config
+      - /<span class="v" data-v="vol">volume1</span>/<span class="v" data-v="share">video</span>:/media:ro</pre></div>
+      <p>In short: Download Station — “Synology via DSM”; qBittorrent or Transmission — “The torrent client itself”, and if the space is unknown, “Folder in the Vartovyi container”.</p>
+      </div>
+
+      <div data-platform="synology">
+      <div class="check"><div class="t">✅ Check</div>
+        <label><input type="checkbox" id="c4a"><span>The client is reachable: signing in to DSM as <code><span class="v" data-v="svc">vartovyi</span></code> opens Download Station, or the qBittorrent Web UI opens with the login and password, or <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:9091/transmission/web/</code> opens Transmission.</span></label>
+        <label><input type="checkbox" id="c4b"><span>The client sees the folders for shows and movies: for Download Station — in File Station as <code><span class="v" data-v="svc">vartovyi</span></code>, for qBittorrent and Transmission — at the path in their container.</span></label>
+        <label><input type="checkbox" id="c4c"><span>The destination folders for shows and movies are in Plex libraries.</span></label>
+      </div>
+      </div>
+      <div class="check" data-platform="linux pi"><div class="t">✅ Check</div>
+        <label><input type="checkbox" id="c4a-linux"><span>The folders <code><span class="v" data-v="media">/srv/media</span>/Series</code> and <code><span class="v" data-v="media">/srv/media</span>/Movies</code> are in Plex libraries.</span></label>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section id="s5" data-step="5">
+      <div class="stephead"><h2><span class="k">5</span><span data-platform="synology">Folders on the NAS</span><span data-platform="linux pi">Folders</span></h2>
+      <p class="lead" data-platform="synology">Two folders for data and settings, writable by the container.</p>
+      <p class="lead" data-platform="linux pi">The project folder for Vartovyi and the media folder for downloads, both writable by uid 1000.</p></div>
+      <div data-platform="synology">
+      <p>In <span class="menu">File Station → docker</span> create the folder <code>vartovyi</code>, and inside it <code>data</code> and <code>config</code>:</p>
+      <div class="pre"><pre>/<span class="v" data-v="vol">volume1</span>/docker/vartovyi/
+  data/     <span class="c">database, torrent and poster cache, tracker sessions</span>
+  config/   <span class="c">settings.json and quality.yaml — the wizard creates them</span></pre></div>
+      <p>If the <code>docker</code> shared folder is not on <code>volume1</code>, replace the volume number in all paths (the “Volume” field in “Your details”). The path is shown in <span class="menu">File Station → right-click the folder → Properties</span>.</p>
+      <p><b>Write permissions.</b> The container runs as the user with uid 1000, not as your DSM user, so permissions from File Station won’t help. Choose one option:</p>
+      <div class="variants">
+        <div class="card variant"><span class="tag">Option A · recommended</span><b>Over SSH</b>
+          <ol>
+            <li><span class="menu">Control Panel → Terminal &amp; SNMP</span> → “Enable SSH service”.</li>
+            <li>On the computer: <code>ssh <span class="v" data-v="admin">&lt;DSM_admin&gt;</span>@<span class="v" data-v="ip">&lt;NAS_IP&gt;</span></code>, the DSM password. The user must be an administrator.</li>
+            <li>Run the command below, then SSH can be turned off.</li>
+          </ol>
+          <div class="pre"><button class="copy" type="button">Copy</button><pre>sudo chown -R 1000:1000 /<span class="v" data-v="vol">volume1</span>/docker/vartovyi/data /<span class="v" data-v="vol">volume1</span>/docker/vartovyi/config</pre></div>
+        </div>
+        <div class="card variant"><span class="tag">Option B · no SSH</span><b>Run as root</b>
+          <p>At step 6 uncomment the line <code>user: "0:0"</code> in the compose file. The container will be able to write to any folder. Simpler, but less isolation.</p>
+        </div>
+      </div>
+      <div class="check"><div class="t">✅ Check</div>
+        <label><input type="checkbox" id="c5a"><span>The folders <code>docker/vartovyi/data</code> and <code>docker/vartovyi/config</code> exist.</span></label>
+        <label><input type="checkbox" id="c5b"><span>Option A: <code>ls -ln /<span class="v" data-v="vol">volume1</span>/docker/vartovyi</code> shows <code>1000 1000</code> for both folders. Or option B is chosen.</span></label>
+      </div>
+      </div>
+
+      <div data-platform="linux pi">
+      <p>Two folders, both can be changed in “Your details”:</p>
+      <ul>
+        <li><b>The project folder</b> <code><span class="v" data-v="dir">~/vartovyi</span></code> — <code>compose.yml</code> and the container data next to it: <code>data</code> (database, torrent and poster cache, tracker sessions), <code>config</code> (settings, the wizard creates them) and <code>qbittorrent</code> (qBittorrent settings).</li>
+        <li><b>The media folder</b> <code><span class="v" data-v="media">/srv/media</span></code> — downloaded shows (<code>Series</code>) and movies (<code>Movies</code>); Plex scans it.</li>
+      </ul>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>mkdir -p <span class="v" data-v="dir">~/vartovyi</span>/data <span class="v" data-v="dir">~/vartovyi</span>/config <span class="v" data-v="dir">~/vartovyi</span>/qbittorrent
+cd <span class="v" data-v="dir">~/vartovyi</span>
+sudo mkdir -p <span class="v" data-v="media">/srv/media</span>/Series <span class="v" data-v="media">/srv/media</span>/Movies
+sudo chown -R 1000:1000 <span class="v" data-v="media">/srv/media</span></pre></div>
+      <p><b>The project folder outside your home</b> (for example <code>/mnt/ssd/vartovyi</code>): there <code>mkdir</code> without <code>sudo</code> fails with “Permission denied”. Create the folder first and make it yours, then run the commands above:</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>sudo mkdir -p <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; sudo chown $USER: <span class="v" data-v="dir">~/vartovyi</span></pre></div>
+      <div class="note warn"><b>The media folder must be writable by uid 1000.</b> qBittorrent and Vartovyi run in their containers as the user with uid 1000, not as root. A folder created with <code>sudo</code> belongs to root, and then torrents stop with “Permission denied” or hang at 0%. That is why <code>sudo chown -R 1000:1000 <span class="v" data-v="media">/srv/media</span></code> above is required — run it again whenever you create folders there with <code>sudo</code> or move the media to another disk.</div>
+      <p><b>The project folder.</b> The containers run as uid 1000. <code>id -u</code> shows yours: on Raspberry Pi OS and most distributions the first user is 1000 already, then the folders in <code><span class="v" data-v="dir">~/vartovyi</span></code> created above need nothing. Create <code>data</code>, <code>config</code> and <code>qbittorrent</code> before the first start, as above: otherwise Docker creates them as root, and Vartovyi can’t write to them. If <code>id -u</code> prints another number, give these three folders to uid 1000 (only them: the project folder itself stays yours, so you can still edit <code>compose.yml</code>, <code>.env</code> and <code>Caddyfile</code>):</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>sudo chown -R 1000:1000 <span class="v" data-v="dir">~/vartovyi</span>/data <span class="v" data-v="dir">~/vartovyi</span>/config <span class="v" data-v="dir">~/vartovyi</span>/qbittorrent</pre></div>
+      <p><b>Another media folder</b> (for example an SSD at <code>/mnt/ssd/media</code>): create a <code>.env</code> file next to <code>compose.yml</code> with the line <code>MEDIA_DIR=/mnt/ssd/media</code>, enter this path in “Your details” and use it everywhere instead of <code>/srv/media</code>:</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>echo "MEDIA_DIR=/mnt/ssd/media" &gt;&gt; <span class="v" data-v="dir">~/vartovyi</span>/.env</pre></div>
+      </div>
+      <div class="check" data-platform="linux pi"><div class="t">✅ Check</div>
+        <label><input type="checkbox" id="c5a-linux"><span><code>ls -ln <span class="v" data-v="media">/srv/media</span></code> shows <code>1000 1000</code> for Series and Movies.</span></label>
+        <label><input type="checkbox" id="c5b-linux"><span><code>ls -ln <span class="v" data-v="dir">~/vartovyi</span></code> shows <code>1000 1000</code> for data, config and qbittorrent.</span></label>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section id="s6" data-step="6">
+      <div class="stephead"><h2><span class="k">6</span><span data-platform="synology">Running in Container Manager</span><span data-platform="linux pi">Starting the containers</span></h2>
+      <p class="lead" data-platform="synology">A project with one container. The settings are entered later, in the browser.</p>
+      <p class="lead" data-platform="linux pi">Three containers from one file: Vartovyi, qBittorrent and Watchtower for updates. The settings are entered later, in the browser.</p></div>
+      <div data-platform="synology">
+      <ol>
+        <li><span class="menu">Container Manager → Project → Create</span>.</li>
+        <li>Name: <code>vartovyi</code>. Path: <code>docker/vartovyi</code>.</li>
+        <li>Source: “Create docker-compose.yml”. Paste the text below.</li>
+        <li>Skip the web portal settings via Web Station.</li>
+        <li>“Next” → “Done”. The first image pull may take a few minutes.</li>
+      </ol>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>services:
+  vartovyi:
+    image: ghcr.io/sorochanroman/vartovyi:latest
+    pull_policy: always
+    container_name: vartovyi
+    restart: unless-stopped
+    # user: "0:0"        <span class="c"># uncomment if you chose option B at step 5</span>
+    environment:
+      - TZ=Europe/Kyiv
+    ports:
+      <span class="c"># the left number is the port on the NAS; if 8080 is taken, change only it, for example "8081:8080"</span>
+      - "<span class="v" data-v="port">8080</span>:8080"
+    volumes:
+      - /<span class="v" data-v="vol">volume1</span>/docker/vartovyi/data:/data
+      - /<span class="v" data-v="vol">volume1</span>/docker/vartovyi/config:/config</pre></div>
+      <div class="note"><b>Firewall.</b> If it is on in <span class="menu">Control Panel → Security → Firewall</span>, add a rule that allows port <span class="v" data-v="port">8080</span> only from the local network. Don’t open this port to the internet (<a href="#access">Access and password</a>).</div>
+      <div class="check"><div class="t">✅ Check</div>
+        <label><input type="checkbox" id="c6a"><span><span class="menu">Container Manager → Container</span>: <code>vartovyi</code> has the “Running” status and doesn’t restart in a loop.</span></label>
+        <label><input type="checkbox" id="c6b"><span>The container log has the line <code>starting in setup mode</code>.</span></label>
+        <label><input type="checkbox" id="c6c"><span><code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span></code> opens the “Vartovyi — setup” page.</span></label>
+      </div>
+      </div>
+
+      <div data-platform="linux pi">
+      <h3>Get the compose file</h3>
+      <p>Download <code>compose.linux.yml</code> into the project folder under the name <code>compose.yml</code>: Compose finds this name by itself, so the commands below need no <code>-f</code>.</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>cd <span class="v" data-v="dir">~/vartovyi</span>
+curl -fsSL https://raw.githubusercontent.com/SorochanRoman/vartovyi-install/HEAD/compose.linux.yml -o compose.yml</pre></div>
+      <p>Or create the file by hand with this content: <code>nano compose.yml</code>, paste the text, save with <b>Ctrl+O</b> and <b>Enter</b>, exit with <b>Ctrl+X</b>.</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre># Vartovyi on Docker for Linux (mini PC, server, Raspberry Pi with a 64-bit OS).
+# Save as compose.yml next to a .env (optional) and run: docker compose up -d
+# Guide: http://&lt;server IP&gt;:8080/guide
+# Media folder: /srv/media by default; another one — put MEDIA_DIR=/path/to/media into a .env file next to this file.
+services:
+  vartovyi:
+    image: ghcr.io/sorochanroman/vartovyi:latest
+    pull_policy: always
+    container_name: vartovyi
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ:-Europe/Kyiv}
+    labels:
+      # automatic updates (watchtower below) apply only to containers with this label
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - &quot;8080:8080&quot;
+    volumes:
+      - ./data:/data
+      - ./config:/config
+      # read-only, only to count free space; the same path as on the host, so Plex paths match
+      - ${MEDIA_DIR:-/srv/media}:${MEDIA_DIR:-/srv/media}:ro
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ:-Europe/Kyiv}
+      - WEBUI_PORT=8090
+      # group-writable files: a Plex on the host in the same group (1000) can delete watched episodes
+      - UMASK=002
+    ports:
+      # web interface; first sign-in: user admin, temporary password in `docker logs qbittorrent`
+      - &quot;8090:8090&quot;
+      - &quot;6881:6881&quot;
+      - &quot;6881:6881/udp&quot;
+    volumes:
+      - ./qbittorrent:/config
+      - ${MEDIA_DIR:-/srv/media}:${MEDIA_DIR:-/srv/media}
+
+  # Every night at 04:00 checks for a new vartovyi:latest image and restarts the container.
+  watchtower:
+    image: nickfedor/watchtower:latest
+    container_name: vartovyi-watchtower
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ:-Europe/Kyiv}
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_SCHEDULE=0 0 4 * * *
+      - WATCHTOWER_CLEANUP=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+</pre></div>
+      <p>Port 8080 is already taken on the server? Change only the left number in <code>"8080:8080"</code>, for example <code>"8081:8080"</code>, and enter it in “Your details”.</p>
+
+      <h3>Start</h3>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>cd <span class="v" data-v="dir">~/vartovyi</span>
+docker compose up -d
+docker compose ps</pre></div>
+      <p>The first start downloads the images: a few minutes, on a Raspberry Pi longer. <code>ps</code> must show all three containers — <code>vartovyi</code>, <code>qbittorrent</code> and <code>vartovyi-watchtower</code> — as “running” (“Up”). Run <code>docker compose</code> commands from <code><span class="v" data-v="dir">~/vartovyi</span></code>: Compose looks for the file in the current folder.</p>
+
+      <h3>qBittorrent password</h3>
+      <p>On first start qBittorrent creates the user <code>admin</code> with a temporary password and prints it to its log:</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>docker logs qbittorrent 2&gt;&amp;1 | grep -i password</pre></div>
+      <ol>
+        <li>Open <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:8090</code> and sign in as <code>admin</code> with this password.</li>
+        <li><span class="menu">Tools → Options → Web UI</span>, the “Authentication” block: set a permanent password and press “Save” at the bottom. You will enter <code>admin</code> and this password in the wizard (step 7).</li>
+        <li>Optionally, on the “Downloads” tab set “Default Save Path” to <code><span class="v" data-v="media">/srv/media</span></code>: then torrents you add by hand also land in the media folder.</li>
+      </ol>
+      <div class="note"><b>Don’t open these ports to the internet.</b> Forward neither 8080 nor 8090 from the router: from outside — only over HTTPS (step 13). Port 6881 is for torrent peers; forwarding it is optional and only speeds up downloads.</div>
+      </div>
+      <div class="check" data-platform="linux pi"><div class="t">✅ Check</div>
+        <label><input type="checkbox" id="c6a-linux"><span><code>docker compose ps</code> shows vartovyi, qbittorrent and vartovyi-watchtower running.</span></label>
+        <label><input type="checkbox" id="c6b-linux"><span><code>docker logs vartovyi</code> has the line <code>starting in setup mode</code>.</span></label>
+        <label><input type="checkbox" id="c6c-linux"><span><code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span></code> opens the “Vartovyi — setup” page; qBittorrent at <code>:8090</code> accepts the permanent password.</span></label>
+      </div>
+      <p>A minute or two after the start the container state becomes “healthy” (<span data-platform="synology">in Container Manager — “Healthy”</span><span data-platform="linux pi">in <code>docker compose ps</code> — <code>(healthy)</code></span>): the image calls <code>/healthz</code> every minute. “unhealthy” means the web server doesn’t answer — look at the log.</p>
+      <p class="lead">If the container restarts in a loop, the reason is in the log. Most often it is <code>EACCES</code> (the permissions from step 5) or an image that wasn’t pulled. See <a href="#trouble">Common problems</a>.</p>
+    </section>
+
+    <!-- 7 -->
+    <section id="s7" data-step="7">
+      <div class="stephead"><h2><span class="k">7</span>Setup wizard</h2>
+      <p class="lead">While the settings are incomplete, the service works only as the wizard page. The wizard checks each step with a live request.</p></div>
+      <ol>
+        <li>Open <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span></code>, the service goes to <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/setup</code> by itself.</li>
+        <li><b>Platform</b> is the first step: Synology NAS, Docker on Linux or Raspberry Pi. It only sets the defaults in the next steps and the part of this Guide you see; you can change it later.</li>
+        <li><b>Web interface password</b> is the second step. At home no code is needed; from outside the home network the wizard first asks for the code from the container log (<span data-platform="synology"><span class="menu">Container Manager → Container → vartovyi → Log</span></span><span data-platform="linux pi"><code>docker logs vartovyi</code></span>, the line “Password setup code: 1234-5678”). The password is at least 8 characters; it is needed to sign in from outside (<a href="#access">Access and password</a>).</li>
+        <li>Then go through the steps: Plex, Toloka, Telegram, Torrent client, Free space, Quality rules, Finish. On each, fill in the fields and press “Check”. “Next” becomes active after a success. The draft is saved, you can close the page and come back.</li>
+        <li><b>Telegram:</b> the check sends the test message “Vartovyi connected ✅”. If it didn’t arrive, press Start in the bot and check again.</li>
+        <li><b>Torrent client:</b> choose Download Station, qBittorrent or Transmission and fill in the fields (step 4). The check connects to the client and looks for the destination folders (qBittorrent can’t check folders). The warning that Plex doesn’t scan a folder is often false for paths in Docker like <code>/downloads/Series</code>.</li>
+        <li><b>Free space:</b> choose the source (see <a href="#space">Free space</a> in step 4). The check shows how much is free for each folder, or “space unknown”.</li>
+        <li><b>Quality rules:</b> minimum resolution, how often to sync Plex and search the trackers (hours, 24 and 12 by default), required Ukrainian audio, “A separate folder for each title”. If <code>quality.yaml</code> already exists, the fields only show its values, and changes here don’t apply.</li>
+        <li><b>Save and start:</b> the wizard writes the settings to <code>config/settings.json</code> (mode 0600: it holds passwords and tokens), the container restarts in working mode, and the page opens “Home” by itself.</li>
+      </ol>
+      <div class="note" data-platform="linux pi"><b>The wizard on the server itself asks for the code.</b> Opened at <code>localhost</code> or in the server’s own browser, the request comes through Docker’s network bridge, so the wizard counts it as outside the home network and asks for the setup code. Take it from <code>docker logs vartovyi</code> (the line “Password setup code: …”) or open the wizard from another device on the network.</div>
+      <p>In working mode the <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/setup</code> page is read-only: the fields can’t be edited, and “Check again” checks the current settings. To change them — <a href="#s9">step 9</a>.</p>
+      <div class="note warn"><b>Security.</b> While there is no password, anyone on the local network can open the wizard page. It never shows secrets, and uses a saved secret only for the same address and user. Do the setup on a trusted network and don’t forward port <span class="v" data-v="port">8080</span> to the internet.</div>
+      <div class="check"><div class="t">✅ Check</div>
+        <label><input type="checkbox" id="c7a"><span>All wizard steps up to “Finish” have green marks.</span></label>
+        <label><input type="checkbox" id="c7b"><span>“Vartovyi connected ✅” arrived in Telegram.</span></label>
+        <label><input type="checkbox" id="c7c"><span>After “Save and start” the Vartovyi “Home” opened.</span></label>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section id="s8" data-step="8">
+      <div class="stephead"><h2><span class="k">8</span>Checking that it works</h2>
+      <p class="lead">The last step: make sure the service sees all its dependencies and answers in Telegram.</p></div>
+      <ol>
+        <li>The Status (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/status</code>) page shows the check cards: Plex (watchlist), Plex (server), Toloka, Telegram, Torrent client (with the client name), Storage, Free space, TMDB (without a key — “not configured”, step 11). A red one has the error text next to it. “Free space” turns red when there is less free space than the <code>storage.minFreeGb</code> threshold (50 GB by default).</li>
+        <li>Send the bot <code>/status</code> — you get the number of items in the watchlist and the time of the last and the next check.</li>
+        <li>Send <code>/check</code> — the bot runs a check right away and replies with a summary.</li>
+        <li>Send <code>/watchlist</code> — you get the list of titles with buttons; a title opens a card with its seasons (<a href="#s3">Bot commands</a>).</li>
+        <li>If the watchlist has something that isn’t in Plex, and the tracker has a release, a message arrives with the release size, the free space and the “Download” and “Ignore release” buttons. The first check may bring several of these at once. “Ignore” hides the release forever; the same episodes from another release are offered again only if it is of better quality.</li>
+        <li>After “Download” the same message is updated once a minute with the task status in the torrent client. If there isn’t enough space, it shows ⚠️ “not enough space”, and the task won’t be added until you free up space. If the new episodes fit but the whole release doesn’t, it shows “⚠️ the whole release won’t fit if the earlier episodes aren’t in the folder”: “Download” works, the client fetches only the files missing from the folder. If the task was removed from the client before it finished, it shows “⚠️ Task deleted from …”.</li>
+        <li>For a show there is also the “⭐ Follow” button: it marks the release as followed and downloads it right away, and from then on Vartovyi adds new episodes of exactly this release by itself and writes “⭐ Added automatically: …”. Remove the mark with the “⭐ Stop following” button on the title page, and mark any non-ignored release of a show with “⭐ Follow and download automatically”. If adding automatically didn’t work (not enough space, a client error, episodes not recognized), a regular message arrives with buttons and a ⭐ line with the reason; other releases of the same show are not downloaded automatically.</li>
+      </ol>
+      <p><b>Toloka: engine or built-in code.</b> The “Toloka · engine” card on the “Status” page has a switch to the “built-in code” — the previous search implementation with the same results and credentials. If Toloka behaves strangely after an update, switch and report the problem.</p>
+      <p>How to use Home, stalled downloads and deleting watched episodes every day — in the reference <a href="#daily">Day to day</a>.</p>
+      <div class="check"><div class="t">✅ Check</div>
+        <label><input type="checkbox" id="c8a"><span>All checks on the “Status” page are green (or “not configured”).</span></label>
+        <label><input type="checkbox" id="c8b"><span><code>/status</code> answers.</span></label>
+        <label><input type="checkbox" id="c8c"><span><code>/check</code> answers with the summary “checked N, new M, errors 0”.</span></label>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section id="s9">
+      <div class="stephead"><h2><span class="k">9</span>Updates and changing settings</h2>
+      <p class="lead">Reference for later.</p></div>
+      <h3>Automatic updates (Watchtower)</h3>
+      <p data-platform="linux pi"><code>compose.yml</code> already contains Watchtower (the <code>vartovyi-watchtower</code> container): every night at 04:00 it checks for a new <code>vartovyi:latest</code>, pulls it and restarts Vartovyi. qBittorrent has no label and is not updated automatically. The version is shown in the log (<code>docker logs vartovyi</code>): the line <code>vartovyi &lt;version&gt; started</code>.</p>
+      <div data-platform="synology">
+      <p>Stop the project (<span class="menu">Project → vartovyi → Action → Stop</span>), in the project YAML add a label to the <code>vartovyi</code> service and, at the end, the Watchtower service, then “Save” → “Build”. Every day at 04:00 it pulls the new <code>:latest</code> and restarts only the labeled containers.</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>    labels:                 <span class="c"># in the vartovyi service</span>
+      - com.centurylinklabs.watchtower.enable=true
+
+  watchtower:               <span class="c"># at the end, at the level of vartovyi:</span>
+    image: nickfedor/watchtower:latest
+    container_name: vartovyi-watchtower
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Kyiv
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_SCHEDULE=0 0 4 * * *
+      - WATCHTOWER_CLEANUP=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock</pre></div>
+      <p>The <code>image:</code> of the <code>vartovyi</code> service must be <code>:latest</code> with the line <code>pull_policy: always</code> (as in step 6), otherwise “Build” may start an old version from the cache. The version is shown in the log: the line <code>vartovyi &lt;version&gt; started</code>.</p>
+      </div>
+      <p>For Watchtower to report updates in Telegram, add the line <code>- WATCHTOWER_NOTIFICATION_URL=telegram://&lt;BOT_TOKEN&gt;@telegram?chats=&lt;CHAT_ID&gt;</code> to its <code>environment:</code> (the bot token and chat_id from step 3). The schedule <code>0 0 4 * * *</code> means every day at 04:00 (seconds, minutes, hours, day, month, weekday). It uses <code>nickfedor/watchtower</code>, a maintained fork: the original <code>containrrr/watchtower</code> is no longer developed and doesn’t work with new Docker versions. Watchtower has access to <code>/var/run/docker.sock</code>, which is why it is a separate service, and Vartovyi itself has no such access. Test versions (with a hyphen in the number, like <code>0.2.0-rc.1</code>) are published only under their own number, so Watchtower won’t install them.</p>
+      <h3>Update by hand</h3>
+      <div data-platform="linux pi">
+      <p>Pulls new images of all three containers (qBittorrent too) and recreates the ones that changed:</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose pull &amp;&amp; docker compose up -d</pre></div>
+      <p>The <code>data</code> and <code>config</code> folders are not touched by an update, the database migrates by itself; before a schema change Vartovyi puts a copy of the database into <code>data/backups</code> (the last three). To roll back, replace <code>:latest</code> in <code>compose.yml</code> with the previous version, for example <code>:0.34.1</code>, restore the database copy from <code>data/backups</code> and run <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code>.</p>
+      </div>
+      <div data-platform="synology">
+      <ol>
+        <li><span class="menu">Container Manager → Image</span>: if <code>ghcr.io/sorochanroman/vartovyi</code> has an update mark, press “Update”.</li>
+        <li>If there is no mark but a new release is out: <span class="menu">Project → vartovyi → Action → Stop</span>, then <span class="menu">Image → vartovyi → Delete</span>, then <span class="menu">Project → vartovyi → Action → Build</span>.</li>
+        <li>Or over SSH in the <code>/<span class="v" data-v="vol">volume1</span>/docker/vartovyi</code> folder: <code>sudo docker compose -p vartovyi pull &amp;&amp; sudo docker compose -p vartovyi up -d</code>.</li>
+      </ol>
+      <p>The <code>data</code> and <code>config</code> folders are not touched by an update, the database migrates by itself; before a schema change Vartovyi puts a copy of the database into <code>data/backups</code> (the last three). To roll back, replace <code>:latest</code> with the previous version, for example <code>:0.34.1</code>, restore the database copy from <code>data/backups</code> and “Build” again.</p>
+      </div>
+      <p>To restore a database copy: stop Vartovyi, delete <code>data/vartovyi.sqlite-wal</code> and <code>data/vartovyi.sqlite-shm</code> and put the copy you need (<code>data/backups/vartovyi-schema-&lt;schema&gt;-&lt;date&gt;.sqlite</code>) in place of <code>data/vartovyi.sqlite</code>. Watchtower updates only the tag in <code>image:</code>, so with a pinned version it changes nothing until you return to <code>:latest</code>. After an update make sure on the “Status” page that all checks are green.</p>
+      <h3>Change settings</h3>
+      <p>The schedule (the “Schedule” block: “Every N hours” — from 1 to 168, or “At set times” — <code>HH:MM</code>, several comma-separated, for example “07:00, 19:00”; applies right away, no restart), the separate title folders and sign-in are changed right on the Status (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/status</code>) page, trackers — on Trackers (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/trackers</code>), notifications — on Notifications (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/notifications</code>). For credentials (DSM password, token, Toloka cookie) — the wizard:</p>
+      <ol data-platform="linux pi">
+        <li>In <code><span class="v" data-v="dir">~/vartovyi</span>/compose.yml</code> add the line <code>- SETUP_MODE=1</code> to the <code>environment:</code> block of the <code>vartovyi</code> service (<code>nano compose.yml</code>).</li>
+        <li>Apply it: <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code> — Compose recreates the container with the new variable.</li>
+        <li>Open <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/setup</code> and go through all the steps with “Check”. Secrets don’t have to be entered again if the address and user haven’t changed.</li>
+        <li>“Save and start”, then remove <code>SETUP_MODE=1</code> and run <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code> again. While the variable is there, the service opens the wizard after every restart.</li>
+      </ol>
+      <p data-platform="linux pi">Changed <code>config/quality.yaml</code> by hand? A restart is enough: <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose restart vartovyi</code>. A change in <code>environment:</code> needs <code>up -d</code>: <code>restart</code> keeps the old variables.</p>
+      <ol data-platform="synology">
+        <li><span class="menu">Project → vartovyi → Action → Stop</span>.</li>
+        <li>In the YAML configuration add the line <code>- SETUP_MODE=1</code> to the <code>environment:</code> block, save and “Build”.</li>
+        <li>Open <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/setup</code> and go through all the steps with “Check”. Secrets don’t have to be entered again if the address and user haven’t changed.</li>
+        <li>“Save and start”, then stop the project, remove <code>SETUP_MODE=1</code> and “Build” again. While the variable is there, the service opens the wizard after every restart.</li>
+      </ol>
+      <h3>Backup and access to the image</h3>
+      <div data-platform="linux pi">
+      <p>Back up the folders <code><span class="v" data-v="dir">~/vartovyi</span>/data</code> and <code><span class="v" data-v="dir">~/vartovyi</span>/config</code>: they hold the database and the settings with passwords, so keep the copy safe. For example, a dated archive in your home folder (Vartovyi stops for a few seconds so the database copy is consistent):</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>cd <span class="v" data-v="dir">~/vartovyi</span>
+docker compose stop vartovyi
+tar czf ~/vartovyi-backup-$(date +%F).tar.gz data config
+docker compose start vartovyi</pre></div>
+      <p>If <code>id -u</code> doesn’t print 1000 (step 5), the folders belong to uid 1000, not to you: put <code>sudo</code> before <code>tar</code>.</p>
+      <p>The package on GHCR must be public. If it is private: on GitHub create a token with the <code>read:packages</code> scope and run <code>docker login ghcr.io</code> — the GitHub login, and the token as the password.</p>
+      </div>
+      <div data-platform="synology">
+      <p>Add the <code>docker/vartovyi</code> folder to a Hyper Backup task: it holds the database and the settings with passwords, so keep the copy safe.</p>
+      <p>The package on GHCR must be public. If it is private: on GitHub create a token with the <code>read:packages</code> scope, then <span class="menu">Container Manager → Registry → Settings → Add</span>, address <code>https://ghcr.io</code>, the GitHub login, and the token as the password.</p>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section id="s10" data-step="10">
+      <div class="stephead"><h2><span class="k">10</span>App on iPhone</h2>
+      <p class="lead">You can put Vartovyi on the iPhone Home Screen and open it like a regular app.</p></div>
+      <ol>
+        <li>On an iPhone connected to the home Wi‑Fi, open the address <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span></code> in <b>Safari</b>.</li>
+        <li>Tap “Share” <svg class="share-ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9H6a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10a1 1 0 0 0-1-1h-2"/><path d="M12 3v12"/><path d="M8.5 6.5 12 3l3.5 3.5"/></svg> → “Add to Home Screen” → “Add”. In Safari’s new compact layout the “Share” button is hidden under the “…” button.</li>
+        <li>Open Vartovyi from the Home Screen icon: it runs full screen, with the “Home”, “Media”, “Discover”, “Status” tabs at the bottom. To refresh the data, pull the page down. “Trackers”, “Notifications” and this guide open from the “Status” page.</li>
+      </ol>
+      <div class="note"><b>Works only on the home network.</b> Away from home (or when the server is unreachable) the app shows “No connection to the server” and a “Try again” button. Notifications come to Telegram, and over HTTPS also as push (step 13).</div>
+      <div class="check"><div class="t">✅ Check</div>
+        <label><input type="checkbox" id="c10a"><span>The iPhone Home Screen has the Vartovyi icon.</span></label>
+        <label><input type="checkbox" id="c10b"><span>From the icon Vartovyi opens full screen, with the “Home”, “Media”, “Discover”, “Status” tabs at the bottom.</span></label>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section id="s11">
+      <div class="stephead"><h2><span class="k">11</span>Discover (TMDB)</h2>
+      <p class="lead">Optional. A TMDB key turns on the “Discover” tab, the “Release schedule” on Home and the check whether a show has ended.</p></div>
+      <p>The “Discover” tab has “Popular now”, “Similar to yours” (based on the watchlist and what was recently added to Plex), “New seasons” of shows from your library and collections by genre. What is already in Plex is not offered; titles from the watchlist are marked “✓ in watchlist”.</p>
+      <p><b>Tracker availability badges.</b> Under each poster — what the enabled trackers have (the best result among them): “🇺🇦 1080p WEB-DL” (available with Ukrainian audio in the required quality), “🇺🇦 only 720p” (with the audio, but below your quality requirements), “no Ukrainian” or “not checked yet”. The badges fill in gradually and only together with the tracker search: after each search (once every <code>tolokaHours</code>, 12 hours by default) Vartovyi makes up to 5 more requests to the trackers. A title is checked on all enabled trackers in turn, so with one tracker that is up to 5 titles, with two — up to 2; an already checked title is checked again no sooner than in a day (fresh releases) or a week (the rest). When you open a title card, it is checked right away (if it is time), and the “On trackers” block shows up to 5 best topics from all trackers with links. If a tracker is unreachable, checks on it are paused for 2 hours; the badge then shows the result of the trackers that answered, together with the previously found topics of the rest. If no tracker is enabled, the badges are not updated.</p>
+      <h3>Get a TMDB key</h3>
+      <ol>
+        <li>Sign up at <a href="https://www.themoviedb.org/signup" target="_blank" rel="noopener">themoviedb.org</a> and confirm your email.</li>
+        <li>Click the avatar → <span class="menu">Settings → API</span> and create a key: usage type <b>Personal</b>, briefly describe the purpose.</li>
+        <li>Copy the <b>API Read Access Token</b> (a long string). The shorter “API Key” works too.</li>
+      </ol>
+      <h3>Add the key to Vartovyi</h3>
+      <p>Open the Discover (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/discover</code>) tab: without a key it has a “Discover with TMDB” card with a field for the key. Paste the key and press “Check and save” — no restart needed. Another way: the line <code>TMDB_TOKEN=…</code> in <code>.env</code> (or in the project’s <code>environment:</code>) and a restart; such a key takes precedence. The “TMDB” card on “Status” shows “not configured”, “key ok” or an error.</p>
+      <h3>Add to watchlist</h3>
+      <p>Open a title and press “+ Watchlist”: it goes to your Plex watchlist. Vartovyi picks it up at the next sync with Plex (once every 24 hours by default) or right after “Check now” or “Refresh” on the “Media” page.</p>
+    </section>
+
+    <!-- trackers -->
+    <section id="trackers">
+      <div class="stephead"><h2><span class="k">12</span>Other trackers</h2>
+      <p class="lead">Optional. Besides the built-in Toloka, Vartovyi also searches other trackers — using their description in the Cardigann format (as in Prowlarr and Jackett). Everything is done on the Trackers (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/trackers</code>) page.</p></div>
+      <ol>
+        <li>Open “Trackers” (the top menu, and on a phone — the link on the “Status” page).</li>
+        <li>In the “Tracker catalog” block find the tracker: search by name, filters by language (including Ukrainian), type (public, semi-private, private) and “supported only”.</li>
+        <li>Press “Add”, fill in the form (login, password or cookie, other parameters from the description) and “Save”. The tracker is added <b>disabled</b>.</li>
+        <li>Press “Check”: Vartovyi signs in to the tracker and searches for “1080p”. The first successful check enables the tracker; an error is shown under it.</li>
+      </ol>
+      <ul>
+        <li><b>The catalog</b> comes from <a href="https://github.com/Prowlarr/Indexers" target="_blank" rel="noopener">Prowlarr/Indexers</a> and is updated once every 7 days or with the “Refresh catalog” button. The tracker is not in the catalog — paste its <code>.yml</code> description into “Add a tracker” and press “Parse”. The description is on GitHub in Prowlarr/Indexers, the <code>definitions/v11</code> folder, the <code>&lt;name&gt;.yml</code> file → Raw. If GitHub is unreachable or rate-limits requests, the last saved catalog is shown.</li>
+        <li><b>“Not supported”</b> — the description uses something Vartovyi can’t do (for example, bypassing Cloudflare); the reason is shown in the catalog row. The <code>details</code> field (the release page) is required too.</li>
+        <li><b>Order</b> (the ↑ and ↓ buttons) is the priority: if the same episodes are on a higher tracker, no notification comes for the release from a lower one. Quality rules are shared by all.</li>
+        <li><b>An address on the local network</b> — Vartovyi asks for confirmation: add such a description only if it is your own tracker.</li>
+        <li><b>Cookie sign-in</b> — copy the <code>Cookie</code> header from the browser (DevTools → Network); when the cookie expires, a message arrives — paste a new one in “Configure”.</li>
+        <li><b>Update definition</b> takes the newest description from the catalog: setting values that remain in the new description are kept, the ones that are gone are removed, new fields get their default values; if the new description isn’t supported, the old one stays. The “newer version available” mark next to the name means the catalog has a newer description. After updating, press “Check”.</li>
+        <li><b>Configure</b> opens the same form: passwords and cookies are shown as “••••”, a field you don’t change keeps the saved value. <b>Delete</b> removes the tracker together with its session; releases found on it stay in the history.</li>
+        <li>Toloka is built in: it can be disabled or moved, but not deleted. After a failure a tracker is paused (“paused until …”), the others keep searching.</li>
+      </ul>
+      <p>On the title page “🔎 Search now” searches for this title on all enabled trackers at once (in priority order, paused trackers are skipped; for one title — at most once every 5 minutes, and if a check is already running, the title is checked in it), and “Open on tracker ▾” leads to the tracker’s search page (trackers searched via POST or an API have no link — keys and passwords never get into links).</p>
+    </section>
+
+    <!-- push -->
+    <section id="push">
+      <div class="stephead"><h2><span class="k">13</span>Notifications and push</h2>
+      <p class="lead">Optional. Which event goes where — to Telegram, as push to a phone or computer, or nowhere.</p></div>
+      <p>The Notifications (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/notifications</code>) page (the top menu, and on a phone — the link on the “Status” page) is an “event × channel” table: for each event <b>Telegram</b> and <b>Push</b> are turned on separately. Changes are saved right away.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Event</th><th>When it comes</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td>New release</td><td data-l="When">a release is found, “Download” / “Ignore” buttons</td><td data-l="Default">Telegram</td></tr>
+          <tr><td>⭐ Auto-download</td><td data-l="When">a release of a followed show was added to downloads automatically</td><td data-l="Default">Telegram</td></tr>
+          <tr><td>Downloaded</td><td data-l="When">the torrent client finished the release</td><td data-l="Default">off (in Telegram the status is updated in the release message anyway)</td></tr>
+          <tr><td>Not downloaded</td><td data-l="When">a torrent client error or the task was deleted</td><td data-l="Default">off (likewise)</td></tr>
+          <tr><td>Download stalled / not downloaded</td><td data-l="When">no progress for <code>downloads.stallHours</code> hours or a client error; “Replace” / “Keep waiting” buttons (<a href="#stalled">Stalled downloads</a>)</td><td data-l="Default">Telegram; push — once push is set up</td></tr>
+          <tr><td>Season premiere</td><td data-l="When">a new season of a show from the watchlist is out</td><td data-l="Default">Telegram</td></tr>
+          <tr><td>Watched can be deleted</td><td data-l="When">a season (or an ended show) is fully watched; “🗑 Delete” / “Keep” buttons (<a href="#watched">Delete watched</a>)</td><td data-l="Default">Telegram; push — once push is set up</td></tr>
+          <tr><td>Problems</td><td data-l="When">a tracker is unreachable, sign-in, low space, check failures</td><td data-l="Default">Telegram</td></tr>
+        </tbody>
+      </table></div>
+      <p>Push is off while there is no device. When the first device turns push on, push is turned on for all events — turn off what you don’t need in the table. If you turn Telegram off for “New release”, the release still waits for a decision: the “Download” / “Ignore” buttons are on the title page and on Home.</p>
+
+      <h3>What push needs</h3>
+      <ul>
+        <li><b>HTTPS with a trusted certificate.</b> Browsers only allow push for HTTPS sites. At <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span></code> the page shows “Push works only over HTTPS — guide”. <span data-platform="synology">How to set up HTTPS on Synology — below.</span><span data-platform="linux pi">How to set up HTTPS with Caddy — below.</span></li>
+        <li><b>iPhone and iPad:</b> iOS / iPadOS 16.4 or newer, and Vartovyi opened <b>from the Home Screen icon</b> added from the HTTPS address: Safari → “Share” → “Add to Home Screen” → “Add”. An icon added earlier from the <code>http://</code> address (step 10) won’t do: add a new one from the HTTPS address.</li>
+        <li><b>Android, computer:</b> Chrome, Edge, Firefox or Safari on a Mac — just open the HTTPS address.</li>
+        <li><b>Internet on the <span data-platform="synology">NAS</span><span data-platform="linux pi">server</span>.</b> Notifications go through the push services of the browser makers (Apple, Google, Mozilla, Microsoft). You don’t need to open Vartovyi to the internet for this.</li>
+      </ul>
+
+      <h3>What works at home and what works anywhere</h3>
+      <ul>
+        <li><b>Push arrives anywhere</b> the phone has internet.</li>
+        <li><b>Tapping the notification, the “Download” / “Ignore” buttons and the Vartovyi page itself work only at home</b> (or over a home VPN): Vartovyi is reachable only on the home network. Away from home the button shows “No connection to Vartovyi”.</li>
+        <li><b>On iPhone, iPad and in Safari on a Mac push notifications have no buttons.</b> Tap the notification — the title page opens, decide there. Chrome, Edge and Firefox show buttons in the notification itself.</li>
+      </ul>
+
+      <div data-platform="synology">
+      <h3>HTTPS via the Synology reverse proxy (DSM 7)</h3>
+      <p>You need a domain name. The simplest is a free Synology DDNS name: <span class="menu">Control Panel → External Access → DDNS → Add</span>, service provider Synology, a name like <code>vartovyi-home.synology.me</code>. Below in the examples — <code>&lt;DDNS-name&gt;</code>.</p>
+      <ol>
+        <li><b>Certificate.</b> <span class="menu">Control Panel → Security → Certificate → Add</span> → “Add a new certificate” → “Get a certificate from Let's Encrypt”. Domain name — <code>&lt;DDNS-name&gt;</code>, email — yours. DSM renews the certificate by itself. If issuing fails with a domain validation error, Let's Encrypt couldn’t reach the NAS through port 80 of the router. <b>If issuing needed port 80, it is needed for every automatic renewal too</b> (roughly every 2–3 months). An expired certificate doesn’t stop push delivery, but the Vartovyi page won’t open over HTTPS until it is renewed.</li>
+        <li><b>Access control profile — required.</b> <span class="menu">Control Panel → Login Portal → Advanced → Access Control Profile → Create</span>: name <code>Home network</code>; an “Allow” rule — your home network, e.g. <code>192.168.1.0/24</code> (or <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>); a “Deny” rule — all other addresses. Without it the rule on port 443 may be reachable from the internet even without port forwarding — over IPv6.</li>
+        <li><b>Reverse proxy.</b> <span class="menu">Control Panel → Login Portal → Advanced → Reverse Proxy → Create</span>:
+          <ul>
+            <li>Description: <code>Vartovyi</code>.</li>
+            <li>Source: protocol <b>HTTPS</b>, hostname <code>&lt;DDNS-name&gt;</code>, port <b>443</b>.</li>
+            <li>Destination: protocol <b>HTTP</b>, hostname <b>localhost</b>, port <b><span class="v" data-v="port">8080</span></b> (the container’s external port from <code>ports:</code>).</li>
+            <li>Access control profile: <code>Home network</code> (from item 2).</li>
+            <li>Custom headers (WebSocket) are not needed. “Save”.</li>
+          </ul></li>
+        <li><b>Assign the certificate.</b> <span class="menu">Control Panel → Security → Certificate → Settings</span>: in the <code>&lt;DDNS-name&gt;</code> row choose the certificate from item 1.</li>
+        <li><b>Add the name to <code>WEB_ALLOWED_HOSTS</code></b>: the line <code>WEB_ALLOWED_HOSTS=&lt;DDNS-name&gt;</code> in <code>.env</code> (or in the project’s <code>environment:</code>), then restart the container. Without it the page opens, but the data doesn’t load (error 403 “unknown server address”).</li>
+        <li><b>Check on the home network.</b> On a phone on the home Wi‑Fi open <code>https://&lt;DDNS-name&gt;</code>: a lock without warnings and the Vartovyi page (with password sign-in). If it doesn’t open, the router doesn’t loop requests to the external address back into the home network — add a record <code>&lt;DDNS-name&gt;</code> → <code><span class="v" data-v="ip">&lt;NAS_IP&gt;</span></code> to the router’s DNS.</li>
+      </ol>
+      <div class="note warn"><b>Password sign-in doesn’t turn Vartovyi into an internet service. Never forward port 443 from the router to the NAS for Vartovyi</b> — push works without it, and always keep the access control profile from item 2 on the rule.</div>
+      </div>
+
+      <div data-platform="linux pi">
+      <h3>HTTPS with Caddy</h3>
+      <p>Push needs HTTPS with a domain name pointing to your router. A free DDNS name will do (for example from <a href="https://www.duckdns.org" target="_blank" rel="noopener">DuckDNS</a>); below in the examples it is <code>vartovyi.example.com</code>, and in “Turn on push on a device” — <code>&lt;DDNS-name&gt;</code>. Caddy gets the Let’s Encrypt certificate and renews it by itself.</p>
+      <ol>
+        <li><b>Port 80 for the certificate.</b> In the router forward port 80 to port 80 of the server (<code><span class="v" data-v="ip">&lt;NAS_IP&gt;</span></code>): Let’s Encrypt checks the domain through it when issuing the certificate and on every renewal (roughly every 2 months). Port 443 doesn’t need forwarding.</li>
+        <li><b>Caddyfile.</b> In <code><span class="v" data-v="dir">~/vartovyi</span></code> create the file <code>Caddyfile</code> (<code>nano Caddyfile</code>) with your domain. The first two lines inside let in only the home network:
+          <div class="pre"><button class="copy" type="button">Copy</button><pre>vartovyi.example.com {
+  @outside not remote_ip private_ranges
+  respond @outside 403
+  reverse_proxy 127.0.0.1:<span class="v" data-v="port">8080</span>
+}</pre></div></li>
+        <li><b>Start Caddy</b> from the same folder:
+          <div class="pre"><button class="copy" type="button">Copy</button><pre>docker run -d --name caddy --restart unless-stopped --network host -v caddy_data:/data -v $PWD/Caddyfile:/etc/caddy/Caddyfile caddy:2</pre></div>
+          <code>docker logs caddy</code> shows whether the certificate was issued (<code>certificate obtained successfully</code>).</li>
+        <li><b>Add the domain to <code>WEB_ALLOWED_HOSTS</code></b> (<a href="#access">Access and password</a>): the line <code>- WEB_ALLOWED_HOSTS=vartovyi.example.com</code> in the <code>environment:</code> block of the <code>vartovyi</code> service in <code>compose.yml</code>, then <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code>. Without it the page opens, but the data doesn’t load (error 403 “unknown server address”). If the proxy runs on another machine, add its address to <code>WEB_TRUSTED_PROXIES</code> the same way.</li>
+        <li><b>Check on the home network.</b> On a phone on the home Wi‑Fi open <code>https://vartovyi.example.com</code>: a lock without warnings and the Vartovyi page (with password sign-in). If it doesn’t open, the router doesn’t loop requests to the external address back into the home network — add a record <code>vartovyi.example.com</code> → <code><span class="v" data-v="ip">&lt;NAS_IP&gt;</span></code> to the router’s DNS.</li>
+      </ol>
+      <div class="note warn"><b>Password sign-in doesn’t turn Vartovyi into an internet service.</b> Forward only port 80 for the certificate — never 443, 8080 or 8090: push works without it. Keep the <code>remote_ip private_ranges</code> lines in the Caddyfile.</div>
+      <p><b>Without your own domain:</b> Tailscale (<code>sudo tailscale serve --bg --https=443 http://127.0.0.1:<span class="v" data-v="port">8080</span></code>) gives an HTTPS address inside your tailnet; first turn on MagicDNS and HTTPS certificates in the tailnet admin console (DNS page); add its <code>….ts.net</code> name to <code>WEB_ALLOWED_HOSTS</code> too.</p>
+      </div>
+
+      <h3>Turn on push on a device</h3>
+      <ol>
+        <li>Open <code>https://&lt;DDNS-name&gt;/notifications</code> (on iPhone — from the Home Screen icon).</li>
+        <li>Optionally enter a device name, press “Turn on for this device” and allow notifications.</li>
+        <li>Next to the device in the “Devices with push” list press “Send a test” — “🔔 Vartovyi: Test notification: push works on this device” should arrive.</li>
+      </ol>
+      <p>Repeat on every phone or computer (20 devices at most). To remove a device — “Delete” in the “Devices with push” list (from any device) or “Turn off for this device” on the device itself; Vartovyi removes invalid subscriptions by itself.</p>
+    </section>
+
+    <!-- daily -->
+    <section id="daily">
+      <div class="stephead"><h2>Day to day</h2>
+      <p class="lead">In short: what Vartovyi does after installation and where to find it in the app.</p></div>
+      <h3>Home</h3>
+      <p>Home (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/</code>) (the first tab) gathers the daily things on one screen; “Media” with all the titles is at <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/media</code>. At the top is the attention strip, only about what is wrong right now: “🔔 N releases awaiting a decision”, a dependency that doesn’t work, “⏸ Toloka paused until 14:30”, “⚠️ Stalled: …”, “🗑 … watched”, “⬇️ N downloading”. Each card can be hidden with the <b>×</b> button — it comes back when its content changes. Past failures are on the “Errors” page. Below are the “Ready to watch” (unwatched in Plex), “Downloading now”, “Waiting for a decision”, “Release schedule” (episodes for 14 days and season premieres for about 3 months, from TMDB — step 11; the data is cached for 12 hours, so right after a start the block says “Loading dates from TMDB…” for a few seconds) and “Popular now” blocks. The page refreshes every minute; if one block fails to load (say, TMDB is unreachable), it shows its own error, and the rest works.</p>
+      <p><b>Unwatched.</b> Every 30 minutes Vartovyi refreshes the Plex server library and remembers the watched episodes (only the token owner’s): a card in “Media” shows a “▶ 3” badge, and the “▶ Unwatched” filter keeps such titles. On the season grid watched episodes are dimmed, and updates arrive with a delay of up to 30 minutes.</p>
+
+      <h3 id="stalled">Stalled downloads</h3>
+      <p>A download is <b>stalled</b> when the client is downloading but there is no new data for <code>downloads.stallHours</code> hours (6 by default; queueing, file checking and pause don’t count), or the client reported a task error. A message “⚠️ Stalled: Title S01E01–E03 · no progress for 7 h” arrives with the <b>🔁 Replace</b> and <b>⏳ Keep waiting</b> buttons; the same buttons are on Home and on the title page. An error cleared with “Clear error” doesn’t count as stalled; when the download moves again or finishes, the stall is cleared by itself. The <code>downloads.stallHours</code> threshold (1–168) is set in <code>quality.yaml</code>; restart the container after changing it.</p>
+      <ul>
+        <li><b>Replace</b> takes a saved release of the same title with all the needed episodes (first an updated version of the same topic, then by tracker order and quality); if there is none, it searches the trackers once. The stalled task is removed from the client without deleting files: Download Station deletes the incomplete download, qBittorrent and Transmission keep partial files. The tracker search runs at most once every 12 hours per title and for at most 5 titles an hour; if several downloads stalled at once or it is a disk or folder error, Vartovyi doesn’t search the trackers — the problem is likely in the torrent client. The title history gets an entry about the replacement; if the replacement couldn’t be added, the stalled task goes back to the client.</li>
+        <li><b>Keep waiting</b> — 24 hours without reminders; if the download still doesn’t move, Vartovyi reminds you again with a fresh choice of replacement.</li>
+        <li>The title page also has “🗑 Remove from client” and “🔄 Refresh torrent and re-download” (both with confirmation). “Remove from client” removes the task without deleting files (Download Station deletes the incomplete download), and the release can be downloaded again. “Refresh torrent” fetches the topic’s torrent from the tracker again: if the topic was re-uploaded, the new torrent goes to the same folder as a new task of the same download; if the torrent is the same — “The torrent on the tracker hasn’t changed”, and “↻ Restart task” appears. Vartovyi doesn’t go to a tracker paused after a failure; the same release can be refreshed again no sooner than in 3 minutes.</li>
+      </ul>
+
+      <h3 id="watched">Delete watched</h3>
+      <p>When a season is fully watched in Plex, Vartovyi offers to free up space — <b>nothing is deleted without your “yes”</b>: “🗑 Silo — season 2 watched (8 episodes, ≈ 34 GB)” with the <b>🗑 Delete</b> / <b>Keep</b> buttons (in Telegram — also the confirmation “Yes, delete for good”). Only a season that is fully out is offered; the whole show — when it has ended (per TMDB) or was removed from the watchlist; movies — never. On the title page a watched season always has “🗑 Delete season”.</p>
+      <ul>
+        <li><b>Needed in Plex:</b> <span class="menu">Settings → Library → Allow media deletion</span> and the server owner’s token (step 1). Otherwise Vartovyi replies what exactly to turn on, and changes nothing.</li>
+        <li>Plex deletes the files of all copies of the season, Vartovyi removes only its own tasks of this season from the client and no longer searches for the deleted episodes. “Restore” on the title page removes the mark (the files are not restored).</li>
+        <li>At most 5 new offers per library refresh; after “Keep” the same season isn’t offered until new episodes appear in it. The confirmation in Telegram is valid for 10 minutes. If a show is in several libraries (for example, “TV” and “TV 4K”), a season counts as watched only when every copy is watched. While episodes of the season are still downloading, there are no offers. Small side files (subtitles, .nfo) and empty folders may remain.</li>
+        <li><b>Deleted in Plex itself?</b> The next library refresh notices that the watched episodes are gone and marks them “watched and deleted” — Vartovyi will no longer offer to download them (“🗑 Season 2 deleted in Plex after watching…” in the title history). Unwatched episodes that disappeared are searched for as before; “Restore” removes the mark, and if the episodes appear in Plex again, it is removed by itself. The Plex trash is not deletion yet: the mark is set only when the episodes are gone from the trash too, and while watched episodes are in the trash, Vartovyi neither searches for nor offers them. If the library suddenly shrank (an unavailable disk, a Plex failure — over 30% of episodes or an empty section), nothing is marked this time and “Errors” shows a warning.</li>
+        <li><b>Security:</b> anyone who opens the site can delete. In the “Sign-in: only from outside (HTTPS)” and “Sign-in: off” modes (<code>WEB_LOGIN_MODE=off</code>) that is anyone on the home network — choose “Sign-in: always” if needed (<a href="#access">Access and password</a>).</li>
+      </ul>
+
+      <div data-platform="linux pi">
+      <p><b>Plex on the host and “Delete watched”.</b> Plex installed on the server itself (not in Docker) runs as the <code>plex</code> user, and the downloaded files belong to uid 1000 (qBittorrent). <code>compose.yml</code> makes them group-writable (<code>UMASK=002</code>): add <code>plex</code> to group 1000 and restart Plex, otherwise Plex can’t delete them. <code>getent group 1000</code> must print a group; if it prints nothing, uid 1000 has no group with the same id — put the group of your user (<code>id -gn</code>) instead of <code>$(getent group 1000 | cut -d: -f1)</code>. The first line makes the folders and files already in <code><span class="v" data-v="media">/srv/media</span></code> group-writable too:</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>sudo chmod -R g+w <span class="v" data-v="media">/srv/media</span>
+sudo usermod -aG $(getent group 1000 | cut -d: -f1) plex
+sudo systemctl restart plexmediaserver</pre></div>
+      </div>
+
+      <h3 id="folders">Title folders and matching in Plex</h3>
+      <p>New downloads go to the title folder with a hint for Plex: <code>video/Series/House of the Dragon (2022) {tmdb-94997}</code>. The name is the original one if it is in Latin letters, otherwise the one from the watchlist; without a TMDB id the hint is <code>{tvdb-…}</code> or <code>{imdb-tt…}</code>. The folder is remembered in the release: new episodes, “Download again” and “Replace” go there too. <span data-platform="synology">Download Station doesn’t create folders itself — Vartovyi does it via <b>File Station</b> as the same DSM user (the permission from step 4); without access the release goes to the root of the folder, and “Status” shows a warning. </span>qBittorrent and Transmission create folders themselves. Existing files are not moved: releases downloaded to the root earlier stay there. To turn it off: the “A separate folder for each title” switch on “Status”, the checkbox in the wizard or <code>downloads.perTitleFolder: false</code>.</p>
+      <p>If Plex matched a download to a different title, Vartovyi fixes unambiguous cases by itself (“Fix match”, an entry in the title history), otherwise the title page shows a “Plex match” block with a “Fix in Plex” button and the reason (the item holds files of several titles, a release is spread over several items, the library uses the old Plex agent, an old release in the root of the folder) — check the item in Plex before pressing it. If the match is changed in Plex itself after the fix, Vartovyi leaves it alone. “Fix match” needs the server owner’s token, otherwise Plex answers 401 (an entry in “Errors”).</p>
+
+      <h3>Exact and possible matches</h3>
+      <p><b>An exact match</b> (the same name and a matching year) gives a notification and the “Awaiting decision” status. <b>A possible match</b> (the year differs by 2–3 years) is saved without a notification — in the “Possible matches” section on the title page, where you can download or ignore it. For a show only a topic with a season mark is kept this way. On every search Vartovyi re-checks the saved releases without a decision: those that don’t match the title at all are ignored (“🔕 Doesn’t match the title: …” in Telegram), and exact and possible ones are marked anew.</p>
+
+      <h3>Poster cache</h3>
+      <p>Vartovyi keeps posters and backdrops in <code>data/image-cache</code> (up to 500 MB, the oldest are removed by themselves). To clear it, stop the project and delete this folder.</p>
+    </section>
+
+    <!-- access -->
+    <section id="access">
+      <div class="stephead"><h2>Access and password</h2>
+      <p class="lead">At home (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span></code>) Vartovyi opens without a password; from outside — via the HTTPS proxy — only after sign-in. The Telegram bot and push work regardless of sign-in: the “Download” / “Ignore” buttons in push have their own one-time token.</p></div>
+      <h3>Sign-in modes</h3>
+      <p>On the Status (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/status</code>) page, the “Access” block:</p>
+      <ul>
+        <li><b>“Sign-in: only from outside (HTTPS)”</b> — the default. No password only for a request from the home network: without proxy headers (<code>X-Forwarded-For</code>, <code>X-Forwarded-Proto</code>, <code>X-Real-IP</code>, <code>Forwarded</code>…), to the private IP of the server, <code>localhost</code> or a home name (without a dot, <code>.local</code>, <code>.lan</code>, <code>.home</code>, <code>.home.arpa</code>, <code>.internal</code> or from <code>WEB_LOCAL_HOSTS</code>), from a private address of a device that isn’t the Docker gateway or an address from <code>WEB_TRUSTED_PROXIES</code>. Tailscale / CGNAT and global IPv6 — with a password.</li>
+        <li><b>“Sign-in: always”</b> — a password at home too.</li>
+        <li><b>“Sign-in: off”</b> — no password from anywhere, including via the HTTPS proxy. The same with the <code>WEB_LOGIN_MODE=off</code> variable in compose (it overrides the setting — for when you can’t sign in). Choosing “off” on “Status” when a password exists requires entering it — even at home. If the reverse proxy is reachable from the internet, in this mode Vartovyi is open to everyone.</li>
+      </ul>
+      <p>“Access” shows for the current request “Your address: … — home network, no sign-in needed” or “… — sign-in required (reason: …)”. If requests come straight from a public address (the port is open to the internet), “Access” shows a warning with the latest such address, and the “Errors” journal — “A request came straight from the internet”. If the server shows all home devices with the Docker gateway address (it happens on some DSM builds in a bridge network), Vartovyi safely falls back to always requiring sign-in — the same line shows the reason.</p>
+      <div class="note warn"><b>A proxy without <code>X-Forwarded-For</code> and port forwarding with SNAT look like the home network.</b> nginx with a plain <code>proxy_pass</code>, stunnel, HAProxy <code>mode tcp</code>, frp, a tunnel, and also port forwarding on the router with address rewriting (SNAT, NAT loopback — the sender becomes the router’s LAN address) give anyone on the internet access without a password. For them choose “Sign-in: always” or add the proxy or router address to <code>WEB_TRUSTED_PROXIES</code> (comma-separated, subnets allowed). <span data-platform="synology">The DSM reverse proxy adds the headers — it is fine.</span><span data-platform="linux pi">Caddy adds the headers — it is fine.</span></div>
+      <p>Best of all, make your proxy add <code>X-Forwarded-For</code> and <code>X-Forwarded-Proto</code> (in nginx: <code>proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto $scheme;</code>). The session cookie is marked <code>Secure</code> only when the request came over HTTPS — directly or from a proxy with <code>X-Forwarded-Proto: https</code>; without this header sign-in works, but the cookie lacks the <code>Secure</code> mark.</p>
+      <p><b>Host names.</b> <code>WEB_ALLOWED_HOSTS</code> — the names the site is opened by from outside (DDNS for HTTPS, step 13); <code>WEB_LOCAL_HOSTS</code> — your own domain you open Vartovyi by at home (split DNS), so it doesn’t ask for a password (don’t put the name Vartovyi is reachable by from outside there). The site API (<code>/api/…</code>) answers only requests to an IP address, <code>localhost</code>, a name without a dot, a home suffix (<code>.local</code>, <code>.home.arpa</code>, <code>.internal</code>, <code>.lan</code>, <code>.home</code>) or a name from <code>WEB_ALLOWED_HOSTS</code> (several names comma-separated) — this protects against DNS rebinding; otherwise pages open, but the data doesn’t load (403 “unknown server address”).</p>
+      <h3>Password</h3>
+      <p>A new Vartovyi asks for a password at the wizard’s Password step. At home you can create or change it on “Status” → “Access” without a code. From outside, while there is no password, any page opens “Create a password”: it needs the code from the log — <span data-platform="synology"><span class="menu">Container Manager → Container → vartovyi → Log</span></span><span data-platform="linux pi"><code>docker logs vartovyi</code></span>, the line “Password setup code: 1234-5678” (new after every restart; over SSH: <code>sudo docker logs vartovyi 2&gt;&amp;1 | grep "setup code"</code>). The line may appear in the log twice (as a plain line and as a JSON entry) — it is the same code; once the password is created, the code no longer works.</p>
+      <p>Sign-in is remembered for 30 days. The app from the iPhone icon has storage separate from Safari — sign in there separately. On “Status” → “Access” there is the list of sessions, “Log out” next to each, “Log out on all devices” and “Change password”. “Log out” is also in the top bar.</p>
+      <h3>Forgot the password</h3>
+      <ol data-platform="linux pi">
+        <li>In <code>compose.yml</code> add <code>- WEB_PASSWORD=new-password</code> (at least 8 characters) to the <code>environment:</code> block of the <code>vartovyi</code> service and run <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code>. The password changes, all devices are signed out.</li>
+        <li>Sign in with the new password, remove the line and run <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code> again — the password stays.</li>
+      </ol>
+      <ol data-platform="synology">
+        <li><span class="menu">Project → vartovyi → Action → Stop</span>, add <code>- WEB_PASSWORD=new-password</code> (at least 8 characters) to <code>environment:</code>, “Build”. The password changes, all devices are signed out.</li>
+        <li>Sign in with the new password, remove the line and “Build” again — the password stays.</li>
+      </ol>
+      <p>While <code>WEB_PASSWORD</code> is set, “Status” shows a reminder to remove the variable, and the password can’t be changed in the web interface. The value is never shown or written to the log. If it matches the current password, the restart signs nobody out — use “Log out on all devices” for that.</p>
+      <h3>Failed attempts</h3>
+      <p>After every wrong password or code the next attempt from the same address is possible in 1, 2, 4, 8 … s, the delay doubles up to 15 min and resets after sign-in or a day without errors. The delay is per address (behind a proxy — from <code>X-Forwarded-For</code>), so someone else’s attempts don’t lock you out. Separately, after 50 failed attempts in an hour from any addresses, every sign-in from a new outside address is slowed down by a few seconds, but not rejected; addresses with a successful sign-in in the last 30 days and the home network are not slowed down. Every attempt is in the “Errors” journal as “Failed sign-in attempt”.</p>
+      <div class="note warn"><b>Never open port <span class="v" data-v="port">8080</span> to the internet — neither by IPv4 forwarding nor over IPv6.</b> <span data-platform="synology">From outside — only via the DSM reverse proxy over HTTPS (step 13); in the DSM firewall allow <span class="v" data-v="port">8080</span> only for the home network.</span><span data-platform="linux pi">From outside — only over HTTPS via Caddy or Tailscale (step 13).</span> At home anyone on your network (the guest Wi-Fi too) opens Vartovyi without a password — if that won’t do, choose “Sign-in: always”.</div>
+    </section>
+
+    <!-- trouble -->
+    <section id="trouble">
+      <div class="stephead"><h2>Common problems</h2></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Symptom</th><th>What to do</th></tr></thead>
+        <tbody>
+          <tr><td>“Create a password”, and the code can’t be found</td><td>The “Password setup code” line — after the latest container start (the code is new each time). Or set <code>WEB_PASSWORD</code> (<a href="#access">Access and password</a>).</td></tr>
+          <tr><td>Forgot the password</td><td><code>WEB_PASSWORD</code> in compose, <span data-platform="synology">“Build”</span><span data-platform="linux pi"><code>up -d</code></span>, sign in, remove the variable (<a href="#access">Access and password</a>).</td></tr>
+          <tr><td>“Too many failed attempts — try again in N s”</td><td>After wrong passwords there is a delay (up to 15 min). Many “Failed sign-in attempt” entries in the “Errors” journal — some device is entering an old password.</td></tr>
+          <tr><td>On iPhone the icon asks to sign in again</td><td>The app from the icon has storage separate from Safari — sign in there once. If it asks every time, check that “Block All Cookies” is off (Settings → Safari).</td></tr>
+          <tr data-platform="linux pi"><td><code>permission denied</code> in <code>docker logs vartovyi</code></td><td>The folders <code>data</code>/<code>config</code> are not writable by uid 1000: <code>sudo chown -R 1000:1000 <span class="v" data-v="dir">~/vartovyi</span>/data <span class="v" data-v="dir">~/vartovyi</span>/config <span class="v" data-v="dir">~/vartovyi</span>/qbittorrent</code>, then <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose restart vartovyi</code> (step 5).</td></tr>
+          <tr data-platform="linux pi"><td>The wizard says qBittorrent rejects the login</td><td>The temporary password from <code>docker logs qbittorrent</code> changes on every start until you set a permanent one (step 6).</td></tr>
+          <tr data-platform="linux pi"><td><code>exec format error</code> on Raspberry Pi</td><td>A 32-bit OS: <code>dpkg --print-architecture</code> prints <code>armhf</code> (<code>uname -m</code> may still say <code>aarch64</code>). Reinstall a 64-bit one; see step 0.</td></tr>
+          <tr data-platform="linux pi"><td><code>no matching manifest for linux/arm/v7</code> when pulling the images</td><td>A 32-bit OS: Docker asks for a 32-bit image, and Vartovyi is built only for <code>amd64</code> and <code>arm64</code>. Reinstall a 64-bit OS; see step 0.</td></tr>
+          <tr data-platform="linux pi"><td>qBittorrent downloads, Plex doesn’t show them</td><td>The folders in Plex libraries must be <code><span class="v" data-v="media">/srv/media</span>/Series</code> and <code><span class="v" data-v="media">/srv/media</span>/Movies</code> exactly (step 4).</td></tr>
+          <tr data-platform="linux pi"><td>Downloads stop with “Permission denied” or hang at 0%</td><td>The media folder is not writable by uid 1000: <code>sudo chown -R 1000:1000 <span class="v" data-v="media">/srv/media</span></code> (step 5).</td></tr>
+          <tr data-platform="linux pi"><td><code>ls -ln</code> doesn’t show <code>1000</code> after <code>chown</code>, or <code>chown: … Operation not permitted</code></td><td>The disk is exFAT or NTFS: they don’t keep Linux owners. Reformat it as ext4 or mount it with <code>uid=1000,gid=1000</code> (step 0).</td></tr>
+          <tr data-platform="linux pi"><td>The containers run, but <code>:<span class="v" data-v="port">8080</span></code> doesn’t open</td><td><code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose ps</code> shows the port of <code>vartovyi</code> (<code>0.0.0.0:8080-&gt;8080/tcp</code>): the left number must match “Your details”. Open the address from a device on the same network.</td></tr>
+          <tr data-platform="linux pi"><td>Caddy doesn’t start: “address already in use”</td><td>Ports 80 or 443 are taken by another service (Pi-hole, nginx, Apache): <code>sudo ss -tlnp | grep -E ':(80|443)\b'</code> shows which one. Stop it, or put Vartovyi behind that proxy instead of Caddy (step 13).</td></tr>
+          <tr data-platform="linux pi"><td><code>docker compose pull</code>: <code>denied</code> or <code>unauthorized</code></td><td>The package on GHCR is private: <code>docker login ghcr.io</code> (step 9).</td></tr>
+          <tr data-platform="synology"><td>Container Manager can’t pull the image</td><td>The package on GHCR is private (step 9).</td></tr>
+          <tr data-platform="synology"><td>The log has <code>exec format error</code></td><td>The image is not for the NAS CPU. You need a release with an <code>arm64</code> build (step 0).</td></tr>
+          <tr data-platform="synology"><td>The log has <code>EACCES</code> / <code>permission denied</code> on <code>/data</code></td><td>The folders are not writable for uid 1000 (step 5).</td></tr>
+          <tr data-platform="synology"><td>The container runs, but <code>:<span class="v" data-v="port">8080</span></code> doesn’t open</td><td>The DSM firewall blocks the port (step 6), or the NAS has a different port in <code>ports:</code>.</td></tr>
+          <tr><td>The page opens, but the data doesn’t load (403 “unknown server address”)</td><td>The site is opened by a name that isn’t in <code>WEB_ALLOWED_HOSTS</code> (step 13).</td></tr>
+          <tr data-platform="synology"><td>Download Station check: certificate error</td><td><code>https://…:5001</code> is given. Use <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:5000</code> (step 4).</td></tr>
+          <tr data-platform="synology"><td>Tasks in Download Station are “Waiting” forever, 0 bytes</td><td>The <code><span class="v" data-v="svc">vartovyi</span></code> user has no default folder set in Download Station. Vartovyi sets it itself (the “Torrent client (Download Station)” card on “Status”). If that didn’t work: sign in to DSM as <code><span class="v" data-v="svc">vartovyi</span></code>, open Download Station and choose any folder.</td></tr>
+          <tr data-platform="synology"><td>Download Station: OTP / two-factor authentication error</td><td>Turn off 2FA for <code><span class="v" data-v="svc">vartovyi</span></code>.</td></tr>
+          <tr data-platform="synology"><td>On “Status”: “No access to File Station”</td><td>Give the <code><span class="v" data-v="svc">vartovyi</span></code> user access to File Station (step 4) — otherwise releases go to the root of the folder.</td></tr>
+          <tr><td>After “Download” the message shows ❌ “Not enough space”</td><td>The new episodes (or the movie) are bigger than the free space in the destination folder. Free up space on the disk and press “Download” again.</td></tr>
+          <tr><td>The bot writes “💾 Only … free left on disk”</td><td>Free space is below the threshold (the warning comes at most once every 4 hours). Free up space or change <code>storage.minFreeGb</code> in <code>quality.yaml</code> and restart the container.</td></tr>
+          <tr data-platform="synology"><td>The task was added, but the files are in a different folder</td><td>Download Station: the destination folder is given with <code>/volume1</code> at the start. qBittorrent and Transmission: the folder is given as the NAS path, not the way the client sees it in its container (step 4).</td></tr>
+          <tr><td>qBittorrent or Transmission: “wrong login or password”, and after fixing it Vartovyi still doesn’t connect for a while</td><td>After a failed sign-in Vartovyi doesn’t try again for 15 minutes, so that qBittorrent doesn’t ban the IP. Wait or restart the Vartovyi container; in the wizard you can check right away.</td></tr>
+          <tr><td>qBittorrent: “access blocked (too many failed sign-ins)”</td><td>qBittorrent banned the IP. Wait (the ban duration is in <span class="menu">Options → Web UI</span>) or restart qBittorrent.</td></tr>
+          <tr><td>Transmission answered HTTP 403</td><td>The Vartovyi IP is not in <code>rpc-whitelist</code>. Add the home network and Docker subnets, for example <code>192.168.1.*,172.*.*.*</code>, or turn the whitelist off and set an RPC login and password (step 4).</td></tr>
+          <tr><td>Transmission answered HTTP 421</td><td><code>rpc-host-whitelist</code> kicked in. Use the IP in the address: <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:9091/transmission/rpc</code>, or add the name to <code>rpc-host-whitelist</code>.</td></tr>
+          <tr><td>Wizard: “No Plex library found with the path /downloads/…”</td><td>The path in the client’s container differs from the path in Plex, although the files are the same. If the folder is in a Plex library, the warning can be ignored (step 4).</td></tr>
+          <tr><td>The “Free space” step: “space unknown”</td><td>Most often it is “Synology via DSM” with qBittorrent or Transmission. Choose “The torrent client itself” or “Folder in the Vartovyi container”. Downloads are not blocked in this case.</td></tr>
+          <tr><td>“Folder in the Vartovyi container”: “Folder … is not available in the container”</td><td>The folder is not mounted into the Vartovyi container, or the path in the wizard differs from the one in <code>volumes:</code> (step 4).</td></tr>
+          <tr><td>The episodes are already downloaded, and Vartovyi keeps notifying about them</td><td>Plex doesn’t scan the destination folder. Add it to a library.</td></tr>
+          <tr><td>What was deleted in Plex stays in the library as unavailable</td><td><b>Empty trash automatically after every scan</b> is off in Plex (Settings → Library): deleted items stay in the trash until it is emptied (<b>…</b> next to the library → <b>Empty Trash</b>). Vartovyi treats items in the trash as deleted: they are not “in Plex”, the episodes can be downloaded again.</td></tr>
+          <tr><td>A show is in the watchlist, but no messages come</td><td>Open the title in “Media”: the “Rejected” section on the title page shows the reason, for example “resolution 720p &lt; 1080p”.</td></tr>
+          <tr><td>“Delete” watched: “Turn on in Plex …” or 401</td><td>“Allow media deletion” is off in Plex, or the token is not the server owner’s (<a href="#watched">Delete watched</a>).</td></tr>
+          <tr><td><code>Plex is unreachable</code> in the log</td><td>The Plex address points to <code>localhost</code> instead of the server IP, or Plex is off.</td></tr>
+          <tr><td><code>Plex 401</code></td><td>The Plex token is invalid. Get a new one (step 1) and change it via the wizard (step 9).</td></tr>
+          <tr><td>Toloka sign-in failed (engine: Toloka sign-in failed)</td><td>A wrong password or a captcha on sign-in. Try the “Browser cookie” mode (step 2).</td></tr>
+          <tr><td>The bot doesn’t answer <code>/status</code></td><td>Start isn’t pressed or the chat_id is wrong.</td></tr>
+          <tr><td>The wizard opens again after saving</td><td><code>SETUP_MODE=1</code> is still in compose. Remove it and <span data-platform="synology">“Build”</span><span data-platform="linux pi">run <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code></span>.</td></tr>
+          <tr><td>“Save and start” gives a write error</td><td>The <code>config</code> folder is not writable for uid 1000 (step 5).</td></tr>
+          <tr><td>An error about <code>quality.yaml</code>, or the service opens the wizard instead of working</td><td>The file is invalid: a syntax error gives the YAML parser’s text (with the line number), wrong values give “Invalid quality.yaml”. The wizard doesn’t overwrite an existing file: fix it by hand or delete it, then the wizard creates a new one.</td></tr>
+          <tr><td>The container restarts, the log says the config file …quality.yaml can’t be read</td><td>The file exists but isn’t readable for uid 1000 (step 5).</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Log and diagnostics</h3>
+      <p>The “Errors” page (Status → Problems in 24 h (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/errors</code>)) shows all failures with their reasons: the source, how many times it repeated, when first and last, and the details. Identical failures within a day are grouped into one problem. Start there, and open the container log when you need the details of every request.</p>
+      <p>The log: <span data-platform="synology"><span class="menu">Container Manager → Container → vartovyi → Log</span></span><span data-platform="linux pi"><code>docker logs vartovyi</code> (live: <code>docker logs -f --tail 100 vartovyi</code>)</span>. Every network failure has a reason, for example <code>Toloka tracker is unreachable: fetch failed: ENOTFOUND toloka.to</code> or an <code>http failed</code> line with a <code>reason</code> field. During an outage only the first failure is a warning (identical repeats go to <code>debug</code>), and when the service answers again — an <code>http recovered</code> line. To see every request and every decision of the cycle, turn on the detailed log:</p>
+      <ol data-platform="linux pi">
+        <li>In <code>compose.yml</code> add the line <code>- LOG_LEVEL=debug</code> to the <code>environment:</code> block of the <code>vartovyi</code> service and run <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code>.</li>
+        <li>Wait for the next check (or <code>/check</code> in the bot) and look at the log: <code>docker logs -f vartovyi</code>.</li>
+        <li>After the diagnostics remove the line and run <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code> again: in <code>debug</code> mode the log grows fast.</li>
+      </ol>
+      <ol data-platform="synology">
+        <li><span class="menu">Project → vartovyi → Action → Stop</span>.</li>
+        <li>In the YAML configuration add the line <code>- LOG_LEVEL=debug</code> to the <code>environment:</code> block, save and “Build”.</li>
+        <li>Wait for the next check (or <code>/check</code> in the bot) and look at the log.</li>
+        <li>After the diagnostics remove the line and “Build” again: in <code>debug</code> mode the log grows fast.</li>
+      </ol>
+      <p>Secrets (tokens, passwords, cookies, <code>_sid</code>) don’t get into the log even at the <code>debug</code> level.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Reason in <code>http failed</code></th><th>What it means</th></tr></thead>
+        <tbody>
+          <tr><td><code>ENOTFOUND &lt;host&gt;</code></td><td>The container can’t resolve the name (DNS in the container). <span data-platform="synology">Check DNS in <span class="menu">Control Panel → Network</span> or the project network.</span><span data-platform="linux pi">Check DNS on the server (<code>/etc/resolv.conf</code>) or the Docker network.</span></td></tr>
+          <tr><td><code>ECONNREFUSED &lt;address:port&gt;</code></td><td>The connection was refused: a wrong port, the service isn’t listening, or a firewall.</td></tr>
+          <tr><td><code>ETIMEDOUT</code>, <code>UND_ERR_CONNECT_TIMEOUT</code>, <code>timeout</code></td><td>No answer: the network, a firewall or blocking by the provider.</td></tr>
+          <tr><td><code>CERT_…</code> (e.g. <code>CERT_HAS_EXPIRED</code>), <code>DEPTH_ZERO_SELF_SIGNED_CERT</code>, <code>SELF_SIGNED_CERT_IN_CHAIN</code></td><td>A certificate problem: expired, self-signed, or HTTPS is intercepted by an antivirus or a proxy on the router.</td></tr>
+        </tbody>
+      </table></div>
+      <p>A check from inside the container: <span data-platform="synology">sign in to the NAS over SSH (step 5)</span><span data-platform="linux pi">open a terminal on the server</span> and run the command. <code>HTTP 200</code> means Toloka is reachable from the container; otherwise you get the same reason as in the log.</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>sudo docker exec vartovyi node -e "fetch('https://toloka.to/').then(r=&gt;console.log('HTTP',r.status)).catch(e=&gt;console.log(e.message, e.cause))"</pre></div>
+    </section>
+
+    <!-- manual -->
+    <section id="manual">
+      <div class="stephead"><h2>Setup without the wizard</h2>
+      <p class="lead">For those who want to set everything in a file.</p></div>
+      <p><span data-platform="synology">Put a <code>.env</code> file into <code>docker/vartovyi</code> (handy to edit with the Text Editor package) and add the line <code>env_file: .env</code> to the service in compose.</span><span data-platform="linux pi">Put the variables into the <code>.env</code> file in <code><span class="v" data-v="dir">~/vartovyi</span></code> (the same file as <code>MEDIA_DIR</code>, step 5), add the line <code>env_file: .env</code> to the <code>vartovyi</code> service in <code>compose.yml</code> and run <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code>.</span> Variables from <code>.env</code> take precedence over the wizard settings. The wizard doesn’t write values that come from variables to <code>settings.json</code>: before removing a variable from <code>.env</code>, enter the value in the wizard, otherwise it is gone after a restart. If all the required ones are set, the wizard isn’t needed.</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>PLEX_TOKEN=
+PLEX_SERVER_URL=http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:32400
+
+TOLOKA_USERNAME=
+TOLOKA_PASSWORD=
+<span class="c"># or instead of the login and password:</span>
+<span class="c"># TOLOKA_COOKIE=</span>
+
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
+
+<span class="c"># torrent client: downloadstation | qbittorrent | transmission</span>
+TORRENT_CLIENT=downloadstation
+DSM_URL=http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:5000
+DSM_USERNAME=<span class="v" data-v="svc">vartovyi</span>
+DSM_PASSWORD=
+DSM_DESTINATION_SHOWS=<span class="v" data-v="shows">video/Series</span>
+DSM_DESTINATION_MOVIES=<span class="v" data-v="movies">video/Movies</span>
+<span class="c"># qBittorrent instead of Download Station (folders — as qBittorrent sees them):</span>
+<span class="c"># TORRENT_CLIENT=qbittorrent</span>
+<span class="c"># QBIT_URL=http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:8090</span>
+<span class="c"># QBIT_USERNAME=</span>
+<span class="c"># QBIT_PASSWORD=</span>
+<span class="c"># DSM_DESTINATION_SHOWS=/downloads/Series</span>
+<span class="c"># DSM_DESTINATION_MOVIES=/downloads/Movies</span>
+<span class="c"># and below replace SPACE_SOURCE=synology with SPACE_SOURCE=client</span>
+<span class="c"># or Transmission (login and password — only if set in Transmission):</span>
+<span class="c"># TORRENT_CLIENT=transmission</span>
+<span class="c"># TRANSMISSION_URL=http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:9091/transmission/rpc</span>
+<span class="c"># TRANSMISSION_USERNAME=</span>
+<span class="c"># TRANSMISSION_PASSWORD=</span>
+<span class="c"># and below replace SPACE_SOURCE=synology with SPACE_SOURCE=client</span>
+
+<span class="c"># free space source: synology | client | path | none</span>
+SPACE_SOURCE=synology
+<span class="c"># only for SPACE_SOURCE=path:</span>
+<span class="c"># SPACE_PATH=/media</span>
+
+<span class="c"># optional: TMDB key (step 11)</span>
+<span class="c"># TMDB_TOKEN=</span>
+<span class="c"># sign-in and host names (the “Access and password” section)</span>
+<span class="c"># WEB_ALLOWED_HOSTS=vartovyi.example.com</span>
+<span class="c"># WEB_LOCAL_HOSTS=nas.example.com</span>
+<span class="c"># WEB_TRUSTED_PROXIES=192.168.1.2</span>
+<span class="c"># WEB_LOGIN_MODE=off</span>
+
+<span class="c"># PLATFORM=synology   # synology | linux | pi — UI only (wizard defaults and the guide)</span>
+TZ=Europe/Kyiv</pre></div>
+      <p data-platform="linux pi">On Linux and Raspberry Pi, with qBittorrent from <code>compose.yml</code>, the torrent client and free space lines are these (the <code>DSM_URL</code>, <code>DSM_USERNAME</code> and <code>DSM_PASSWORD</code> lines are not needed; the folder keys keep their names):</p>
+      <div class="pre" data-platform="linux pi"><button class="copy" type="button">Copy</button><pre>TORRENT_CLIENT=qbittorrent
+QBIT_URL=http://qbittorrent:8090
+QBIT_USERNAME=admin
+QBIT_PASSWORD=
+DSM_DESTINATION_SHOWS=<span class="v" data-v="media">/srv/media</span>/Series
+DSM_DESTINATION_MOVIES=<span class="v" data-v="media">/srv/media</span>/Movies
+SPACE_SOURCE=path
+SPACE_PATH=<span class="v" data-v="media">/srv/media</span></pre></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Key</th><th>What it is</th></tr></thead>
+        <tbody>
+          <tr><td><code>TORRENT_CLIENT</code></td><td><code>downloadstation</code> (the default if the key is missing), <code>qbittorrent</code> or <code>transmission</code>.</td></tr>
+          <tr><td><code>DSM_URL</code>, <code>DSM_USERNAME</code>, <code>DSM_PASSWORD</code></td><td>Download Station, and also the <code>synology</code> space source.</td></tr>
+          <tr><td><code>QBIT_URL</code>, <code>QBIT_USERNAME</code>, <code>QBIT_PASSWORD</code></td><td>The qBittorrent Web UI, for example <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:8090</code>. All three are required.</td></tr>
+          <tr><td><code>TRANSMISSION_URL</code>, <code>TRANSMISSION_USERNAME</code>, <code>TRANSMISSION_PASSWORD</code></td><td>Transmission RPC, for example <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:9091/transmission/rpc</code>. The login and password are optional.</td></tr>
+          <tr><td><code>DSM_DESTINATION_SHOWS</code>, <code>DSM_DESTINATION_MOVIES</code></td><td>The folders for shows and movies for any client: for Download Station — <code>video/Series</code>, for the others — the path as the client sees it.</td></tr>
+          <tr><td><code>SPACE_SOURCE</code></td><td><code>synology</code>, <code>client</code>, <code>path</code> or <code>none</code> (step 4, “Free space”). If the key is missing: <code>synology</code> when <code>DSM_URL</code> is set, otherwise <code>none</code>.</td></tr>
+          <tr><td><code>SPACE_PATH</code></td><td>For <code>path</code>: a folder mounted into the Vartovyi container, for example <code>/media</code>.</td></tr>
+          <tr><td><code>TOLOKA_COOKIE</code></td><td>Instead of <code>TOLOKA_USERNAME</code> and <code>TOLOKA_PASSWORD</code> (step 2): while the cookie is set, the login and password are ignored, and Vartovyi doesn’t sign in again by itself — when the session expires, an alert arrives, and the cookie has to be renewed.</td></tr>
+          <tr><td><code>PLATFORM</code></td><td><code>synology</code>, <code>linux</code> or <code>pi</code> — UI only: the wizard defaults and the sections of this guide.</td></tr>
+          <tr><td><code>WEB_ALLOWED_HOSTS</code>, <code>WEB_LOCAL_HOSTS</code>, <code>WEB_TRUSTED_PROXIES</code>, <code>WEB_LOGIN_MODE</code></td><td>Names from outside, home names, proxies without <code>X-Forwarded-For</code> and the emergency <code>off</code> for sign-in (<a href="#access">Access and password</a>).</td></tr>
+        </tbody>
+      </table></div>
+      <p>In this case create the <code>config/quality.yaml</code> file yourself:</p>
+      <div class="pre"><button class="copy" type="button">Copy</button><pre>quality:
+  minResolution: 1080p          <span class="c"># 720p | 1080p | 2160p</span>
+  preferredResolution: 1080p    <span class="c"># which resolution to take first (default = minResolution)</span>
+  preferredSources: [WEB-DL, BluRay]   <span class="c"># order = source priority</span>
+  rejectSources: [CAMRip, TS, TC]
+  requireUkrainianAudio: true
+  notify: best                  <span class="c"># best | all</span>
+
+schedule:
+  plexHours: 24                 <span class="c"># how often to sync the watchlist with the Plex cloud, hours (1–168)</span>
+  tolokaHours: 12               <span class="c"># how often to search the trackers for releases, hours (1–168)</span>
+  <span class="c"># plexTimes: ["04:00"]          # or sync Plex at the given times (HH:MM, comma-separated) — instead of plexHours</span>
+  <span class="c"># trackerTimes: ["07:00", "19:00"]   # or search the trackers at the given times — instead of tolokaHours</span>
+
+storage:
+  minFreeGb: 50                 <span class="c"># free space warning threshold on the disk, GB</span>
+
+downloads:
+  stallHours: 6                 <span class="c"># how many hours without progress make a “stalled download” (1–168)</span>
+  perTitleFolder: true          <span class="c"># a separate “Title (Year) {tmdb-id}” folder for each title (also a switch on “Status”)</span></pre></div>
+      <p><b>Schedule.</b> Vartovyi wakes up every 30 minutes: it sends unsent messages and refreshes the Plex server library. It syncs the watchlist from the Plex cloud once every <code>plexHours</code> hours (24 by default), and searches the trackers for releases once every <code>tolokaHours</code> hours (12 by default); new titles from the watchlist are searched for right away. “Refresh” on “Media”, “Check now” or <code>/check</code> start everything immediately. Both intervals can also be changed on the “Status” page in the “Schedule” block — they apply right away and are saved to <code>quality.yaml</code>. The old <code>intervalMinutes</code> field no longer works and is ignored.</p>
+      <p><b>At given times.</b> Instead of “every N hours” — <code>plexTimes</code> and <code>trackerTimes</code>: lists of <code>HH:MM</code> times (up to 24 values, no repeats), for example <code>trackerTimes: ["07:00", "19:00"]</code>. The time is the container’s local time, that is the <code>TZ</code> variable. If a time was missed (the server was off), there is one run after the start, not one per missed time. A manual run doesn’t shift the schedule: the next one is at the nearest given time. A run at a given time starts on time (within seconds), not at the next 30-minute step; the mode is set for each channel separately; the search pause after a tracker failure is then no longer than the shortest gap between the times.</p>
+      <p><b>Choosing a release.</b> <code>preferredSources</code> is the order of sources (earlier = better), <code>preferredResolution</code> is the resolution to take first. <code>notify: best</code> (the default) — only the best release goes to Telegram, the rest stay on the title page; <code>notify: all</code> — a notification about each. Source names: BluRay, HDDVDRip, WEB-DLRip, WEB-DL, WEBRip, BDRip, HDTV, DVDRip, SATRip, HDRip, TVRip, CAMRip, TS, TC (case doesn’t matter; the same names work in <code>rejectSources</code>; <code>HD-DVDRip</code> is HDDVDRip). Sources not in the list come after the listed ones, an unknown one is last; higher resolutions come after <code>preferredResolution</code>. With equal source and resolution, the release already notified about wins, then the one with more new episodes, then the smaller one. The size in the message and the space check: if the release hasn’t been downloaded yet — the whole release; if an earlier version of it is already downloaded — only the new episodes. After changing <code>quality.yaml</code> by hand, restart the container.</p>
+    </section>
+  </main>
+  </div>
+</div>
+
+
+<script>
+const I18N_LANG = "en";
+const I18N_MSGS = {"guide.progress":"{done} of {n} checks","guide.copy":"Copy","guide.copied":"Copied","guide.selected":"Selected — copy it","guide.adminEmpty":"\u003cDSM_admin\u003e"};
+
+var I18N_PLURAL = typeof Intl === 'object' && Intl.PluralRules ? new Intl.PluralRules(I18N_LANG) : null;
+var I18N_LOCALE = I18N_LANG === 'uk' ? 'uk-UA' : 'en-GB';
+function pluralForm(n, forms) {
+  var cat = I18N_PLURAL ? I18N_PLURAL.select(n) : (n === 1 ? 'one' : 'other');
+  return forms[cat] != null ? forms[cat] : forms.other;
+}
+function i18nFill(s, params, map) {
+  if (!params) return s;
+  return s.replace(/[{]([A-Za-z0-9_]+)[}]/g, function (m, name) {
+    return Object.prototype.hasOwnProperty.call(params, name) ? map(String(params[name])) : m;
+  });
+}
+function i18nMsg(key, params) {
+  var m = Object.prototype.hasOwnProperty.call(I18N_MSGS, key) ? I18N_MSGS[key] : key;
+  if (typeof m === 'string') return m;
+  var n = params && typeof params.n === 'number' ? params.n : NaN;
+  return isNaN(n) ? m.other : pluralForm(n, m);
+}
+function t(key, params) { return i18nFill(i18nMsg(key, params), params, function (v) { return v; }); }
+function th(key, params) {
+  return i18nFill(i18nMsg(key, params), params, function (v) {
+    return v.replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });
+  });
+}
+function fmtNum(n, digits) {
+  var o = digits == null ? {} : { minimumFractionDigits: digits, maximumFractionDigits: digits };
+  return new Intl.NumberFormat(I18N_LOCALE, o).format(n);
+}
+
+(function () {
+  var KEY = 'vartovyi-nas-guide-v1';
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.check input[type=checkbox]'));
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { saved = {}; }
+  boxes.forEach(function (b) { b.checked = !!saved[b.id]; });
+  var jump = document.getElementById('jump');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('nav.steps a[href^="#"]'));
+
+  // --- Платформа: ?platform= → платформа сервера → вибір у цьому браузері → Synology ---
+  var PKEY = 'vartovyi-guide-platform-v1';
+  function validP(p) { return p === 'synology' || p === 'linux' || p === 'pi'; }
+  var cur = (new URLSearchParams(location.search)).get('platform');
+  if (!validP(cur)) { try { cur = localStorage.getItem(PKEY); } catch (e) { cur = null; } }
+  if (!validP(cur)) cur = 'synology';
+  /** Елемент видно на поточній платформі (найближчий предок із data-platform її містить). */
+  function shown(el) { var b = el.closest('[data-platform]:not(body)'); return !b || b.getAttribute('data-platform').split(' ').indexOf(cur) >= 0; }
+  function setPlatform(p, remember) {
+    cur = p;
+    document.body.setAttribute('data-platform', p);
+    document.querySelectorAll('[data-set-platform]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-set-platform') === p)); });
+    if (jump) Array.prototype.forEach.call(jump.options, function (o) { var l = o.getAttribute(p === 'synology' ? 'data-t-synology' : 'data-t-linux'); if (l) { o.removeAttribute('data-label'); o.textContent = l; } });
+    if (remember) {
+      try { localStorage.setItem(PKEY, p); } catch (e) {}
+      try { var u = new URL(location.href); u.searchParams.set('platform', p); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {}
+    }
+    syncLang(); fillInputs(); applyVars(); update();
+  }
+  /* Сайт: перемикач мови веде на ту саму платформу і той самий крок іншою мовою (?platform= і #…). */
+  function syncLang() {
+    var a = document.querySelector('.sitebar .langsw');
+    if (!a) return;
+    if (!a.hasAttribute('data-base')) a.setAttribute('data-base', a.getAttribute('href'));
+    a.setAttribute('href', a.getAttribute('data-base') + location.search + location.hash);
+  }
+  window.addEventListener('hashchange', syncLang);
+  document.querySelectorAll('[data-set-platform]').forEach(function (b) { b.addEventListener('click', function () { setPlatform(b.getAttribute('data-set-platform'), true); }); });
+
+  function update() {
+    var visible = boxes.filter(shown);
+    var done = visible.filter(function (b) { return b.checked; }).length;
+    document.getElementById('barFill').style.width = (visible.length ? done / visible.length * 100 : 0) + '%';
+    document.getElementById('progressText').textContent = t('guide.progress', { done: done, n: visible.length });
+    navLinks.forEach(function (a) {
+      var step = a.getAttribute('data-step');
+      if (step === null) return;
+      var sec = document.querySelector('section[data-step="' + step + '"]');
+      var own = sec ? Array.prototype.filter.call(sec.querySelectorAll('.check input'), shown) : [];
+      var all = own.length > 0 && Array.prototype.every.call(own, function (i) { return i.checked; });
+      a.classList.toggle('done', all);
+      var opt = jump ? jump.querySelector('option[value="' + a.getAttribute('href').slice(1) + '"]') : null;
+      if (opt) {
+        var base = opt.getAttribute('data-label') || opt.textContent;
+        opt.setAttribute('data-label', base);
+        opt.textContent = all ? base + ' ✓' : base;
+      }
+    });
+  }
+  function save() {
+    var s = {};
+    boxes.forEach(function (b) { if (b.checked) s[b.id] = true; });
+    try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
+  }
+  boxes.forEach(function (b) { b.addEventListener('change', function () { save(); update(); }); });
+  document.getElementById('reset').addEventListener('click', function () {
+    boxes.forEach(function (b) { b.checked = false; }); save(); update();
+  });
+
+  // --- Поточний крок: підсвічування в змісті й у списку «Крок» (телефон) ---
+  var sections = navLinks.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
+  var current = null;
+  function setCurrent(i) {
+    if (i === current) return;
+    current = i;
+    navLinks.forEach(function (a, k) { if (k === i) a.setAttribute('aria-current', 'step'); else a.removeAttribute('aria-current'); });
+    if (jump && i !== null && sections[i]) jump.value = sections[i].id;
+    var link = i !== null ? navLinks[i] : null;
+    var side = document.querySelector('.side');
+    if (link && side && side.scrollHeight > side.clientHeight) {
+      var r = link.getBoundingClientRect(), s = side.getBoundingClientRect();
+      if (r.top < s.top || r.bottom > s.bottom) side.scrollTop += r.top - s.top - s.height / 3;
+    }
+  }
+  var ticking = false;
+  function spy() {
+    ticking = false;
+    var bar = document.querySelector('.topbar, .sitebar');
+    var j = document.querySelector('.jump');
+    var line = (bar ? bar.getBoundingClientRect().bottom : 0) + (j && j.offsetParent !== null ? j.offsetHeight : 0) + 40;
+    var found = 0;
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i] && sections[i].getBoundingClientRect().top <= line) found = i;
+    }
+    setCurrent(found);
+  }
+  window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(spy); } }, { passive: true });
+  window.addEventListener('resize', spy);
+  if (jump) jump.addEventListener('change', function () {
+    var el = document.getElementById(jump.value);
+    if (!el) return;
+    el.scrollIntoView({ block: 'start' });
+    try { history.replaceState(null, '', location.pathname + location.search + '#' + jump.value); } catch (e) {}
+    syncLang();
+  });
+
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var pre = btn.parentNode.querySelector('pre');
+      var text = pre.innerText;
+      function done(ok) { btn.textContent = t(ok ? 'guide.copied' : 'guide.selected'); setTimeout(function () { btn.textContent = t('guide.copy'); }, 1800); }
+      function selectIt() { var r = document.createRange(); r.selectNodeContents(pre); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); done(false); }
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, selectIt);
+        else selectIt();
+      } catch (e) { selectIt(); }
+    });
+  });
+
+  // --- Твої дані: підстановка значень у текст ---
+  var VKEY = 'vartovyi-nas-guide-vars-v1';
+  var DEFAULTS_BY = {
+    synology: { ip: '', port: '8080', admin: '', svc: 'vartovyi', vol: 'volume1', share: 'video', shows: 'video/Series', movies: 'video/Movies', dir: '~/vartovyi', media: '/srv/media' },
+    linux: { ip: '', port: '8080', admin: '', svc: 'vartovyi', vol: 'volume1', share: 'video', shows: '/srv/media/Series', movies: '/srv/media/Movies', dir: '~/vartovyi', media: '/srv/media' }
+  };
+  function defs() { return DEFAULTS_BY[cur === 'synology' ? 'synology' : 'linux']; }
+  var EMPTY = { ip: '<NAS_IP>', admin: t('guide.adminEmpty') };
+  /*
+   * Значення, що залежать від платформи (папки серіалів і фільмів, порт), — окремо для Synology і для Linux / Pi
+   * (у byPlatform; Pi ділить їх із Linux), решта — спільні. Той самий ключ VKEY; старі плоскі shows/movies/port
+   * один раз переносяться в byPlatform.synology (до перемикача платформи «Інструкція» була лише для Synology).
+   */
+  var PER_PLATFORM = ['shows', 'movies', 'port'];
+  function pgroup(p) { return p === 'synology' ? 'synology' : 'linux'; }
+  /* Пошкоджене сховище (не обʼєкт, масив) — як порожнє: скрипт «Інструкції» не має падати. */
+  function obj(x) { return x && typeof x === 'object' && !Array.isArray(x) ? x : {}; }
+  function migrateVars(v) {
+    v = obj(v);
+    v.byPlatform = obj(v.byPlatform);
+    var syn = obj(v.byPlatform.synology);
+    PER_PLATFORM.forEach(function (k) { if (k in v) { if (!(k in syn)) syn[k] = v[k]; delete v[k]; } });
+    v.byPlatform.synology = syn;
+    v.byPlatform.linux = obj(v.byPlatform.linux);
+    return v;
+  }
+  function getVar(v, p, k) { return PER_PLATFORM.indexOf(k) >= 0 ? v.byPlatform[pgroup(p)][k] : v[k]; }
+  function setVar(v, p, k, x) { if (PER_PLATFORM.indexOf(k) >= 0) v.byPlatform[pgroup(p)][k] = x; else v[k] = x; }
+  var vals = {};
+  try { vals = JSON.parse(localStorage.getItem(VKEY) || '{}') || {}; } catch (e) { vals = {}; }
+  vals = migrateVars(vals);
+  try { localStorage.setItem(VKEY, JSON.stringify(vals)); } catch (e) {}
+  var host = location.hostname;
+  if (!vals.ip && host && !/^(localhost|127\.|\[?::1)/.test(host) && /^[0-9.]+$|\.local$|^[a-z0-9-]+$/i.test(host) && location.protocol !== 'https:' && location.port) {
+    vals.ip = host; if (!getVar(vals, cur, 'port')) setVar(vals, cur, 'port', location.port);
+  }
+  // На Synology папки — відносно спільної папки (без «/» і «volumeN/»); на Linux / Pi — абсолютні шляхи, як є.
+  function norm(k, v) { v = (v || '').trim(); if (cur === 'synology' && (k === 'shows' || k === 'movies')) v = v.replace(/^\/+/, '').replace(/^volume\d+\//, ''); if (k === 'vol') v = v.replace(/^\/+|\/+$/g, ''); return v; }
+  function applyVars() {
+    EMPTY.ip = cur === 'synology' ? '<NAS_IP>' : '<SERVER_IP>';
+    ['shows', 'movies'].forEach(function (k) { var inp = document.querySelector('#vars input[data-k="' + k + '"]'); if (inp) inp.placeholder = defs()[k]; });
+    document.querySelectorAll('[data-v]').forEach(function (el) {
+      var k = el.getAttribute('data-v');
+      var v = norm(k, getVar(vals, cur, k)) || defs()[k];
+      el.textContent = v || EMPTY[k] || '';
+      el.classList.toggle('unset', !v);
+    });
+  }
+  /* Поля показують значення поточної платформи; викликається і при перемиканні платформи. */
+  function fillInputs() {
+    document.querySelectorAll('#vars input').forEach(function (inp) { inp.value = getVar(vals, cur, inp.getAttribute('data-k')) || ''; });
+  }
+  document.querySelectorAll('#vars input').forEach(function (inp) {
+    var k = inp.getAttribute('data-k');
+    inp.addEventListener('input', function () {
+      setVar(vals, cur, k, inp.value);
+      try { localStorage.setItem(VKEY, JSON.stringify(vals)); } catch (e) {}
+      applyVars();
+    });
+  });
+  setPlatform(cur, false);
+  spy();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+services:
+  vartovyi:
+    image: ghcr.io/sorochanroman/vartovyi:latest
+    # «Зібрати» в Container Manager щоразу стягує свіжий образ, а не бере давно збережений локально latest
+    pull_policy: always
+    container_name: vartovyi
+    restart: unless-stopped
+    # user: "0:0"        # розкоментуй, якщо не змінював власника папок на uid 1000 (інструкція /guide, крок 5)
+    environment:
+      - TZ=Europe/Kyiv
+    # env_file: .env     # лише для налаштування без майстра
+    labels:
+      # автооновлення (сервіс watchtower нижче) стосується лише контейнерів із цією позначкою
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      # ліве число — порт на NAS; якщо 8080 зайнятий, зміни лише його, наприклад "8090:8080"
+      - "8080:8080"
+    volumes:
+      - /volume1/docker/vartovyi/data:/data
+      - /volume1/docker/vartovyi/config:/config
+
+  # Автооновлення: щоночі о 04:00 перевіряє новий образ vartovyi:latest і перезапускає контейнер.
+  # Перед зміною схеми бази Vartovyi сам робить копію в data/backups. Докладніше — інструкція /guide, крок 9.
+  watchtower:
+    image: nickfedor/watchtower:latest
+    container_name: vartovyi-watchtower
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Kyiv
+      - WATCHTOWER_LABEL_ENABLE=true          # лише контейнери з позначкою вище (Plex, qBittorrent тощо не чіпає)
+      - WATCHTOWER_SCHEDULE=0 0 4 * * *       # секунди хвилини години день місяць день_тижня
+      - WATCHTOWER_CLEANUP=true               # видаляти старий образ після оновлення
+      # Повідомлення про оновлення в Telegram — встав токен бота й chat id (ті самі, що в майстрі):
+      # - WATCHTOWER_NOTIFICATION_URL=telegram://<ТОКЕН_БОТА>@telegram?chats=<CHAT_ID>
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

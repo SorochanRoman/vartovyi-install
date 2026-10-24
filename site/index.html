@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vartovyi — серіали й фільми з українською озвучкою з вашого Plex watchlist</title>
+<meta name="description" content="Vartovyi — self-hosted сервіс для NAS чи домашнього сервера: стежить за watchlist у Plex, знаходить на трекерах роздачі з українською озвучкою, питає в Telegram і передає торент у ваш клієнт. Безкоштовно, у Docker.">
+<link rel="canonical" href="https://sorochanroman.github.io/vartovyi-install/">
+<link rel="alternate" hreflang="uk" href="https://sorochanroman.github.io/vartovyi-install/">
+<link rel="alternate" hreflang="en" href="https://sorochanroman.github.io/vartovyi-install/en/">
+<link rel="alternate" hreflang="x-default" href="https://sorochanroman.github.io/vartovyi-install/">
+<meta name="theme-color" content="#3461e6">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Vartovyi">
+<meta property="og:locale" content="uk_UA">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:title" content="Vartovyi — українська озвучка для вашого Plex">
+<meta property="og:description" content="Стежить за Plex watchlist, знаходить роздачі з українською озвучкою, питає в Telegram і качає в торент-клієнт на вашому NAS чи сервері.">
+<meta property="og:url" content="https://sorochanroman.github.io/vartovyi-install/">
+<meta property="og:image" content="https://sorochanroman.github.io/vartovyi-install/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Vartovyi: Plex watchlist → трекери → Telegram → торент-клієнт">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Vartovyi — українська озвучка для вашого Plex">
+<meta name="twitter:description" content="Self-hosted сервіс: Plex watchlist → роздачі з українською озвучкою → Telegram → торент-клієнт.">
+<meta name="twitter:image" content="https://sorochanroman.github.io/vartovyi-install/assets/og-image.png">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Перейти до змісту</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./"><img src="assets/icon.svg" alt="" width="30" height="30">Vartovyi</a>
+    <nav class="site-nav" aria-label="Розділи">
+      <a class="nav-link" href="#how">Як працює</a>
+      <a class="nav-link" href="#features">Можливості</a>
+      <a class="nav-link" href="#install">Встановлення</a>
+      <a class="nav-link" href="#faq">Питання</a>
+      <a class="nav-link" href="https://github.com/SorochanRoman/vartovyi-install">GitHub</a>
+      <span class="lang" role="group" aria-label="Мова сторінки"><span aria-current="true" lang="uk">УКР</span><a href="en/" hreflang="en" lang="en">EN</a></span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Self-hosted · Docker · amd64 і arm64</span>
+      <h1 id="hero-title">Vartovyi</h1>
+      <p class="lead">Додаєте серіал чи фільм у watchlist Plex — Vartovyi сам знаходить роздачу з <strong>українською озвучкою</strong>, питає в Telegram «качати?» і передає торент у ваш клієнт. Нова серія з’являється в Plex без ручного пошуку.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#install">Встановити</a>
+        <a class="btn btn-ghost" href="https://github.com/SorochanRoman/vartovyi-install">
+          <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.33c-2.22.48-2.69-1.07-2.69-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.82 1.23.82.72 1.23 1.88.87 2.34.67.07-.52.28-.87.5-1.07-1.77-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.6 7.6 0 0 1 8 3.87c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          GitHub
+        </a>
+      </div>
+      <ul class="facts">
+        <li>Synology NAS, Linux або Raspberry Pi</li>
+        <li>Майстер налаштування в браузері</li>
+        <li>Дані лишаються у вас</li>
+      </ul>
+    </div>
+    <div class="hero-shot">
+      <img class="desk" src="assets/img/dash.webp" width="1600" height="1000" alt="Сторінка «Головна» у Vartovyi: готове до перегляду, поточні завантаження і план релізів">
+      <img class="phone" src="assets/img/phone-dash.webp" width="780" height="1688" alt="«Головна» Vartovyi на iPhone" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section id="how" class="alt" aria-labelledby="how-title">
+  <div class="wrap">
+    <h2 id="how-title">Як це працює</h2>
+    <p class="section-lead">Vartovyi працює у фоні на вашому NAS чи домашньому сервері: раз на кілька годин звіряє watchlist із бібліотекою Plex і шукає те, чого бракує. Рішення «качати чи ні» лишається за вами, якщо не ввімкнете автозавантаження для улюбленої роздачі.</p>
+    <ol class="flow">
+      <li>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div>
+        <h3>Plex watchlist</h3>
+        <p>Ви додаєте тайтл у watchlist Plex — з телефона, телевізора чи з вкладки «Підбірки».</p>
+      </li>
+      <li>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div>
+        <h3>Пошук на трекерах</h3>
+        <p>Toloka та інші трекери: лише роздачі з українською озвучкою, що проходять ваші правила якості.</p>
+      </li>
+      <li>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></div>
+        <h3>Telegram або push</h3>
+        <p>Повідомлення з розміром, якістю й вільним місцем і кнопками «Завантажити» / «Ігнорувати».</p>
+      </li>
+      <li>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg></div>
+        <h3>Торент-клієнт</h3>
+        <p>Download Station, qBittorrent або Transmission — в окрему папку тайтлу; статус оновлюється в тому ж повідомленні.</p>
+      </li>
+      <li>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="m10 8 4 2.5-4 2.5z"/></svg></div>
+        <h3>Plex</h3>
+        <p>Plex підхоплює файли, а Vartovyi бачить, що серії вже є, і показує їх у «Готове до перегляду».</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section id="features" aria-labelledby="features-title">
+  <div class="wrap">
+    <h2 id="features-title">Можливості</h2>
+    <p class="section-lead">Усе, що потрібно, щоб нові серії з українською озвучкою з’являлися в Plex самі, — і нічого не видалялося без вашого «так».</p>
+    <div class="features">
+      <article class="card">
+        <h3>🔎 Пошук і відбір</h3>
+        <ul>
+          <li><strong>Toloka</strong> вбудована; інші трекери — з каталогу описів Cardigann (як у Prowlarr/Jackett), наприклад Mazepa.</li>
+          <li>Правила якості: мінімальна роздільна здатність, бажані й заборонені джерела, обов’язкова українська озвучка.</li>
+          <li>Пріоритет трекерів, «стежити від сезону N», точні й можливі збіги назви.</li>
+          <li>Розклад: кожні N годин або у вказаний час.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>💬 Telegram і push</h3>
+        <ul>
+          <li>Повідомлення з кнопками <strong>Завантажити</strong>, <strong>Ігнорувати</strong>, <strong>⭐ Стежити</strong> (нові серії цієї роздачі качаються самі).</li>
+          <li>Команди <code>/watchlist</code> (картка тайтлу, сезони, «Скачати сезон»), <code>/check</code>, <code>/status</code>.</li>
+          <li>Web Push на телефон і комп’ютер; матриця «подія × канал» на сторінці «Сповіщення».</li>
+          <li>Прем’єри сезонів, проблеми, мало місця на диску.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>⬇️ Завантаження</h3>
+        <ul>
+          <li>Download Station, qBittorrent або Transmission.</li>
+          <li>Окрема папка для кожного тайтлу з підказкою для Plex (<code>{tmdb-…}</code>).</li>
+          <li>Перевірка вільного місця перед завантаженням.</li>
+          <li><strong>Завислі завантаження</strong>: Vartovyi помічає, що прогресу немає, і пропонує заміну.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>🎬 Plex</h3>
+        <ul>
+          <li>Сітка сезонів: що вже є, що переглянуто, що качається, що чекає рішення.</li>
+          <li>«Виправити в Plex», коли Plex зіставив файли не з тим тайтлом.</li>
+          <li>Пропозиція видалити повністю переглянутий сезон — лише після вашого підтвердження.</li>
+          <li>Plex Pass не потрібен.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>🖥 Вебінтерфейс</h3>
+        <ul>
+          <li><strong>Головна</strong>: готове до перегляду, завантаження, що чекає рішення, план релізів.</li>
+          <li><strong>Медіа</strong> з фільтрами, сторінка тайтлу з історією, <strong>Підбірки</strong> з TMDB із позначками наявності на трекерах.</li>
+          <li><strong>Стан</strong> усіх інтеграцій, <strong>Трекери</strong>, журнал <strong>Помилок</strong>, вбудована <strong>Інструкція</strong>.</li>
+          <li>Застосунок на початковому екрані iPhone.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>🔐 Налаштування і доступ</h3>
+        <ul>
+          <li>Майстер у браузері перевіряє кожен крок — без ручного редагування <code>.env</code>.</li>
+          <li>Режими входу: пароль лише ззовні (типово), завжди або вимкнено.</li>
+          <li>Автоматична копія бази перед оновленням схеми.</li>
+          <li>Образ для amd64 і arm64.</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="screens" class="alt" aria-labelledby="screens-title">
+  <div class="wrap">
+    <h2 id="screens-title">Як виглядає</h2>
+    <p class="section-lead">Знімки з демо-даних: назви тайтлів і постери вигадані.</p>
+    <div class="shots">
+      <figure>
+        <img src="assets/img/media.webp" width="1600" height="1000" loading="lazy" alt="Сторінка «Медіа»: картки тайтлів зі станами — качається, чекає рішення, в Plex">
+        <figcaption>«Медіа» — увесь watchlist зі станом кожного тайтлу.</figcaption>
+      </figure>
+      <figure class="phone-fig">
+        <img src="assets/img/phone-dash.webp" width="780" height="1688" loading="lazy" alt="«Головна» на телефоні з нижніми вкладками Головна, Медіа, Підбірки, Стан">
+        <figcaption>На iPhone — як застосунок з початкового екрана.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/img/item.webp" width="1600" height="1000" loading="lazy" alt="Сторінка серіалу: сітка серій по сезонах, остання перевірка й історія">
+        <figcaption>Сторінка тайтлу — сезони, роздачі, історія, «Шукати зараз».</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/img/notif.webp" width="1600" height="1000" loading="lazy" alt="Сторінка «Сповіщення»: перемикачі Telegram і Push для кожної події">
+        <figcaption>«Сповіщення» — що й куди надсилати.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/img/dash.webp" width="1600" height="1000" loading="lazy" alt="«Головна» на комп’ютері: готове до перегляду, зараз завантажується, план релізів">
+        <figcaption>«Головна» — усе щоденне на одному екрані.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="requirements" aria-labelledby="req-title">
+  <div class="wrap">
+    <h2 id="req-title">Що знадобиться</h2>
+    <ul class="req">
+      <li><strong>Docker</strong><span>Synology DSM 7.2+ з пакетом Container Manager, будь-який 64-бітний Linux-сервер із Docker Compose або Raspberry Pi 3/4/5 з 64-бітною ОС.</span></li>
+      <li><strong>Plex</strong><span>Plex Media Server і токен акаунту. Plex Pass не потрібен.</span></li>
+      <li><strong>Акаунт Toloka</strong><span>Логін і пароль (або кукі з браузера). Інші трекери — за бажанням.</span></li>
+      <li><strong>Telegram-бот</strong><span>Створюється за хвилину в @BotFather; плюс ваш chat id.</span></li>
+      <li><strong>Торент-клієнт</strong><span>Download Station, qBittorrent або Transmission; папки, які сканує Plex.</span></li>
+      <li><strong>Ключ TMDB <span class="tag">необов’язково</span></strong><span>Для «Підбірок» і плану релізів. Безкоштовний.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="platforms" class="alt" aria-labelledby="platforms-title">
+  <div class="wrap">
+    <h2 id="platforms-title">Де працює</h2>
+    <p class="section-lead">Один і той самий образ для amd64 і arm64. Інструкція відкривається одразу на вибраній платформі.</p>
+    <div class="features">
+      <article class="card">
+        <h3>🗄 Synology NAS</h3>
+        <ul>
+          <li>DSM 7.2+ з пакетом <strong>Container Manager</strong> — Docker окремо не потрібен.</li>
+          <li>Download Station, qBittorrent або Transmission.</li>
+          <li>HTTPS через вбудований зворотний проксі DSM.</li>
+        </ul>
+        <p><a href="guide/?platform=synology">Інструкція для Synology →</a></p>
+      </article>
+      <article class="card">
+        <h3>🐧 Docker на Linux</h3>
+        <ul>
+          <li>Будь-який 64-бітний сервер із Docker Compose: міні-ПК, домашній сервер, NAS без DSM.</li>
+          <li>Один <code>compose.linux.yml</code>: Vartovyi, qBittorrent і автооновлення.</li>
+          <li>HTTPS через Caddy або Tailscale.</li>
+        </ul>
+        <p><a href="guide/?platform=linux">Інструкція для Linux →</a></p>
+      </article>
+      <article class="card">
+        <h3>🍓 Raspberry Pi</h3>
+        <ul>
+          <li>Pi 3, 4 або 5 з <strong>64-бітною</strong> Raspberry Pi OS.</li>
+          <li>Папка Vartovyi і медіа — на USB SSD, а не на SD-картці.</li>
+          <li>Той самий <code>compose.linux.yml</code>, що й для Linux.</li>
+        </ul>
+        <p><a href="guide/?platform=pi">Інструкція для Raspberry Pi →</a></p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="install" aria-labelledby="install-title">
+  <div class="wrap">
+    <h2 id="install-title">Швидке встановлення</h2>
+    <p class="section-lead">Коротка версія для тих, хто знайомий з Docker. Покрокова інструкція для Synology, Linux і Raspberry Pi з перевірками — у <a href="guide/">повній інструкції</a>; та сама інструкція є в запущеному сервісі на сторінці <code>/guide</code> («Інструкція» у меню).</p>
+    <ol class="steps">
+      <li>
+        <h3>Створіть папки</h3>
+        <p>Дві папки для даних і налаштувань, доступні на запис користувачу з uid 1000 (від нього працює контейнер). На Synology — у спільній папці <code>docker</code> (на Linux — будь-яка папка, наприклад <code>~/vartovyi</code>):</p>
+<pre><code>mkdir -p /volume1/docker/vartovyi/data /volume1/docker/vartovyi/config
+sudo chown -R 1000:1000 /volume1/docker/vartovyi/data /volume1/docker/vartovyi/config</code></pre>
+        <p>Без SSH можна натомість розкоментувати <code>user: "0:0"</code> у compose — простіше, але менше ізоляції.</p>
+      </li>
+      <li>
+        <h3>Додайте <code>docker-compose.yml</code></h3>
+        <p>У Container Manager: <strong>Проєкт → Створити</strong>, шлях <code>docker/vartovyi</code>, «Створити docker-compose.yml». На іншому сервері — файл у будь-якій папці (шляхи томів змініть на свої). На Linux і Raspberry Pi є готовий <a href="https://raw.githubusercontent.com/SorochanRoman/vartovyi-install/HEAD/compose.linux.yml">compose.linux.yml</a> з qBittorrent і Watchtower — збережіть його в папці проєкту як <code>compose.yml</code>, тоді командам нижче не потрібен <code>-f</code>:</p>
+<pre><code>mkdir -p ~/vartovyi &amp;&amp; cd ~/vartovyi
+curl -fsSL https://raw.githubusercontent.com/SorochanRoman/vartovyi-install/HEAD/compose.linux.yml -o compose.yml</code></pre>
+        <p>Файл для Synology:</p>
+<pre><code>services:
+  vartovyi:
+    image: ghcr.io/sorochanroman/vartovyi:latest
+    pull_policy: always
+    container_name: vartovyi
+    restart: unless-stopped
+    # user: "0:0"   <span class="c"># якщо не змінювали власника папок</span>
+    environment:
+      - TZ=Europe/Kyiv
+    ports:
+      - "8080:8080"   <span class="c"># ліве число — порт на хості</span>
+    volumes:
+      - /volume1/docker/vartovyi/data:/data
+      - /volume1/docker/vartovyi/config:/config</code></pre>
+      </li>
+      <li>
+        <h3>Запустіть</h3>
+        <p>У Container Manager — <strong>Далі → Готово</strong>; у терміналі — <code>docker compose up -d</code>. У журналі контейнера з’явиться рядок <code>Код для створення пароля: 1234-5678</code> — він знадобиться на кроці майстра «Пароль».</p>
+      </li>
+      <li>
+        <h3>Пройдіть майстер</h3>
+        <p>Відкрийте <code>http://&lt;IP&gt;:8080/setup</code>. Кожен крок має кнопку <strong>Перевірити</strong>:</p>
+        <ul>
+          <li><strong>Платформа</strong> — Synology, Linux або Raspberry Pi (задає типові значення);</li>
+          <li><strong>Пароль</strong> вебінтерфейсу (з кодом із журналу);</li>
+          <li><strong>Plex</strong> — токен і адреса сервера <code>http://&lt;IP&gt;:32400</code>;</li>
+          <li><strong>Toloka</strong> — логін і пароль або кукі;</li>
+          <li><strong>Telegram</strong> — токен бота і chat id (спершу натисніть Start у боті);</li>
+          <li><strong>Торент-клієнт</strong> і папки для серіалів та фільмів, <strong>вільне місце</strong>;</li>
+          <li><strong>Правила якості</strong> і розклад → <strong>Зберегти і запустити</strong>.</li>
+        </ul>
+        <p>Контейнер перезапуститься в робочому режимі, і відкриється «Головна». На сторінці «Стан системи» всі картки мають бути зеленими.</p>
+      </li>
+    </ol>
+    <p class="note">Не відкривайте порт 8080 в інтернет. Для доступу ззовні й push-сповіщень використовуйте HTTPS через зворотний проксі (у DSM — вбудований, на Linux — Caddy або Tailscale) — як саме, описано в інструкції.</p>
+  </div>
+</section>
+
+<section id="update" class="alt" aria-labelledby="update-title">
+  <div class="wrap two">
+    <div>
+      <h2 id="update-title">Оновлення</h2>
+      <p>Нові версії публікуються в GHCR з тегом <code>latest</code> і номером версії.</p>
+<pre><code>docker compose pull
+docker compose up -d</code></pre>
+      <p>У Container Manager: <strong>Проєкт → vartovyi → Дія → Зібрати</strong> (з <code>pull_policy: always</code> образ стягується свіжий). Папки <code>data</code> і <code>config</code> не змінюються, міграції бази виконуються самі, а перед зміною схеми Vartovyi робить копію в <code>data/backups</code>.</p>
+      <p><strong>Автоматично:</strong> додайте сервіс Watchtower — приклад є в <a href="https://github.com/SorochanRoman/vartovyi-install/blob/HEAD/docker-compose.yml">docker-compose.yml</a>, а в <code>compose.linux.yml</code> він уже є. Він оновлює лише контейнери з позначкою Vartovyi і не чіпає решту.</p>
+    </div>
+    <div id="privacy">
+      <h2>Приватність і безпека</h2>
+      <ul>
+        <li><strong>Self-hosted.</strong> Сервіс працює на вашому NAS чи сервері; база, налаштування й токени лишаються там. Жодної аналітики чи хмарного акаунту Vartovyi немає.</li>
+        <li><strong>Зовнішні запити</strong> — лише до сервісів, які ви налаштували: Plex, трекери, Telegram, TMDB, служби push браузерів, а також GitHub для каталогу описів трекерів.</li>
+        <li><strong>Вхід.</strong> Удома — без пароля, ззовні (через HTTPS) — з паролем; можна вимагати пароль завжди або вимкнути вхід. Сесії й вихід на всіх пристроях — на сторінці «Стан».</li>
+        <li><strong>Секрети</strong> не показуються у вебінтерфейсі й не пишуться в журнал; <code>settings.json</code> зберігається з правами 0600.</li>
+        <li><strong>Нічого не видаляється</strong> без підтвердження.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="faq" aria-labelledby="faq-title">
+  <div class="wrap">
+    <h2 id="faq-title">Питання</h2>
+    <details>
+      <summary>Це безкоштовно?</summary>
+      <p>Так. Vartovyi — проєкт з відкритим кодом, ви запускаєте його на власному обладнанні. Код поширюється під ліцензією MIT.</p>
+    </details>
+    <details>
+      <summary>Чи потрібен Synology?</summary>
+      <p>Ні. Інструкція є для Synology NAS, Docker на Linux і Raspberry Pi з 64-бітною ОС; образ — звичайний Docker для amd64 і arm64. На Linux і Raspberry Pi qBittorrent іде в комплекті, підійде й Transmission.</p>
+    </details>
+    <details>
+      <summary>Чи завантажує він щось сам, без мене?</summary>
+      <p>Типово — ні: про кожну знайдену роздачу ви отримуєте повідомлення й вирішуєте самі. Автоматично качаються лише нові серії роздачі, яку ви позначили «⭐ Стежити».</p>
+    </details>
+    <details>
+      <summary>Які трекери підтримуються?</summary>
+      <p>Toloka вбудована. Інші можна додати на сторінці «Трекери» з каталогу описів Prowlarr/Indexers (формат Cardigann), наприклад Mazepa. Підтримуються не всі можливості формату — непідтримувані описи Vartovyi позначає з поясненням причини.</p>
+    </details>
+    <details>
+      <summary>Чи можна користуватися поза домом?</summary>
+      <p>Telegram і push працюють будь-де. Сайт — у домашній мережі або через HTTPS-проксі з паролем; відкривати порт 8080 в інтернет не можна.</p>
+    </details>
+    <details>
+      <summary>Відповідальне використання</summary>
+      <p>Vartovyi не розміщує й не роздає жодного контенту і не пов’язаний із жодним трекером. Це інструмент автоматизації: він лише шукає на сайтах, які ви самі налаштували, і передає посилання вашому торент-клієнту. Ви відповідаєте за те, що завантажуєте: дотримуйтесь законодавства своєї країни, авторських прав і правил трекерів, якими користуєтесь.</p>
+    </details>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>Vartovyi · <a href="https://github.com/SorochanRoman/vartovyi-install/blob/HEAD/LICENSE">ліцензія MIT</a></p>
+    <nav aria-label="Посилання">
+      <a href="https://github.com/SorochanRoman/vartovyi-install">GitHub</a>
+      <a href="guide/">Інструкція</a>
+      <a href="https://github.com/SorochanRoman/vartovyi-install/issues">Повідомити про проблему</a>
+      <a href="en/" hreflang="en" lang="en">English</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vartovyi — Ukrainian-dubbed releases for your Plex watchlist</title>
+<meta name="description" content="Vartovyi is a self-hosted service for your NAS or home server: it watches your Plex watchlist, finds releases with Ukrainian audio on torrent trackers, asks you on Telegram and hands the torrent to your client. Free, runs in Docker.">
+<link rel="canonical" href="https://sorochanroman.github.io/vartovyi-install/en/">
+<link rel="alternate" hreflang="uk" href="https://sorochanroman.github.io/vartovyi-install/">
+<link rel="alternate" hreflang="en" href="https://sorochanroman.github.io/vartovyi-install/en/">
+<link rel="alternate" hreflang="x-default" href="https://sorochanroman.github.io/vartovyi-install/">
+<meta name="theme-color" content="#3461e6">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Vartovyi">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="uk_UA">
+<meta property="og:title" content="Vartovyi — Ukrainian audio for your Plex">
+<meta property="og:description" content="Watches your Plex watchlist, finds releases with Ukrainian audio, asks on Telegram and downloads to the torrent client on your NAS or server.">
+<meta property="og:url" content="https://sorochanroman.github.io/vartovyi-install/en/">
+<meta property="og:image" content="https://sorochanroman.github.io/vartovyi-install/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Vartovyi: Plex watchlist → trackers → Telegram → torrent client">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Vartovyi — Ukrainian audio for your Plex">
+<meta name="twitter:description" content="Self-hosted: Plex watchlist → releases with Ukrainian audio → Telegram → torrent client.">
+<meta name="twitter:image" content="https://sorochanroman.github.io/vartovyi-install/assets/og-image.png">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./"><img src="../assets/icon.svg" alt="" width="30" height="30">Vartovyi</a>
+    <nav class="site-nav" aria-label="Sections">
+      <a class="nav-link" href="#how">How it works</a>
+      <a class="nav-link" href="#features">Features</a>
+      <a class="nav-link" href="#install">Install</a>
+      <a class="nav-link" href="#faq">FAQ</a>
+      <a class="nav-link" href="https://github.com/SorochanRoman/vartovyi-install">GitHub</a>
+      <span class="lang" role="group" aria-label="Page language"><a href="../" hreflang="uk" lang="uk">УКР</a><span aria-current="true">EN</span></span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Self-hosted · Docker · amd64 &amp; arm64</span>
+      <h1 id="hero-title">Vartovyi</h1>
+      <p class="lead">Add a show or movie to your Plex watchlist and Vartovyi finds a release with <strong>Ukrainian audio</strong>, asks you on Telegram whether to grab it, and hands the torrent to your client. New episodes land in Plex without you searching for them.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#install">Install</a>
+        <a class="btn btn-ghost" href="https://github.com/SorochanRoman/vartovyi-install">
+          <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.33c-2.22.48-2.69-1.07-2.69-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.82 1.23.82.72 1.23 1.88.87 2.34.67.07-.52.28-.87.5-1.07-1.77-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.6 7.6 0 0 1 8 3.87c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          GitHub
+        </a>
+      </div>
+      <ul class="facts">
+        <li>Synology NAS, Linux or Raspberry Pi</li>
+        <li>Browser-based setup wizard</li>
+        <li>Your data stays with you</li>
+      </ul>
+    </div>
+    <div class="hero-shot">
+      <img class="desk" src="../assets/img/dash.webp" width="1600" height="1000" alt="Vartovyi home page: ready to watch, current downloads and the release calendar">
+      <img class="phone" src="../assets/img/phone-dash.webp" width="780" height="1688" alt="Vartovyi home page on an iPhone" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section id="how" class="alt" aria-labelledby="how-title">
+  <div class="wrap">
+    <h2 id="how-title">How it works</h2>
+    <p class="section-lead">Vartovyi runs in the background on your NAS or home server. Every few hours it compares your watchlist with your Plex library and looks for whatever is missing. You decide what gets downloaded — unless you turn on auto-download for a release you follow.</p>
+    <ol class="flow">
+      <li>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div>
+        <h3>Plex watchlist</h3>
+        <p>Add a title to your Plex watchlist — from your phone, your TV or the Discover tab.</p>
+      </li>
+      <li>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div>
+        <h3>Tracker search</h3>
+        <p>Toloka and other trackers: only releases with Ukrainian audio that pass your quality rules.</p>
+      </li>
+      <li>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></div>
+        <h3>Telegram or push</h3>
+        <p>A message with size, quality and free disk space, plus Download / Ignore buttons.</p>
+      </li>
+      <li>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg></div>
+        <h3>Torrent client</h3>
+        <p>Download Station, qBittorrent or Transmission, into a per-title folder; progress updates in the same message.</p>
+      </li>
+      <li>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="m10 8 4 2.5-4 2.5z"/></svg></div>
+        <h3>Plex</h3>
+        <p>Plex picks up the files; Vartovyi sees the episodes are there and lists them under “Ready to watch”.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section id="features" aria-labelledby="features-title">
+  <div class="wrap">
+    <h2 id="features-title">Features</h2>
+    <p class="section-lead">Everything needed for new Ukrainian-dubbed episodes to show up in Plex on their own — and nothing gets deleted without your “yes”.</p>
+    <div class="features">
+      <article class="card">
+        <h3>🔎 Search &amp; selection</h3>
+        <ul>
+          <li><strong>Toloka</strong> built in; other trackers from the Cardigann definition catalog (the format used by Prowlarr/Jackett), e.g. Mazepa.</li>
+          <li>Quality rules: minimum resolution, preferred and rejected sources, required Ukrainian audio.</li>
+          <li>Tracker priority, “follow from season N”, exact vs. possible title matches.</li>
+          <li>Schedule: every N hours or at set times.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>💬 Telegram &amp; push</h3>
+        <ul>
+          <li>Messages with <strong>Download</strong>, <strong>Ignore</strong> and <strong>⭐ Follow</strong> buttons (new episodes of a followed release download automatically).</li>
+          <li><code>/watchlist</code> (title card, seasons, “download season”), <code>/check</code>, <code>/status</code> commands.</li>
+          <li>Web Push to phone and desktop; an event × channel matrix on the Notifications page.</li>
+          <li>Season premieres, problems, low disk space.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>⬇️ Downloads</h3>
+        <ul>
+          <li>Download Station, qBittorrent or Transmission.</li>
+          <li>A separate folder per title with a Plex hint (<code>{tmdb-…}</code>).</li>
+          <li>Free space check before every download.</li>
+          <li><strong>Stalled downloads</strong>: Vartovyi notices when progress stops and offers a replacement.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>🎬 Plex</h3>
+        <ul>
+          <li>Season grid: what’s in Plex, watched, downloading or waiting for a decision.</li>
+          <li>“Fix in Plex” when Plex matched the files to the wrong title.</li>
+          <li>Offers to delete fully watched seasons — only after you confirm.</li>
+          <li>No Plex Pass required.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>🖥 Web UI</h3>
+        <ul>
+          <li><strong>Home</strong>: ready to watch, downloads, pending decisions, release calendar.</li>
+          <li><strong>Media</strong> with filters, title pages with history, <strong>Discover</strong> powered by TMDB with tracker availability badges.</li>
+          <li><strong>Status</strong> of every integration, <strong>Trackers</strong>, an <strong>error journal</strong>, a built-in <strong>guide</strong>.</li>
+          <li>Installable on the iPhone home screen.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>🔐 Setup &amp; access</h3>
+        <ul>
+          <li>A browser wizard that validates every step — no hand-editing of <code>.env</code>.</li>
+          <li>Login modes: password only from outside (default), always, or off.</li>
+          <li>Automatic database backup before schema upgrades.</li>
+          <li>Images for amd64 and arm64.</li>
+        </ul>
+      </article>
+    </div>
+    <p class="note">The interface, Telegram messages and the full guide are in English and Ukrainian.</p>
+  </div>
+</section>
+
+<section id="screens" class="alt" aria-labelledby="screens-title">
+  <div class="wrap">
+    <h2 id="screens-title">Screenshots</h2>
+    <p class="section-lead">Taken with demo data: titles and posters are made up.</p>
+    <div class="shots">
+      <figure>
+        <img src="../assets/img/media.webp" width="1600" height="1000" loading="lazy" alt="Media page: title cards with states such as downloading, waiting for a decision, in Plex">
+        <figcaption>Media — your whole watchlist with the state of each title.</figcaption>
+      </figure>
+      <figure class="phone-fig">
+        <img src="../assets/img/phone-dash.webp" width="780" height="1688" loading="lazy" alt="Home page on a phone with bottom tabs: Home, Media, Discover, Status">
+        <figcaption>On iPhone it runs like an app from the home screen.</figcaption>
+      </figure>
+      <figure>
+        <img src="../assets/img/item.webp" width="1600" height="1000" loading="lazy" alt="Show page: episode grid per season, last check and history">
+        <figcaption>Title page — seasons, releases, history, “Search now”.</figcaption>
+      </figure>
+      <figure>
+        <img src="../assets/img/notif.webp" width="1600" height="1000" loading="lazy" alt="Notifications page: Telegram and Push toggles for each event">
+        <figcaption>Notifications — what goes where.</figcaption>
+      </figure>
+      <figure>
+        <img src="../assets/img/dash.webp" width="1600" height="1000" loading="lazy" alt="Home page on desktop: ready to watch, downloading now, release calendar">
+        <figcaption>Home — your daily overview on one screen.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="requirements" aria-labelledby="req-title">
+  <div class="wrap">
+    <h2 id="req-title">What you need</h2>
+    <ul class="req">
+      <li><strong>Docker</strong><span>Synology DSM 7.2+ with Container Manager, any 64-bit Linux server with Docker Compose, or a Raspberry Pi 3/4/5 with a 64-bit OS.</span></li>
+      <li><strong>Plex</strong><span>Plex Media Server and your account token. No Plex Pass needed.</span></li>
+      <li><strong>Toloka account</strong><span>Username and password (or browser cookies). Other trackers are optional.</span></li>
+      <li><strong>Telegram bot</strong><span>Takes a minute with @BotFather; plus your chat id.</span></li>
+      <li><strong>Torrent client</strong><span>Download Station, qBittorrent or Transmission, saving into folders Plex scans.</span></li>
+      <li><strong>TMDB key <span class="tag">optional</span></strong><span>For Discover and the release calendar. Free.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="platforms" class="alt" aria-labelledby="platforms-title">
+  <div class="wrap">
+    <h2 id="platforms-title">Where it runs</h2>
+    <p class="section-lead">One image for amd64 and arm64. The guide opens right on the platform you pick.</p>
+    <div class="features">
+      <article class="card">
+        <h3>🗄 Synology NAS</h3>
+        <ul>
+          <li>DSM 7.2+ with the <strong>Container Manager</strong> package — no separate Docker install.</li>
+          <li>Download Station, qBittorrent or Transmission.</li>
+          <li>HTTPS through the built-in DSM reverse proxy.</li>
+        </ul>
+        <p><a href="guide/?platform=synology">Guide for Synology →</a></p>
+      </article>
+      <article class="card">
+        <h3>🐧 Docker on Linux</h3>
+        <ul>
+          <li>Any 64-bit server with Docker Compose: a mini PC, a home server, a NAS without DSM.</li>
+          <li>One <code>compose.linux.yml</code>: Vartovyi, qBittorrent and automatic updates.</li>
+          <li>HTTPS with Caddy or Tailscale.</li>
+        </ul>
+        <p><a href="guide/?platform=linux">Guide for Linux →</a></p>
+      </article>
+      <article class="card">
+        <h3>🍓 Raspberry Pi</h3>
+        <ul>
+          <li>Pi 3, 4 or 5 with the <strong>64-bit</strong> Raspberry Pi OS.</li>
+          <li>The Vartovyi folder and the media on a USB SSD, not on the SD card.</li>
+          <li>The same <code>compose.linux.yml</code> as for Linux.</li>
+        </ul>
+        <p><a href="guide/?platform=pi">Guide for Raspberry Pi →</a></p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="install" aria-labelledby="install-title">
+  <div class="wrap">
+    <h2 id="install-title">Quick install</h2>
+    <p class="section-lead">The short version for people comfortable with Docker. The step-by-step guide for Synology, Linux and Raspberry Pi with checks is in the <a href="guide/">full guide</a>; the same guide is built into the running service at <code>/guide</code>.</p>
+    <ol class="steps">
+      <li>
+        <h3>Create the folders</h3>
+        <p>Two folders for data and settings, writable by uid 1000 (the container user). On Synology, inside the <code>docker</code> shared folder (on Linux, any folder, for example <code>~/vartovyi</code>):</p>
+<pre><code>mkdir -p /volume1/docker/vartovyi/data /volume1/docker/vartovyi/config
+sudo chown -R 1000:1000 /volume1/docker/vartovyi/data /volume1/docker/vartovyi/config</code></pre>
+        <p>No SSH? Uncomment <code>user: "0:0"</code> in the compose file instead — simpler, but less isolated.</p>
+      </li>
+      <li>
+        <h3>Add <code>docker-compose.yml</code></h3>
+        <p>In Container Manager: <strong>Project → Create</strong>, path <code>docker/vartovyi</code>, “Create docker-compose.yml”. On another host, put the file in any folder and adjust the volume paths. For Linux and Raspberry Pi there is a ready <a href="https://raw.githubusercontent.com/SorochanRoman/vartovyi-install/HEAD/compose.linux.yml">compose.linux.yml</a> with qBittorrent and Watchtower — save it as <code>compose.yml</code> in the project folder, then the commands below need no <code>-f</code>:</p>
+<pre><code>mkdir -p ~/vartovyi &amp;&amp; cd ~/vartovyi
+curl -fsSL https://raw.githubusercontent.com/SorochanRoman/vartovyi-install/HEAD/compose.linux.yml -o compose.yml</code></pre>
+        <p>The Synology file:</p>
+<pre><code>services:
+  vartovyi:
+    image: ghcr.io/sorochanroman/vartovyi:latest
+    pull_policy: always
+    container_name: vartovyi
+    restart: unless-stopped
+    # user: "0:0"   <span class="c"># if you didn't change the folder owner</span>
+    environment:
+      - TZ=Europe/Kyiv
+    ports:
+      - "8080:8080"   <span class="c"># left number is the host port</span>
+    volumes:
+      - /volume1/docker/vartovyi/data:/data
+      - /volume1/docker/vartovyi/config:/config</code></pre>
+      </li>
+      <li>
+        <h3>Start it</h3>
+        <p>In Container Manager click <strong>Next → Done</strong>; in a terminal run <code>docker compose up -d</code>. The container log shows a one-time setup code (<code>Password setup code: 1234-5678</code>) — you’ll need it in the wizard’s Password step.</p>
+      </li>
+      <li>
+        <h3>Run the wizard</h3>
+        <p>Open <code>http://&lt;IP&gt;:8080/setup</code>. Every step has a <strong>Check</strong> button:</p>
+        <ul>
+          <li><strong>Platform</strong> — Synology, Linux or Raspberry Pi (sets the defaults);</li>
+          <li><strong>Password</strong> for the web UI (using the code from the log);</li>
+          <li><strong>Plex</strong> — token and server address <code>http://&lt;IP&gt;:32400</code>;</li>
+          <li><strong>Toloka</strong> — username and password, or cookies;</li>
+          <li><strong>Telegram</strong> — bot token and chat id (press Start in the bot first);</li>
+          <li><strong>Torrent client</strong> with folders for shows and movies, and <strong>free space</strong>;</li>
+          <li><strong>Quality rules</strong> and schedule → <strong>Save and start</strong>.</li>
+        </ul>
+        <p>The container restarts in normal mode and opens the Home page. On the Status page, every card should be green.</p>
+      </li>
+    </ol>
+    <p class="note">Never expose port 8080 to the internet. For remote access and push notifications, use HTTPS through a reverse proxy (DSM has one built in; on Linux, Caddy or Tailscale) — the guide explains how.</p>
+  </div>
+</section>
+
+<section id="update" class="alt" aria-labelledby="update-title">
+  <div class="wrap two">
+    <div>
+      <h2 id="update-title">Updating</h2>
+      <p>New versions are published to GHCR as <code>latest</code> and as a version tag.</p>
+<pre><code>docker compose pull
+docker compose up -d</code></pre>
+      <p>In Container Manager: <strong>Project → vartovyi → Action → Build</strong> (with <code>pull_policy: always</code> it pulls a fresh image). The <code>data</code> and <code>config</code> folders are untouched, database migrations run on start, and Vartovyi backs up the database to <code>data/backups</code> before a schema change.</p>
+      <p><strong>Automatically:</strong> add a Watchtower service — see the example in <a href="https://github.com/SorochanRoman/vartovyi-install/blob/HEAD/docker-compose.yml">docker-compose.yml</a>; <code>compose.linux.yml</code> already has it. It only updates containers labelled for Vartovyi and leaves the rest alone.</p>
+    </div>
+    <div id="privacy">
+      <h2>Privacy &amp; security</h2>
+      <ul>
+        <li><strong>Self-hosted.</strong> It runs on your NAS or server; the database, settings and tokens stay there. No analytics, no Vartovyi cloud account.</li>
+        <li><strong>Outbound requests</strong> go only to services you configure: Plex, trackers, Telegram, TMDB, browser push services, plus GitHub for the tracker definition catalog.</li>
+        <li><strong>Login.</strong> No password at home, password required from outside (over HTTPS); you can require it always or turn it off. Sessions and “sign out everywhere” live on the Status page.</li>
+        <li><strong>Secrets</strong> are never shown in the UI or written to logs; <code>settings.json</code> is stored with 0600 permissions.</li>
+        <li><strong>Nothing is deleted</strong> without confirmation.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="faq" aria-labelledby="faq-title">
+  <div class="wrap">
+    <h2 id="faq-title">FAQ</h2>
+    <details>
+      <summary>Is it free?</summary>
+      <p>Yes. Vartovyi is open source and runs on your own hardware. It is released under the MIT license.</p>
+    </details>
+    <details>
+      <summary>Do I need a Synology?</summary>
+      <p>No. The guide covers Synology NAS, Docker on Linux and Raspberry Pi with a 64-bit OS; the image is plain Docker for amd64 and arm64. On Linux and Raspberry Pi qBittorrent comes included, Transmission works too.</p>
+    </details>
+    <details>
+      <summary>Does it download things on its own?</summary>
+      <p>Not by default: you get a message for every release found and decide yourself. Only new episodes of a release you marked “⭐ Follow” are downloaded automatically.</p>
+    </details>
+    <details>
+      <summary>Which trackers are supported?</summary>
+      <p>Toloka is built in. Others can be added on the Trackers page from the Prowlarr/Indexers definition catalog (Cardigann format), e.g. Mazepa. Not every feature of the format is supported — Vartovyi marks unsupported definitions and explains why.</p>
+    </details>
+    <details>
+      <summary>Can I use it away from home?</summary>
+      <p>Telegram and push work anywhere. The website is available on your home network, or through an HTTPS reverse proxy with a password; never expose port 8080 directly.</p>
+    </details>
+    <details>
+      <summary>Responsible use</summary>
+      <p>Vartovyi does not host or distribute any content and is not affiliated with any tracker. It is an automation tool: it only searches sites you configure yourself and passes links to your own torrent client. You are responsible for what you download — follow the laws of your country, copyright, and the rules of the trackers you use.</p>
+    </details>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>Vartovyi · <a href="https://github.com/SorochanRoman/vartovyi-install/blob/HEAD/LICENSE">MIT license</a></p>
+    <nav aria-label="Links">
+      <a href="https://github.com/SorochanRoman/vartovyi-install">GitHub</a>
+      <a href="guide/">Guide</a>
+      <a href="https://github.com/SorochanRoman/vartovyi-install/issues">Report an issue</a>
+      <a href="../" hreflang="uk" lang="uk">Українською</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>

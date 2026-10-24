@@ -1,0 +1,55 @@
+# Vartovyi on Docker for Linux (mini PC, server, Raspberry Pi with a 64-bit OS).
+# Save as compose.yml next to a .env (optional) and run: docker compose up -d
+# Guide: http://<server IP>:8080/guide
+# Media folder: /srv/media by default; another one — put MEDIA_DIR=/path/to/media into a .env file next to this file.
+services:
+  vartovyi:
+    image: ghcr.io/sorochanroman/vartovyi:latest
+    pull_policy: always
+    container_name: vartovyi
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ:-Europe/Kyiv}
+    labels:
+      # automatic updates (watchtower below) apply only to containers with this label
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+      - ./config:/config
+      # read-only, only to count free space; the same path as on the host, so Plex paths match
+      - ${MEDIA_DIR:-/srv/media}:${MEDIA_DIR:-/srv/media}:ro
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ:-Europe/Kyiv}
+      - WEBUI_PORT=8090
+      # group-writable files: a Plex on the host in the same group (1000) can delete watched episodes
+      - UMASK=002
+    ports:
+      # web interface; first sign-in: user admin, temporary password in `docker logs qbittorrent`
+      - "8090:8090"
+      - "6881:6881"
+      - "6881:6881/udp"
+    volumes:
+      - ./qbittorrent:/config
+      - ${MEDIA_DIR:-/srv/media}:${MEDIA_DIR:-/srv/media}
+
+  # Every night at 04:00 checks for a new vartovyi:latest image and restarts the container.
+  watchtower:
+    image: nickfedor/watchtower:latest
+    container_name: vartovyi-watchtower
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ:-Europe/Kyiv}
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_SCHEDULE=0 0 4 * * *
+      - WATCHTOWER_CLEANUP=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

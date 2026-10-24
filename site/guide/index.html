@@ -1,0 +1,1442 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f5f8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1015" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<title>Vartovyi · Інструкція</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f4f5f8; --surface: #ffffff; --surface-2: #eef0f4; --text: #151821; --muted: #626b7c; --faint: #98a1b0;
+    --line: #e3e6ec; --accent: #3461e6; --accent-soft: rgba(52, 97, 230, .10);
+    --ok: #15924a; --ok-soft: rgba(21, 146, 74, .12); --bad: #d42f2f; --bad-soft: rgba(212, 47, 47, .10);
+    --warn: #c47508; --warn-soft: rgba(215, 130, 10, .13); --info: #2563eb; --info-soft: rgba(37, 99, 235, .12);
+    --teal: #0c8f84; --teal-soft: rgba(12, 143, 132, .14);
+    --shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 1px 3px rgba(16, 24, 40, .07);
+    --shadow-lg: 0 14px 30px -8px rgba(16, 24, 40, .22), 0 4px 10px -4px rgba(16, 24, 40, .10);
+    --radius: 14px; --radius-sm: 10px; --top: 56px; --tabbar: 58px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1015; --surface: #171a21; --surface-2: #20242d; --text: #e8ebf1; --muted: #9ba3b3; --faint: #6c7483;
+      --line: #2a2f3a; --accent: #87a4ff; --accent-soft: rgba(135, 164, 255, .14);
+      --ok: #3fd08a; --ok-soft: rgba(63, 208, 138, .14); --bad: #ff7a7a; --bad-soft: rgba(255, 122, 122, .14);
+      --warn: #f5b93e; --warn-soft: rgba(245, 185, 62, .14); --info: #6aa8ff; --info-soft: rgba(106, 168, 255, .16);
+      --teal: #36d3c1; --teal-soft: rgba(54, 211, 193, .15);
+      --shadow: 0 1px 2px rgba(0, 0, 0, .45); --shadow-lg: 0 16px 34px -10px rgba(0, 0, 0, .7), 0 4px 10px -4px rgba(0, 0, 0, .5);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  button, input, select { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left)); }
+  .muted { color: var(--muted); }
+  .topbar { position: sticky; top: 0; z-index: 30; background: var(--bg); background: color-mix(in srgb, var(--bg) 84%, transparent); -webkit-backdrop-filter: saturate(1.5) blur(14px); backdrop-filter: saturate(1.5) blur(14px); border-bottom: 1px solid var(--line); }
+  .topbar .wrap { display: flex; align-items: center; gap: 12px; height: var(--top); }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 17px; letter-spacing: -.01em; text-decoration: none; flex: none; }
+  .brand svg { color: var(--accent); flex: none; }
+  .nav { display: flex; gap: 2px; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav a { text-decoration: none; color: var(--muted); font-size: 14px; padding: 6px 12px; border-radius: 999px; white-space: nowrap; transition: background .15s, color .15s; }
+  .nav a:hover { color: var(--text); background: var(--surface-2); }
+  .nav a[aria-current="page"] { color: var(--text); background: var(--surface); box-shadow: var(--shadow); font-weight: 600; }
+  @media (max-width: 480px) { .brand span { display: none; } .nav a { padding: 6px 10px; font-size: 13.5px; } }
+  .logout { flex: none; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 13.5px; padding: 5px 12px; min-height: 34px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+  .logout:hover { color: var(--text); background: var(--surface-2); }
+  .logout:disabled { opacity: .55; cursor: default; }
+  .pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 600; line-height: 1.2; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+  .st-error { color: var(--bad); background: var(--bad-soft); }
+  .st-found { color: var(--ok); background: var(--ok-soft); }
+  .st-have, .st-downloading { color: var(--ok); background: var(--ok-soft); }
+  .st-rejected, .st-none, .st-unchecked { color: var(--muted); background: var(--surface-2); }
+  /* Постер проявляється, коли завантажився (без «миготіння» заглушки); уже бачені за сесію — одразу. */
+  .pimg { opacity: 0; transition: opacity .18s ease; }
+  .pimg.ok { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { .pimg { transition: none; } }
+  .ph { position: absolute; inset: 0; display: grid; place-items: center; color: rgba(255, 255, 255, .92); font-weight: 700; letter-spacing: .02em; text-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
+  .bar { height: 4px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--info); border-radius: inherit; transition: width .4s; }
+  .empty { text-align: center; padding: 56px 16px; color: var(--muted); }
+  .empty b { display: block; color: var(--text); font-size: 17px; margin-bottom: 4px; }
+  .topbar { padding-top: env(safe-area-inset-top); }
+  .tabbar { display: none; }
+  @media (max-width: 700px) {
+    .topbar .nav { display: none; }
+    .topbar .logout { margin-left: auto; }
+    .tabbar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; padding: 6px max(8px, env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-right)); background: var(--bg); background: color-mix(in srgb, var(--surface) 88%, transparent); -webkit-backdrop-filter: saturate(1.5) blur(18px); backdrop-filter: saturate(1.5) blur(18px); border-top: 1px solid var(--line); }
+    .tabbar a { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 46px; justify-content: center; text-decoration: none; color: var(--faint); font-size: 11px; font-weight: 600; -webkit-tap-highlight-color: transparent; }
+    .tabbar a[aria-current="page"] { color: var(--accent); }
+    body { padding-bottom: calc(var(--tabbar) + env(safe-area-inset-bottom)); }
+  }
+  #ptr { position: fixed; left: 50%; top: calc(var(--top) + env(safe-area-inset-top)); z-index: 37; width: 36px; height: 36px; margin: 8px 0 0 -18px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); color: var(--accent); box-shadow: var(--shadow); font-size: 18px; font-weight: 700; opacity: 0; transform: translateY(-56px); pointer-events: none; transition: transform .2s, opacity .2s; }
+  #ptr.pulling { transition: none; }
+  #ptr .arrow { transition: transform .15s; }
+  #ptr.ready .arrow { transform: rotate(180deg); }
+  #ptr.busy .arrow { display: none; }
+  #ptr.busy::after { content: ""; width: 18px; height: 18px; box-sizing: border-box; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: ptr-spin .7s linear infinite; }
+  @keyframes ptr-spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { #ptr, #ptr .arrow { transition: none; } #ptr.busy::after { animation-duration: 2s; } }
+  #offline { position: fixed; left: 0; right: 0; top: calc(var(--top) + env(safe-area-inset-top)); z-index: 36; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px max(16px, env(safe-area-inset-right)) 10px max(16px, env(safe-area-inset-left)); background: var(--surface); background: linear-gradient(var(--bad-soft), var(--bad-soft)), var(--surface); color: var(--text); border-bottom: 1px solid var(--bad); box-shadow: var(--shadow); font-size: 14px; line-height: 1.4; }
+  #offline .msg { flex: 1 1 220px; }
+  #offline button { flex: none; min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--bad); background: var(--surface); color: var(--bad); font-weight: 600; cursor: pointer; }
+
+  .langsw { flex: none; display: inline-flex; align-items: center; gap: 2px; font-size: 12.5px; font-weight: 600; color: var(--faint, #98a1b0); }
+  .langsw a { text-decoration: none; color: var(--muted, #626b7c); padding: 4px 6px; min-height: 30px; display: inline-flex; align-items: center; border-radius: 6px; }
+  .langsw a:hover { color: var(--text, inherit); }
+  .langsw a[aria-current="true"] { color: var(--text, inherit); text-decoration: underline; text-underline-offset: 3px; }
+  @media (max-width: 700px) { .topbar .langsw { margin-left: auto; } .topbar .langsw + .logout { margin-left: 0; } }
+
+
+  @supports (-webkit-touch-callout: none) { input, select, textarea { font-size: 16px !important; } }
+
+  :root { --code-bg: #1b2130; --code-ink: #e6ebf1; --code-dim: #8d9bb0; --code-var: #ffc46b; --jump: 56px; }
+  @media (prefers-color-scheme: dark) { :root { --code-bg: #0a0c11; --code-ink: #dfe5ee; } }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  .gpage { padding-block: 20px 56px; }
+  .gpage a { color: var(--accent); text-underline-offset: 2px; }
+  .ghead { display: grid; gap: 8px; margin-bottom: 24px; max-width: 76ch; }
+  .eyebrow { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .ghead h1 { margin: 0; font-size: clamp(24px, 4vw, 32px); line-height: 1.15; letter-spacing: -.02em; text-wrap: balance; }
+  .lede { margin: 0; color: var(--muted); }
+  .pswitch { display: inline-flex; gap: 4px; padding: 4px; border-radius: var(--radius-sm); background: var(--surface-2); margin-bottom: 20px; flex-wrap: wrap; }
+  .pswitch button { border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 14px; padding: 6px 12px; border-radius: 8px; cursor: pointer; min-height: 36px; }
+  .pswitch button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow); font-weight: 600; }
+  body[data-platform="synology"] [data-platform]:not([data-platform~="synology"]),
+  body[data-platform="linux"] [data-platform]:not([data-platform~="linux"]),
+  body[data-platform="pi"] [data-platform]:not([data-platform~="pi"]) { display: none !important; }
+
+  .layout { display: grid; grid-template-columns: 236px minmax(0, 1fr); gap: 40px; align-items: start; }
+  .side { position: sticky; top: calc(var(--top) + env(safe-area-inset-top) + 16px); max-height: calc(100vh - var(--top) - env(safe-area-inset-top) - 32px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding: 2px 4px 8px 2px; }
+  nav.steps { display: grid; gap: 2px; }
+  nav.steps .grp { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); padding: 16px 10px 6px; }
+  nav.steps .grp:first-child { padding-top: 0; }
+  nav.steps a { display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 5px 10px; border-radius: var(--radius-sm); color: var(--muted); text-decoration: none; font-size: 14px; line-height: 1.3; }
+  nav.steps a:hover { background: var(--surface-2); color: var(--text); }
+  nav.steps a[aria-current="step"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow); font-weight: 600; }
+  .n { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 11.5px; font-weight: 700; font-variant-numeric: tabular-nums; border: 1.5px solid var(--line); color: var(--muted); background: var(--surface); }
+  .n.ref span { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .55; }
+  a[aria-current="step"] .n { border-color: var(--accent); color: var(--accent); }
+  a.done .n { background: var(--ok); border-color: var(--ok); color: #fff; }
+  a.done .n span { display: none; }
+  a.done .n::after { content: "✓"; font-size: 12px; }
+
+  .jump { display: none; }
+  .gmain { min-width: 0; display: grid; gap: 48px; }
+  .gmain > *, section > * { min-width: 0; }
+  section { display: grid; gap: 12px; scroll-margin-top: calc(var(--top) + env(safe-area-inset-top) + 16px); }
+  h2 { display: flex; align-items: center; gap: 12px; margin: 0; font-size: clamp(21px, 3vw, 25px); line-height: 1.2; letter-spacing: -.015em; text-wrap: balance; }
+  h2 .k { flex: none; min-width: 34px; height: 34px; padding: 0 8px; border-radius: 10px; display: inline-grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-size: 16px; font-weight: 800; letter-spacing: 0; font-variant-numeric: tabular-nums; }
+  h3 { margin: 14px 0 0; font-size: 17px; line-height: 1.3; scroll-margin-top: calc(var(--top) + env(safe-area-inset-top) + 16px); }
+  .stephead { display: grid; gap: 6px; }
+  .lead { color: var(--muted); }
+  p, li { max-width: 74ch; overflow-wrap: break-word; }
+  p { margin: 0; }
+  ol, ul { margin: 0; padding-left: 1.35em; display: grid; gap: 6px; }
+  li > ul, li > ol { margin-top: 6px; }
+  b { font-weight: 650; }
+  code { font: .87em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--surface-2); padding: .1em .35em; border-radius: 5px; overflow-wrap: anywhere; }
+  .menu { font-weight: 600; background: var(--accent-soft); padding: .05em .4em; border-radius: 5px; overflow-wrap: anywhere; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  .share-ico { display: inline-block; vertical-align: -3px; color: var(--accent); }
+
+  .pre { position: relative; background: var(--code-bg); color: var(--code-ink); border-radius: var(--radius-sm); border: 1px solid var(--line); }
+  .pre pre { margin: 0; padding: 14px 16px; overflow-x: auto; font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; -webkit-overflow-scrolling: touch; }
+  .pre .copy + pre { padding-top: 42px; }
+  .pre .c { color: var(--code-dim); }
+  .copy { position: absolute; top: 8px; right: 8px; z-index: 1; font-size: 12px; font-weight: 600; min-height: 28px; background: rgba(255, 255, 255, .1); color: var(--code-ink); border: 1px solid rgba(255, 255, 255, .16); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+  .copy:hover { background: rgba(255, 255, 255, .18); }
+
+  .note { border-left: 3px solid var(--accent); background: var(--surface); box-shadow: var(--shadow); padding: 12px 14px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; max-width: 78ch; }
+  .note.warn { border-left-color: var(--warn); background: var(--warn-soft); box-shadow: none; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 18px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .card > *, .check > *, .vars > * { min-width: 0; }
+  .card .big { font-size: 18px; font-weight: 700; line-height: 1.3; }
+  .variants { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 12px; }
+  .variant { align-content: start; }
+  .variant .tag { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+
+  .tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; overflow-wrap: break-word; }
+  tbody tr:last-child td { border-bottom: 0; }
+  th { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); background: var(--surface-2); }
+  .tag-ok, .tag-no { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-right: 4px; }
+  .tag-ok { background: var(--ok-soft); color: var(--ok); }
+  .tag-no { background: var(--bad-soft); color: var(--bad); }
+
+  .vars { display: grid; gap: 12px; }
+  .vars .h { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; justify-content: space-between; }
+  .vars .h b { font-size: 16px; }
+  .vars .h span { color: var(--muted); font-size: 13.5px; }
+  .vgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 140px), 1fr)); gap: 10px 14px; }
+  .vgrid label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); min-width: 0; }
+  .vgrid input { width: 100%; min-width: 0; min-height: 40px; font: 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--text); }
+  .v { color: var(--accent); font-weight: 600; }
+  .v.unset { background: var(--warn-soft); color: var(--warn); border-radius: 3px; padding: 0 .2em; }
+  .pre .v { color: var(--code-var); font-weight: 400; }
+  .pre .v.unset { background: #4a2a22; color: #ffb4a3; }
+  .progress { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; font-size: 13.5px; color: var(--muted); }
+  .gbar { flex: 1 1 160px; max-width: 360px; height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+  .gbar i { display: block; height: 100%; width: 0; background: var(--ok); border-radius: inherit; transition: width .25s; }
+  .reset { border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 13px; padding: 5px 12px; min-height: 34px; border-radius: 999px; cursor: pointer; }
+  .reset:hover { color: var(--text); background: var(--surface-2); }
+
+  .check { background: var(--ok-soft); border: 1px solid color-mix(in srgb, var(--ok) 30%, transparent); border-radius: var(--radius-sm); padding: 12px 14px; display: grid; gap: 4px; }
+  .check .t { font-weight: 700; color: var(--ok); margin-bottom: 2px; }
+  .check label { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; cursor: pointer; padding: 4px 0; max-width: 74ch; }
+  .check label > span { overflow-wrap: break-word; }
+  .check input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--ok); }
+  .check label:has(input:checked) > span { color: var(--muted); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--muted) 60%, transparent); }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .side { display: none; }
+    .jump { display: flex; align-items: center; gap: 10px; position: sticky; top: calc(var(--top) + env(safe-area-inset-top)); z-index: 20; min-height: var(--jump); padding: 8px 0; margin-bottom: 16px; background: var(--bg); background: color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter: saturate(1.5) blur(14px); backdrop-filter: saturate(1.5) blur(14px); }
+    .jump label { flex: none; font-size: 13px; font-weight: 600; color: var(--muted); }
+    .jump select { flex: 1; min-width: 0; min-height: 40px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--text); font-size: 15px; box-shadow: var(--shadow); }
+    section, h3 { scroll-margin-top: calc(var(--top) + env(safe-area-inset-top) + var(--jump) + 12px); }
+    .gmain { gap: 40px; }
+  }
+  @media (max-width: 640px) {
+    .tbl { overflow: visible; }
+    .tbl thead { display: none; }
+    .tbl tr { display: block; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    .tbl tbody tr:last-child { border-bottom: 0; }
+    .tbl td { display: block; padding: 2px 0; border: 0; }
+    .tbl td:first-child { font-weight: 600; }
+    .tbl td[data-l]::before { content: attr(data-l) " · "; color: var(--muted); font-size: 12.5px; font-weight: 600; }
+    .card { padding: 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .gbar i { transition: none; } }
+  @media print {
+    .topbar, .sitebar, .tabbar, .side, .jump, .copy, .reset, .vgrid, #ptr, #offline { display: none !important; }
+    body { background: #fff; color: #000; padding: 0; }
+    .layout { display: block; }
+    .gmain { display: block; }
+    section { margin-bottom: 28px; }
+    .card, .note, .check, .tbl { box-shadow: none; }
+    .pre { background: #f5f5f5; color: #000; border-color: #ccc; }
+    .pre .c, .pre .v { color: #444; }
+    .pre pre { white-space: pre-wrap; overflow: visible; padding-top: 12px !important; }
+    h2, h3 { break-after: avoid; }
+    .check, tr { break-inside: avoid; }
+  }
+
+  .sitebar { position: sticky; top: 0; z-index: 30; padding-top: env(safe-area-inset-top); background: var(--bg); background: color-mix(in srgb, var(--bg) 84%, transparent); -webkit-backdrop-filter: saturate(1.5) blur(14px); backdrop-filter: saturate(1.5) blur(14px); border-bottom: 1px solid var(--line); }
+  .sitebar .wrap { display: flex; justify-content: space-between; align-items: center; min-height: 56px; }
+  .sitebar .langsw { display: inline-flex; align-items: center; min-height: 36px; padding: 6px 10px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; }
+  .sitebar .langsw:hover { color: var(--text); background: var(--surface-2); }
+  @media (max-width: 480px) { .sitebar .brand span { display: inline; } }
+  @media (max-width: 700px) { body { padding-bottom: env(safe-area-inset-bottom); } }
+</style>
+</head>
+<body data-platform="synology">
+<header class="sitebar"><div class="wrap"><a class="brand" href="../"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2.5 4 5.6v6.1c0 4.9 3.4 8.6 8 9.8 4.6-1.2 8-4.9 8-9.8V5.6L12 2.5Z" fill="currentColor" opacity=".16"/><path d="M12 2.5 4 5.6v6.1c0 4.9 3.4 8.6 8 9.8 4.6-1.2 8-4.9 8-9.8V5.6L12 2.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.2 12.3a4.4 4.4 0 0 1 7.6 0 4.4 4.4 0 0 1-7.6 0Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12.3" r="1.4" fill="currentColor"/></svg><span>Vartovyi</span></a><a class="langsw" href="../en/guide/" hreflang="en" lang="en">EN</a></div></header>
+<div class="wrap gpage">
+  <header class="ghead">
+    <div class="eyebrow"><span data-platform="synology">Інструкція · Synology DSM 7.2+</span><span data-platform="linux pi">Інструкція · Docker на Linux і Raspberry Pi</span></div>
+    <h1><span data-platform="synology">Встановлення Vartovyi на Synology NAS</span><span data-platform="linux pi">Встановлення Vartovyi</span></h1>
+    <p class="lede">Кроки 0–8 — перше встановлення: після кожного є перевірка, відмічай пункти і не йди далі, поки всі не відмічені (відмітки зберігаються в цьому браузері). Кроки 9–13 — оновлення, iPhone, підбірки, інші трекери і push; наприкінці — довідка.</p>
+    <p class="lede" data-platform="synology">Якщо ти читаєш це на самому NAS, контейнер уже працює (кроки 0–6 позаду) — переходь до кроку 7, майстра налаштування (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/setup</code>).</p>
+    <p class="lede" data-platform="linux pi">Якщо ти читаєш це в самому Vartovyi, контейнери вже працюють (кроки 0–6 позаду) — переходь до кроку 7, майстра налаштування (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/setup</code>).</p>
+  </header>
+
+  <div class="pswitch" role="group" aria-label="Платформа"><button type="button" data-set-platform="synology" aria-pressed="true">Synology</button><button type="button" data-set-platform="linux" aria-pressed="false">Linux</button><button type="button" data-set-platform="pi" aria-pressed="false">Raspberry Pi</button></div>
+
+  <div class="jump"><label for="jump">Крок</label><select id="jump" aria-label="Перейти до кроку"><optgroup label="Встановлення"><option value="s0" data-t-synology="0. NAS і пакети" data-t-linux="0. Підготовка">0. NAS і пакети</option><option value="s1" data-t-synology="1. Plex" data-t-linux="1. Plex">1. Plex</option><option value="s2" data-t-synology="2. Toloka" data-t-linux="2. Toloka">2. Toloka</option><option value="s3" data-t-synology="3. Telegram" data-t-linux="3. Telegram">3. Telegram</option><option value="s4" data-t-synology="4. Торент-клієнт" data-t-linux="4. Торент-клієнт">4. Торент-клієнт</option><option value="s5" data-t-synology="5. Папки на NAS" data-t-linux="5. Папки">5. Папки на NAS</option><option value="s6" data-t-synology="6. Container Manager" data-t-linux="6. Запуск контейнерів">6. Container Manager</option><option value="s7" data-t-synology="7. Майстер налаштування" data-t-linux="7. Майстер налаштування">7. Майстер налаштування</option><option value="s8" data-t-synology="8. Перевірка роботи" data-t-linux="8. Перевірка роботи">8. Перевірка роботи</option></optgroup><optgroup label="Після встановлення"><option value="s9" data-t-synology="9. Оновлення і зміни" data-t-linux="9. Оновлення і зміни">9. Оновлення і зміни</option><option value="s10" data-t-synology="10. Застосунок на iPhone" data-t-linux="10. Застосунок на iPhone">10. Застосунок на iPhone</option><option value="s11" data-t-synology="11. Підбірки (TMDB)" data-t-linux="11. Підбірки (TMDB)">11. Підбірки (TMDB)</option><option value="trackers" data-t-synology="12. Інші трекери" data-t-linux="12. Інші трекери">12. Інші трекери</option><option value="push" data-t-synology="13. Сповіщення і push" data-t-linux="13. Сповіщення і push">13. Сповіщення і push</option></optgroup><optgroup label="Довідка"><option value="daily" data-t-synology="Щоденна робота" data-t-linux="Щоденна робота">Щоденна робота</option><option value="access" data-t-synology="Доступ і пароль" data-t-linux="Доступ і пароль">Доступ і пароль</option><option value="trouble" data-t-synology="Типові проблеми" data-t-linux="Типові проблеми">Типові проблеми</option><option value="manual" data-t-synology="Без майстра" data-t-linux="Без майстра">Без майстра</option></optgroup></select></div>
+
+  <div class="layout">
+  <aside class="side">
+  <nav class="steps" id="nav" aria-label="Кроки інструкції">
+    <div class="grp">Встановлення</div><a href="#s0" data-step="0"><span class="n"><span>0</span></span><span class="t"><span data-platform="synology">NAS і пакети</span><span data-platform="linux pi">Підготовка</span></span></a><a href="#s1" data-step="1"><span class="n"><span>1</span></span><span class="t">Plex</span></a><a href="#s2" data-step="2"><span class="n"><span>2</span></span><span class="t">Toloka</span></a><a href="#s3" data-step="3"><span class="n"><span>3</span></span><span class="t">Telegram</span></a><a href="#s4" data-step="4"><span class="n"><span>4</span></span><span class="t">Торент-клієнт</span></a><a href="#s5" data-step="5"><span class="n"><span>5</span></span><span class="t"><span data-platform="synology">Папки на NAS</span><span data-platform="linux pi">Папки</span></span></a><a href="#s6" data-step="6"><span class="n"><span>6</span></span><span class="t"><span data-platform="synology">Container Manager</span><span data-platform="linux pi">Запуск контейнерів</span></span></a><a href="#s7" data-step="7"><span class="n"><span>7</span></span><span class="t">Майстер налаштування</span></a><a href="#s8" data-step="8"><span class="n"><span>8</span></span><span class="t">Перевірка роботи</span></a>
+    <div class="grp">Після встановлення</div><a href="#s9"><span class="n"><span>9</span></span><span class="t">Оновлення і зміни</span></a><a href="#s10" data-step="10"><span class="n"><span>10</span></span><span class="t">Застосунок на iPhone</span></a><a href="#s11"><span class="n"><span>11</span></span><span class="t">Підбірки (TMDB)</span></a><a href="#trackers"><span class="n"><span>12</span></span><span class="t">Інші трекери</span></a><a href="#push"><span class="n"><span>13</span></span><span class="t">Сповіщення і push</span></a>
+    <div class="grp">Довідка</div><a href="#daily"><span class="n ref"><span></span></span><span class="t">Щоденна робота</span></a><a href="#access"><span class="n ref"><span></span></span><span class="t">Доступ і пароль</span></a><a href="#trouble"><span class="n ref"><span></span></span><span class="t">Типові проблеми</span></a><a href="#manual"><span class="n ref"><span></span></span><span class="t">Без майстра</span></a>
+  </nav>
+  </aside>
+
+  <main class="gmain">
+    <div class="card vars" id="vars">
+      <div class="h"><b>Твої дані</b><span>Заповни один раз: значення підставляться в команди й адреси нижче і збережуться в цьому браузері. Паролі тут не потрібні.</span></div>
+      <div class="vgrid">
+        <label for="v-ip"><span data-platform="synology">IP-адреса NAS</span><span data-platform="linux pi">IP-адреса сервера</span><input id="v-ip" data-k="ip" placeholder="192.168.1.10" autocomplete="off"></label>
+        <label for="v-port"><span data-platform="synology">Порт Vartovyi на NAS</span><span data-platform="linux pi">Порт Vartovyi</span><input id="v-port" data-k="port" placeholder="8080" inputmode="numeric" autocomplete="off"></label>
+        <label for="v-admin" data-platform="synology">Твій користувач DSM (адмін, для SSH)<input id="v-admin" data-k="admin" placeholder="admin" autocomplete="off"></label>
+        <label for="v-svc" data-platform="synology">Користувач для Download Station<input id="v-svc" data-k="svc" placeholder="vartovyi" autocomplete="off"></label>
+        <label for="v-vol" data-platform="synology">Том зі спільною папкою docker<input id="v-vol" data-k="vol" placeholder="volume1" autocomplete="off"></label>
+        <label for="v-share" data-platform="synology">Спільна папка з відео<input id="v-share" data-k="share" placeholder="video" autocomplete="off"></label>
+        <label for="v-dir" data-platform="linux pi">Тека з compose.linux.yml<input id="v-dir" data-k="dir" placeholder="~/vartovyi" autocomplete="off"></label>
+        <label for="v-media" data-platform="linux pi">Тека з медіа (MEDIA_DIR)<input id="v-media" data-k="media" placeholder="/srv/media" autocomplete="off"></label>
+        <label for="v-shows">Папка для серіалів<input id="v-shows" data-k="shows" placeholder="video/Series" autocomplete="off"></label>
+        <label for="v-movies">Папка для фільмів<input id="v-movies" data-k="movies" placeholder="video/Movies" autocomplete="off"></label>
+      </div>
+      <div class="progress"><div class="gbar"><i id="barFill"></i></div><span id="progressText">0 з 0 перевірок</span><button class="reset" id="reset" type="button">Скинути відмітки</button></div>
+    </div>
+
+    <!-- 0 -->
+    <section id="s0" data-step="0">
+      <div class="stephead"><h2><span class="k">0</span><span data-platform="synology">NAS і пакети</span><span data-platform="linux pi">Підготовка</span></h2>
+      <p class="lead" data-platform="synology">Перевірити, що NAS підходить, і встановити три пакети.</p>
+      <p class="lead" data-platform="linux pi">Linux-машина, що працює постійно, Docker із Compose і IP-адреса сервера.</p></div>
+
+      <div data-platform="synology">
+      <div class="card">
+        <div class="big">Docker окремо ставити не треба.</div>
+        <p>На Synology Docker встановлюється як пакет <b>Container Manager</b> з Центру пакетів. Усередині нього вже є і рушій Docker, і запуск через <code>docker-compose.yml</code> (розділ «Проєкт»). Нічого ставити через SSH не потрібно.</p>
+      </div>
+
+      <div class="tbl"><table>
+        <thead><tr><th>Версія DSM</th><th>Пакет</th><th>Що робити</th></tr></thead>
+        <tbody>
+          <tr><td>7.2 і новіша</td><td data-l="Пакет">Container Manager</td><td data-l="Що робити"><span class="tag-ok">підходить</span> інструкція написана під неї</td></tr>
+          <tr><td>7.0–7.1</td><td data-l="Пакет">Docker</td><td data-l="Що робити"><span class="tag-no">оновити</span> немає розділу «Проєкт»; <span class="menu">Панель керування → Оновлення та відновлення</span></td></tr>
+          <tr><td>6.x</td><td data-l="Пакет">Docker</td><td data-l="Що робити"><span class="tag-no">оновити</span> не підтримується цією інструкцією</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Чи підходить модель</h3>
+      <p>Відкрий <span class="menu">Панель керування → Інформаційний центр → Загальне</span> і подивись рядок «Процесор».</p>
+      <ul>
+        <li><b>Intel або AMD</b> (серії <code>+</code> і <code>xs</code>, наприклад DS220+, DS923+, DS1621+) — підходить.</li>
+        <li><b>ARM</b> (Realtek, наприклад DS223, DS124, DS223j) — Container Manager є не на всіх ARM-моделях. Якщо він є в Центрі пакетів, Vartovyi теж запуститься: образ збирається для <code>amd64</code> і <code>arm64</code>.</li>
+        <li>Якщо Container Manager у Центрі пакетів немає, модель його не підтримує, і Vartovyi на цьому NAS не запуститься.</li>
+      </ul>
+
+      <h3>Встановити пакети</h3>
+      <ol>
+        <li><b>Container Manager.</b> При першому запуску він запропонує створити спільну папку <code>docker</code> — погодься.</li>
+        <li><b>Download Station.</b> Через неї Vartovyi додаватиме торенти. Не потрібна, якщо користуєшся qBittorrent чи Transmission (крок 4).</li>
+        <li><b>Plex Media Server</b>, якщо ще не встановлений. Увійди в ньому у свій акаунт plex.tv.</li>
+      </ol>
+      <p>Знадобиться локальна IP-адреса NAS, далі <code><span class="v" data-v="ip">&lt;NAS_IP&gt;</span></code>, наприклад <code>192.168.1.10</code>. Вона є в <span class="menu">Панель керування → Мережа → Мережевий інтерфейс</span>. Бажано закріпити її в роутері, щоб не змінювалась.</p>
+
+      <div class="check"><div class="t">✅ Перевір</div>
+        <label><input type="checkbox" id="c0a"><span>DSM 7.2 або новіша, процесор підходить.</span></label>
+        <label><input type="checkbox" id="c0b"><span>У головному меню DSM є Container Manager і Download Station (або вже працює qBittorrent чи Transmission).</span></label>
+        <label><input type="checkbox" id="c0c"><span>У File Station є спільна папка <code>docker</code>.</span></label>
+        <label><input type="checkbox" id="c0d"><span>Знаю IP-адресу NAS.</span></label>
+      </div>
+      </div>
+
+      <div data-platform="linux pi">
+      <h3>Що потрібно</h3>
+      <ul>
+        <li><b>64-бітна Linux-машина, що працює постійно</b>: міні-ПК, домашній сервер, NAS без DSM або Raspberry Pi 3, 4 чи 5. Підійде будь-який дистрибутив, де працює Docker: Debian, Ubuntu, Raspberry Pi OS, Fedora та інші.</li>
+        <li><b>Plex Media Server</b> з входом у твій акаунт plex.tv. Plex має бачити ті самі файли, що завантажує Vartovyi: найпростіше — Plex на тій самій машині (встановлений на ній або в Docker з <code><span class="v" data-v="media">/srv/media</span></code>, змонтованою за тим самим шляхом). Plex на іншій машині в тій самій мережі теж підійде: відкрий доступ до <code><span class="v" data-v="media">/srv/media</span></code> через SMB чи NFS і додай цю спільну папку в бібліотеки Plex (крок 4).</li>
+        <li><b>Постійна локальна IP-адреса</b> машини, далі <code><span class="v" data-v="ip">&lt;NAS_IP&gt;</span></code>, наприклад <code>192.168.1.10</code>. Її показує команда <code>hostname -I</code> (перша адреса). Закріпи її в роутері (резервування DHCP), щоб не змінювалась.</li>
+        <li><b>Термінал на машині</b>: клавіатура й екран або SSH з компʼютера: <code>ssh &lt;користувач&gt;@<span class="v" data-v="ip">&lt;NAS_IP&gt;</span></code>. Усі команди нижче виконуються там, від твого звичайного користувача, не від root.</li>
+      </ul>
+
+      <h3>Встановити Docker</h3>
+      <p>Vartovyi працює в Docker із Docker Compose. Спершу перевір, чи вони вже встановлені:</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>docker compose version</pre></div>
+      <p>Якщо команда показує версію (наприклад <code>Docker Compose version v2.29.1</code>), переходь до перевірки. Інакше встанови Docker офіційним скриптом і дозволь своєму користувачу запускати його без <code>sudo</code>. Перший рядок ставить <code>curl</code>, якого може не бути в мінімальних образах; він для Debian, Ubuntu і Raspberry Pi OS (у Fedora: <code>sudo dnf install -y curl</code>):</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>sudo apt update &amp;&amp; sudo apt install -y curl
+curl -fsSL https://get.docker.com | sh
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER</pre></div>
+      <p><b>Вийди з сеансу і зайди знову</b> (або закрий SSH і підключись ще раз), щоб нова група застосувалась, потім знову виконай <code>docker compose version</code>. Якщо пише <code>permission denied</code> про <code>docker.sock</code>, група ще не застосувалась: вийди ще раз або перезавантаж машину (<code>sudo reboot</code>).</p>
+      </div>
+
+      <div data-platform="pi">
+      <h3>Raspberry Pi</h3>
+      <ul>
+        <li><b>Потрібна 64-бітна система.</b> Raspberry Pi OS (64-bit), достатньо версії Lite. Перевір двома командами нижче: перша має показати <code>aarch64</code>, друга — <code>arm64</code>. <code>armv7l</code> чи <code>armhf</code> означає 32-бітну систему (32-бітна Raspberry Pi OS на Pi 4 чи 5 працює з 64-бітним ядром, тож сама <code>uname -m</code> може показати <code>aarch64</code>; <code>dpkg</code> показує саму систему) — на ній Vartovyi не працює; перевстанови 64-бітну через <a href="https://www.raspberrypi.com/software/" target="_blank" rel="noopener">Raspberry Pi Imager</a>.</li>
+        <li><b>USB SSD замість SD-картки</b> для папки Vartovyi і медіа: база SQLite і торенти швидко зношують SD-картки. Найпростіше — записати систему одразу на SSD через Raspberry Pi Imager і завантажуватись із нього (Pi 4 і Pi 5 вміють завантажуватись з USB одразу): тоді типові папки <code>~/vartovyi</code> і <code>/srv/media</code> вже на SSD. Якщо система лишається на SD-картці, а SSD змонтовано, наприклад, у <code>/mnt/ssd</code>, вкажи в «Твоїх даних» <code>/mnt/ssd/vartovyi</code> і <code>/mnt/ssd/media</code>.</li>
+        <li><b>SSD в ext4.</b> Якщо записати систему на SSD (вище), він уже в ext4. Окремо змонтований SSD теж має бути в ext4: exFAT і NTFS не зберігають власників Linux, тож <code>chown</code> не спрацьовує («Operation not permitted») або нічого не змінює, і завантаження зупиняються. Відформатуй його в ext4 (це стирає диск); якщо він має лишитись exFAT чи NTFS, монтуй його з параметрами <code>uid=1000,gid=1000</code> (у <code>/etc/fstab</code>).</li>
+        <li><b>Офіційний блок живлення</b> (Pi 4: 5V 3A, Pi 5: 5V 5A) і <b>корпус з охолодженням</b>: від слабкого живлення SSD відвалюється, а перегрітий Pi сам себе пригальмовує (тротлінг), і завантаження сповільнюються разом із ним.</li>
+      </ul>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>uname -m
+dpkg --print-architecture</pre></div>
+      </div>
+
+      <div class="check" data-platform="linux pi"><div class="t">✅ Перевір</div>
+        <label><input type="checkbox" id="c0a-linux"><span><code>docker compose version</code> показує версію.</span></label>
+        <label><input type="checkbox" id="c0b-linux"><span>Знаю IP-адресу сервера.</span></label>
+      </div>
+      <div class="check" data-platform="pi"><div class="t">✅ Перевір · Raspberry Pi</div>
+        <label><input type="checkbox" id="c0c-linux"><span><code>uname -m</code> показує <code>aarch64</code>, а <code>dpkg --print-architecture</code> — <code>arm64</code>; папка Vartovyi — на SSD.</span></label>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section id="s1" data-step="1">
+      <div class="stephead"><h2><span class="k">1</span>Plex</h2>
+      <p class="lead">Потрібні токен акаунту і адреса сервера. Їх введеш у майстрі на кроці 7.</p></div>
+      <p><b>Токен.</b> Відкрий Plex Web, зайди в будь-який фільм або серіал, натисни <span class="menu">⋯ → Get Info → View XML</span>. В адресному рядку сторінки, що відкриється, буде параметр <code>X-Plex-Token=…</code>. Скопіюй значення після <code>=</code>. Бери токен <b>власника сервера</b>: лише з ним працюють «Видалити переглянуте» і виправлення відповідності в Plex.</p>
+      <p><b>Адреса сервера</b> — <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:32400</code>. Не <code>localhost</code>: з контейнера це інша машина.</p>
+      <p><b>Watchlist.</b> Додай у Plex кілька серіалів і фільмів у watchlist. Саме цей список Vartovyi відстежуватиме.</p>
+      <div class="check"><div class="t">✅ Перевір</div>
+        <label><input type="checkbox" id="c1a"><span>Адреса <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:32400/library/sections?X-Plex-Token=&lt;токен&gt;</code> у браузері повертає XML зі списком бібліотек.</span></label>
+        <label><input type="checkbox" id="c1b"><span>У watchlist є хоча б один серіал або фільм.</span></label>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section id="s2" data-step="2">
+      <div class="stephead"><h2><span class="k">2</span>Toloka</h2>
+      <p class="lead">Логін і пароль від toloka.to — обовʼязкові для майстра: Toloka — основний трекер, під цим акаунтом Vartovyi шукає роздачі і завантажує .torrent-файли.</p></div>
+      <p>Переконайся, що акаунт активний і не має обмежень на завантаження торентів. Інші трекери (з каталогу Prowlarr, зокрема українські, як-от Mazepa) додаються пізніше на сторінці «Трекери» — <a href="#trackers">крок 12</a>.</p>
+      <div class="note"><b>Якщо при вході є капча</b> або не хочеш зберігати пароль на сервері, передай готову сесію з браузера. Увійди на toloka.to, відкрий DevTools (F12) → Network, онови сторінку, вибери будь-який запит до <code>toloka.to</code> і скопіюй з Request Headers усе значення заголовка <code>Cookie</code>. У майстрі вибери «Кукі з браузера» і встав його. Коли сесія протухне, прийде алерт, і кукі треба буде скопіювати знову.</div>
+      <div class="check"><div class="t">✅ Перевір</div>
+        <label><input type="checkbox" id="c2a"><span>Вхід на toloka.to під цим акаунтом працює, або кукі скопійовано.</span></label>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section id="s3" data-step="3">
+      <div class="stephead"><h2><span class="k">3</span>Telegram</h2>
+      <p class="lead">Бот, який надсилатиме повідомлення про нові серії.</p></div>
+      <ol>
+        <li><b>Створи бота.</b> Напиши <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a> команду <code>/newbot</code>, задай імʼя і username. У відповідь прийде токен вигляду <code>123456789:AAF…</code>.</li>
+        <li><b>Дізнайся свій chat_id.</b> Напиши <a href="https://t.me/userinfobot" target="_blank" rel="noopener">@userinfobot</a>, він відповість числом <code>Id</code>. Бот реагуватиме лише на цей chat_id.</li>
+        <li><b>Відкрий свого бота і натисни Start.</b> Без цього бот не зможе написати тобі першим.</li>
+      </ol>
+      <h3>Команди бота</h3>
+      <p>Меню команд — кнопка «/» біля поля вводу в чаті з ботом:</p>
+      <ul>
+        <li><code>/check</code> — перевірити трекери зараз; бот відповість підсумком.</li>
+        <li><code>/watchlist</code> — список тайтлів по 8 на сторінку з коротким станом (🔔 чекає рішення, ⬇️ качається, ✅ є в Plex — разом із переглянутим і видаленим, 🔎 шукаємо… чи не підійшло); «‹ ›» гортають сторінки в тому самому повідомленні.</li>
+        <li><code>/status</code> — стан Vartovyi: тайтли, остання й наступна перевірка, вільне місце.</li>
+      </ul>
+      <p>Кнопка тайтлу у <code>/watchlist</code> відкриває картку: стан і для серіалу рядок на кожен сезон («S2 · 8/10 в Plex · 2 на трекері · ⬇️ 1 качається»). <b>🔎 Шукати зараз</b> — пошук тайтлу на всіх трекерах, як на сторінці тайтлу (раз на 5 хв). <b>📥 Скачати сезон</b> (для фільму — <b>📥 Скачати</b>) — вибір сезону («S1 ✅» — є в Plex або переглянуто й видалено, «S3 · 2 роздачі»), далі до 5 відомих роздач, найкращі першими («Toloka · 1080p WEB-DL · 12,3 ГБ · S02E01–E10»), і кнопки <b>⬇️ N</b>: роздача додається в торент-клієнт з тими самими перевірками, що на сайті (місце, папка тайтлу), а результат зʼявляється в тому самому повідомленні. Немає роздач — «Роздач із сезоном N поки не знайдено» і <b>🔎 Шукати зараз</b>. Уже завантажені роздачі позначені «✅ завантажено» і без кнопки, «‹ До списку» повертає до списку. Якщо пошук триває довше хвилини, він іде у фоні — відкрий картку ще раз за хвилину.</p>
+      <div class="check"><div class="t">✅ Перевір</div>
+        <label><input type="checkbox" id="c3a"><span>Токен бота збережено.</span></label>
+        <label><input type="checkbox" id="c3b"><span>Знаю свій chat_id.</span></label>
+        <label><input type="checkbox" id="c3c"><span>У чаті з ботом натиснуто Start.</span></label>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section id="s4" data-step="4">
+      <div class="stephead"><h2><span class="k">4</span>Торент-клієнт</h2>
+      <p class="lead" data-platform="synology">Програма, яка завантажуватиме торенти: Download Station, qBittorrent або Transmission. У майстрі (крок 7) її вибирають на кроці «Торент-клієнт», там же вказують дві папки: для серіалів і для фільмів.</p>
+      <p class="lead" data-platform="linux pi">Програма, яка завантажуватиме торенти. На Linux і Raspberry Pi це qBittorrent, який запускається разом із Vartovyi на кроці 6.</p></div>
+      <div data-platform="linux pi">
+      <div class="card">
+        <div class="big">qBittorrent уже є в комплекті.</div>
+        <p>На Linux і Raspberry Pi <code>compose.yml</code> (крок 6) уже містить qBittorrent поруч із Vartovyi: зараз нічого ставити не треба. У майстрі вибери <b>qBittorrent</b>; адреса <code>http://qbittorrent:8090</code> підставиться сама. Логін — <code>admin</code>, пароль — той, що задаси на кроці 6.</p>
+      </div>
+      <p>Завантаження йдуть у <code><span class="v" data-v="media">/srv/media</span>/Series</code> і <code><span class="v" data-v="media">/srv/media</span>/Movies</code> (їх створиш на кроці 5) — додай ці дві папки в бібліотеки Plex: <code>Series</code> — у бібліотеку «Серіали» (TV Shows), <code>Movies</code> — у «Фільми» (Movies). Plex на самому сервері бачить їх за тим самим шляхом. Якщо Plex працює в Docker, змонтуй <code><span class="v" data-v="media">/srv/media</span></code> і в його контейнер за тим самим шляхом.</p>
+      <p><b>Plex на іншій машині</b> (інший сервер, NAS, компʼютер) сам <code><span class="v" data-v="media">/srv/media</span></code> не бачить. Відкрий доступ до папки з медіа в мережі (SMB через Samba або NFS), змонтуй чи відкрий цю спільну папку на машині з Plex і додай її папки <code>Series</code> і <code>Movies</code> у бібліотеки. Шлях у бібліотеці тоді відрізняється від <code><span class="v" data-v="media">/srv/media</span></code>, тож майстер покаже для цих папок попередження «Не знайдено бібліотеки Plex» — так і має бути: завантажене все одно зʼявиться в Plex.</p>
+      <p><b>Уже маєш qBittorrent чи Transmission?</b> Прибери сервіс <code>qbittorrent</code> з <code>compose.yml</code> і вкажи в майстрі адресу свого клієнта (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:&lt;порт&gt;</code>); папки — шляхи так, як їх бачить твій клієнт. Як підготувати кожен клієнт — нижче.</p>
+      </div>
+      <p data-platform="synology">Якщо не знаєш, що вибрати, бери <b>Download Station</b>: це пакет Synology, і для нього нічого, крім користувача DSM, не потрібно. qBittorrent чи Transmission має сенс, якщо ти вже ними користуєшся.</p>
+      <p><b>Папки призначення</b> мають бути тими самими, які сканує Plex. Тоді завантажені серії зʼявляться в бібліотеці, і Vartovyi не повідомлятиме про них знову. Усередині них Vartovyi створює окрему папку для кожного тайтлу (<a href="#folders">Папки тайтлів</a>).</p>
+
+      <div data-platform="synology">
+      <h3>Download Station</h3>
+      <p>Окремий користувач DSM, під яким Vartovyi додаватиме торенти.</p>
+      <ol>
+        <li><span class="menu">Панель керування → Користувач і група → Створити</span>, імʼя, наприклад, <code><span class="v" data-v="svc">vartovyi</span></code>.</li>
+        <li>Вкладка <b>Дозволи</b>: для спільної папки з відео (наприклад, <code><span class="v" data-v="share">video</span></code>) — «Читання/запис».</li>
+        <li>Вкладка <b>Застосунки</b>: для <b>Download Station</b> і <b>File Station</b> — «Дозволити». File Station потрібен, щоб створювати папку для кожного тайтлу; без нього роздачі кладуться в корінь папки, а на «Стан» буде попередження.</li>
+        <li>Двофакторну автентифікацію для цього користувача не вмикай, інакше API не залогіниться.</li>
+      </ol>
+      <p><b>Папки призначення</b> вказуються відносно кореня спільних папок, без <code>/<span class="v" data-v="vol">volume1</span></code>. Якщо серіали лежать у <code>/<span class="v" data-v="vol">volume1</span>/<span class="v" data-v="shows">video/Series</span></code>, у майстрі пиши <code><span class="v" data-v="shows">video/Series</span></code>.</p>
+      <div class="note warn"><b>Адреса DSM — <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:5000</code>.</b> HTTPS-адреса <code>:5001</code> зі стандартним самопідписаним сертифікатом Synology з контейнера не прийметься. Якщо в <span class="menu">Панель керування → Мережа → Параметри DSM</span> увімкнено перенаправлення HTTP на HTTPS, вимкни його або встанови довірений сертифікат.</div>
+      </div>
+
+      <h3>qBittorrent</h3>
+      <ol>
+        <li>У qBittorrent увімкни Web UI: <span class="menu">Налаштування → Web UI</span>, прапорець «Веб-інтерфейс (віддалене керування)».</li>
+        <li>Там же подивись <b>порт</b> (у Docker-образі linuxserver — змінна <code>WEBUI_PORT</code>, у прикладі нижче 8090) і задай <b>логін і пароль</b>. Їх введеш у майстрі.</li>
+        <li>Адреса для майстра: <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:&lt;порт&gt;</code>, наприклад <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:8090</code>.</li>
+      </ol>
+      <p><b>Папки</b> вказуються так, як їх бачить сам qBittorrent: якщо він у Docker — шлях усередині його контейнера, наприклад <code>/downloads/Series</code><span data-platform="synology">, а не <code>/<span class="v" data-v="vol">volume1</span>/…</code></span>. Перевірити, чи такі папки існують, qBittorrent не дає, тож майстер покаже «перевірити папки цей клієнт не дає»: подивись, чи вони є, у налаштуваннях збереження qBittorrent. Розкладку вмісту торента залиш «Оригінальна» або «Створювати підпапку» (не «Без підпапки»).</p>
+      <p>Після невірного логіна чи пароля Vartovyi 15 хвилин не пробує увійти знову: qBittorrent після кількох невдалих спроб банить IP і може забанити й твій браузер, якщо IP той самий.</p>
+
+      <h3>Transmission</h3>
+      <ol>
+        <li>Адреса RPC: <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:9091/transmission/rpc</code>. Порт 9091 типовий, якщо змінював — вкажи свій.</li>
+        <li>Transmission пускає до RPC лише адреси з <code>rpc-whitelist</code>. Або додай туди підмережу домашньої мережі і Docker (наприклад, <code>192.168.1.*,172.*.*.*</code>), або вимкни whitelist (<code>&quot;rpc-whitelist-enabled&quot;: false</code>) і задай логін і пароль RPC (<code>rpc-authentication-required</code>, <code>rpc-username</code>, <code>rpc-password</code>). <code>settings.json</code> Transmission редагуй, коли він зупинений: при виході він перезаписує файл.</li>
+        <li>Логін і пароль у майстрі вводь, лише якщо вони задані в Transmission, інакше залиш поля порожніми.</li>
+      </ol>
+      <p><b>Папки</b> — так, як їх бачить Transmission, наприклад <code>/downloads/Series</code>. Майстер перевіряє, що вони існують.</p>
+
+      <div data-platform="synology">
+      <h3>qBittorrent у Docker поруч із Vartovyi</h3>
+      <p>qBittorrent з образу linuxserver — окремий проєкт у Container Manager (назва <code>qbittorrent</code>, шлях <code>docker/qbittorrent</code>), створений так само, як на кроці 6; compose Vartovyi не міняється. Спільна папка з відео <code>/<span class="v" data-v="vol">volume1</span>/<span class="v" data-v="share">video</span></code> змонтована в qBittorrent як <code>/downloads</code>, а Plex бачить ту саму папку. У майстрі тоді вказуєш адресу <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:8090</code> і папки <code>/downloads/Series</code> та <code>/downloads/Movies</code>.</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    restart: unless-stopped
+    environment:
+      - PUID=1026        <span class="c"># uid користувача з правами на папку відео (id &lt;користувач&gt; по SSH)</span>
+      - PGID=100
+      - TZ=Europe/Kyiv
+      - WEBUI_PORT=8090
+    ports:
+      - "8090:8090"      <span class="c"># Web UI</span>
+      - "6881:6881"
+      - "6881:6881/udp"
+    volumes:
+      - /<span class="v" data-v="vol">volume1</span>/docker/qbittorrent/config:/config
+      - /<span class="v" data-v="vol">volume1</span>/<span class="v" data-v="share">video</span>:/downloads   <span class="c"># та сама папка, яку сканує Plex</span></pre></div>
+      <p>Папки <code>docker/qbittorrent/config</code> і <code>video/Series</code>, <code>video/Movies</code> створи заздалегідь у File Station. Під час першого запуску образ linuxserver пише в журнал контейнера <code>qbittorrent</code> тимчасовий пароль користувача <code>admin</code>: увійди з ним у Web UI і задай свій пароль у <span class="menu">Налаштування → Web UI</span>.</p>
+      <div class="note"><b>Попередження про Plex.</b> Майстер порівнює папки з бібліотеками Plex за шляхом. Для <code>/downloads/Series</code> він часто не знаходить збігу, бо Plex бачить ті самі файли як <code>/<span class="v" data-v="vol">volume1</span>/<span class="v" data-v="share">video</span>/Series</code>, і пише «Не знайдено бібліотеки Plex». Якщо папка справді в бібліотеці Plex, це попередження можна ігнорувати. Щоб його не було, змонтуй папку в Plex (якщо він теж у Docker) під тим самим шляхом, що й у qBittorrent.</div>
+      </div>
+
+      <h3 id="space">Вільне місце</h3>
+      <p>Вільне місце показується в повідомленні про роздачу, перевіряється перед завантаженням (якщо не вистачає, «Завантажити» не додасть завдання), від нього залежить попередження 💾 про малий залишок і картка «Вільне місце» на сторінці «Стан». У майстрі джерело вибирають на кроці «Вільне місце»:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Джерело</th><th>Коли брати</th></tr></thead>
+        <tbody>
+          <tr><td><b>Synology через DSM</b> (<code>synology</code>)</td><td>Для Download Station: вільне місце тома зі спільною папкою. З іншим клієнтом зазвичай дає «місце невідоме»: шлях <code>/downloads/Series</code> не відповідає жодній спільній папці DSM.</td></tr>
+          <tr><td><b>Сам торент-клієнт</b> (<code>client</code>)</td><td>Для qBittorrent і Transmission. Transmission віддає місце для кожної папки окремо, qBittorrent — одне число для диска своєї типової папки збереження. Для Download Station це те саме, що «Synology через DSM».</td></tr>
+          <tr><td><b>Папка в контейнері Vartovyi</b> (<code>path</code>)</td><td>Коли клієнт місця не віддає або віддає неточно: Vartovyi сам дивиться місце на диску змонтованої папки.</td></tr>
+          <tr><td><b>Не показувати</b> (<code>none</code>)</td><td>Місце ніде не показується, завантаження через нестачу місця не блокуються, попереджень 💾 немає. Картка «Вільне місце» пише «не налаштовано».</td></tr>
+        </tbody>
+      </table></div>
+      <p data-platform="linux pi">На Linux і Raspberry Pi вибери <b>Папка в контейнері Vartovyi</b> зі шляхом <code><span class="v" data-v="media">/srv/media</span></code>: <code>compose.yml</code> уже монтує папку з медіа у Vartovyi за тим самим шляхом (лише читання), і майстер її пропонує.</p>
+      <div data-platform="synology">
+      <p>Для «Папка в контейнері Vartovyi» змонтуй у контейнер Vartovyi папку з того самого диска, куди йдуть завантаження, і вкажи в майстрі її шлях у контейнері (тут <code>/media</code>). Достатньо лише читання:</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>    volumes:
+      - /<span class="v" data-v="vol">volume1</span>/docker/vartovyi/data:/data
+      - /<span class="v" data-v="vol">volume1</span>/docker/vartovyi/config:/config
+      - /<span class="v" data-v="vol">volume1</span>/<span class="v" data-v="share">video</span>:/media:ro</pre></div>
+      <p>Коротко: Download Station — «Synology через DSM»; qBittorrent чи Transmission — «Сам торент-клієнт», а якщо місце невідоме, «Папка в контейнері Vartovyi».</p>
+      </div>
+
+      <div data-platform="synology">
+      <div class="check"><div class="t">✅ Перевір</div>
+        <label><input type="checkbox" id="c4a"><span>Клієнт доступний: вхід у DSM під <code><span class="v" data-v="svc">vartovyi</span></code> відкриває Download Station, або Web UI qBittorrent відкривається з логіном і паролем, або <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:9091/transmission/web/</code> відкриває Transmission.</span></label>
+        <label><input type="checkbox" id="c4b"><span>Клієнт бачить папки для серіалів і фільмів: для Download Station — у File Station під <code><span class="v" data-v="svc">vartovyi</span></code>, для qBittorrent і Transmission — за шляхом у їхньому контейнері.</span></label>
+        <label><input type="checkbox" id="c4c"><span>Папки призначення для серіалів і фільмів є в бібліотеках Plex.</span></label>
+      </div>
+      </div>
+      <div class="check" data-platform="linux pi"><div class="t">✅ Перевір</div>
+        <label><input type="checkbox" id="c4a-linux"><span>Папки <code><span class="v" data-v="media">/srv/media</span>/Series</code> і <code><span class="v" data-v="media">/srv/media</span>/Movies</code> є в бібліотеках Plex.</span></label>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section id="s5" data-step="5">
+      <div class="stephead"><h2><span class="k">5</span><span data-platform="synology">Папки на NAS</span><span data-platform="linux pi">Папки</span></h2>
+      <p class="lead" data-platform="synology">Дві папки для даних і налаштувань, доступні контейнеру на запис.</p>
+      <p class="lead" data-platform="linux pi">Папка проєкту Vartovyi і папка з медіа для завантажень, обидві доступні на запис для uid 1000.</p></div>
+      <div data-platform="synology">
+      <p>У <span class="menu">File Station → docker</span> створи папку <code>vartovyi</code>, а в ній <code>data</code> і <code>config</code>:</p>
+      <div class="pre"><pre>/<span class="v" data-v="vol">volume1</span>/docker/vartovyi/
+  data/     <span class="c">база, кеш торентів і постерів, сесії трекерів</span>
+  config/   <span class="c">settings.json і quality.yaml — їх створить майстер</span></pre></div>
+      <p>Якщо спільна папка <code>docker</code> не на <code>volume1</code>, заміни номер тому в усіх шляхах (поле «Том» у «Твоїх даних»). Шлях видно в <span class="menu">File Station → правою кнопкою на папці → Властивості</span>.</p>
+      <p><b>Права на запис.</b> Контейнер працює від користувача з uid 1000, а не від твого користувача DSM, тому дозволи з File Station не допоможуть. Вибери один варіант:</p>
+      <div class="variants">
+        <div class="card variant"><span class="tag">Варіант А · рекомендований</span><b>Через SSH</b>
+          <ol>
+            <li><span class="menu">Панель керування → Термінал і SNMP</span> → «Увімкнути службу SSH».</li>
+            <li>На компʼютері: <code>ssh <span class="v" data-v="admin">&lt;адмін_DSM&gt;</span>@<span class="v" data-v="ip">&lt;NAS_IP&gt;</span></code>, пароль від DSM. Користувач має бути адміністратором.</li>
+            <li>Виконай команду нижче, потім SSH можна вимкнути.</li>
+          </ol>
+          <div class="pre"><button class="copy" type="button">Копіювати</button><pre>sudo chown -R 1000:1000 /<span class="v" data-v="vol">volume1</span>/docker/vartovyi/data /<span class="v" data-v="vol">volume1</span>/docker/vartovyi/config</pre></div>
+        </div>
+        <div class="card variant"><span class="tag">Варіант Б · без SSH</span><b>Запуск від root</b>
+          <p>На кроці 6 у compose-файлі розкоментуй рядок <code>user: "0:0"</code>. Контейнер писатиме в будь-які папки. Простіше, але менше ізоляції.</p>
+        </div>
+      </div>
+      <div class="check"><div class="t">✅ Перевір</div>
+        <label><input type="checkbox" id="c5a"><span>Папки <code>docker/vartovyi/data</code> і <code>docker/vartovyi/config</code> існують.</span></label>
+        <label><input type="checkbox" id="c5b"><span>Варіант А: <code>ls -ln /<span class="v" data-v="vol">volume1</span>/docker/vartovyi</code> показує <code>1000 1000</code> для обох папок. Або обрано варіант Б.</span></label>
+      </div>
+      </div>
+
+      <div data-platform="linux pi">
+      <p>Дві папки, обидві можна змінити в «Твоїх даних»:</p>
+      <ul>
+        <li><b>Папка проєкту</b> <code><span class="v" data-v="dir">~/vartovyi</span></code> — <code>compose.yml</code> і поруч дані контейнерів: <code>data</code> (база, кеш торентів і постерів, сесії трекерів), <code>config</code> (налаштування, їх створить майстер) і <code>qbittorrent</code> (налаштування qBittorrent).</li>
+        <li><b>Папка з медіа</b> <code><span class="v" data-v="media">/srv/media</span></code> — завантажені серіали (<code>Series</code>) і фільми (<code>Movies</code>); її сканує Plex.</li>
+      </ul>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>mkdir -p <span class="v" data-v="dir">~/vartovyi</span>/data <span class="v" data-v="dir">~/vartovyi</span>/config <span class="v" data-v="dir">~/vartovyi</span>/qbittorrent
+cd <span class="v" data-v="dir">~/vartovyi</span>
+sudo mkdir -p <span class="v" data-v="media">/srv/media</span>/Series <span class="v" data-v="media">/srv/media</span>/Movies
+sudo chown -R 1000:1000 <span class="v" data-v="media">/srv/media</span></pre></div>
+      <p><b>Папка проєкту поза домашньою</b> (наприклад <code>/mnt/ssd/vartovyi</code>): там <code>mkdir</code> без <code>sudo</code> не спрацює («Permission denied»). Спершу створи папку і зроби її своєю, потім виконай команди вище:</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>sudo mkdir -p <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; sudo chown $USER: <span class="v" data-v="dir">~/vartovyi</span></pre></div>
+      <div class="note warn"><b>Папка з медіа має бути доступна на запис для uid 1000.</b> qBittorrent і Vartovyi працюють у своїх контейнерах від користувача з uid 1000, а не від root. Папка, створена через <code>sudo</code>, належить root, і тоді торенти зупиняються з «Permission denied» або висять на 0%. Тому <code>sudo chown -R 1000:1000 <span class="v" data-v="media">/srv/media</span></code> вище обовʼязковий — виконуй його знову щоразу, коли створюєш там папки через <code>sudo</code> або переносиш медіа на інший диск.</div>
+      <p><b>Папка проєкту.</b> Контейнери працюють від uid 1000. Свій показує <code>id -u</code>: у Raspberry Pi OS і більшості дистрибутивів перший користувач уже має 1000, тоді створеним вище папкам у <code><span class="v" data-v="dir">~/vartovyi</span></code> нічого не треба. Створи <code>data</code>, <code>config</code> і <code>qbittorrent</code> до першого запуску, як вище: інакше Docker створить їх від root, і Vartovyi не зможе в них писати. Якщо <code>id -u</code> показує інше число, віддай ці три папки uid 1000 (лише їх: сама папка проєкту лишається твоєю, щоб ти міг редагувати <code>compose.yml</code>, <code>.env</code> і <code>Caddyfile</code>):</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>sudo chown -R 1000:1000 <span class="v" data-v="dir">~/vartovyi</span>/data <span class="v" data-v="dir">~/vartovyi</span>/config <span class="v" data-v="dir">~/vartovyi</span>/qbittorrent</pre></div>
+      <p><b>Інша папка з медіа</b> (наприклад SSD у <code>/mnt/ssd/media</code>): створи поруч із <code>compose.yml</code> файл <code>.env</code> з рядком <code>MEDIA_DIR=/mnt/ssd/media</code>, вкажи цей шлях у «Твоїх даних» і використовуй його всюди замість <code>/srv/media</code>:</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>echo "MEDIA_DIR=/mnt/ssd/media" &gt;&gt; <span class="v" data-v="dir">~/vartovyi</span>/.env</pre></div>
+      </div>
+      <div class="check" data-platform="linux pi"><div class="t">✅ Перевір</div>
+        <label><input type="checkbox" id="c5a-linux"><span><code>ls -ln <span class="v" data-v="media">/srv/media</span></code> показує <code>1000 1000</code> для Series і Movies.</span></label>
+        <label><input type="checkbox" id="c5b-linux"><span><code>ls -ln <span class="v" data-v="dir">~/vartovyi</span></code> показує <code>1000 1000</code> для data, config і qbittorrent.</span></label>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section id="s6" data-step="6">
+      <div class="stephead"><h2><span class="k">6</span><span data-platform="synology">Запуск у Container Manager</span><span data-platform="linux pi">Запуск контейнерів</span></h2>
+      <p class="lead" data-platform="synology">Проєкт із одного контейнера. Налаштування вводяться пізніше, у браузері.</p>
+      <p class="lead" data-platform="linux pi">Три контейнери з одного файлу: Vartovyi, qBittorrent і Watchtower для оновлень. Налаштування вводяться пізніше, у браузері.</p></div>
+      <div data-platform="synology">
+      <ol>
+        <li><span class="menu">Container Manager → Проєкт → Створити</span>.</li>
+        <li>Назва: <code>vartovyi</code>. Шлях: <code>docker/vartovyi</code>.</li>
+        <li>Джерело: «Створити docker-compose.yml». Встав текст нижче.</li>
+        <li>Налаштування веб-порталу через Web Station пропусти.</li>
+        <li>«Далі» → «Готово». Перше стягування образу може тривати кілька хвилин.</li>
+      </ol>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>services:
+  vartovyi:
+    image: ghcr.io/sorochanroman/vartovyi:latest
+    pull_policy: always
+    container_name: vartovyi
+    restart: unless-stopped
+    # user: "0:0"        <span class="c"># розкоментуй, якщо на кроці 5 обрав варіант Б</span>
+    environment:
+      - TZ=Europe/Kyiv
+    ports:
+      <span class="c"># ліве число — порт на NAS; якщо 8080 зайнятий, зміни лише його, наприклад "8081:8080"</span>
+      - "<span class="v" data-v="port">8080</span>:8080"
+    volumes:
+      - /<span class="v" data-v="vol">volume1</span>/docker/vartovyi/data:/data
+      - /<span class="v" data-v="vol">volume1</span>/docker/vartovyi/config:/config</pre></div>
+      <div class="note"><b>Брандмауер.</b> Якщо в <span class="menu">Панель керування → Безпека → Брандмауер</span> він увімкнений, додай правило, що дозволяє порт <span class="v" data-v="port">8080</span> лише з локальної мережі. В інтернет цей порт не відкривай (<a href="#access">Доступ і пароль</a>).</div>
+      <div class="check"><div class="t">✅ Перевір</div>
+        <label><input type="checkbox" id="c6a"><span><span class="menu">Container Manager → Контейнер</span>: <code>vartovyi</code> має статус «Працює» і не перезапускається по колу.</span></label>
+        <label><input type="checkbox" id="c6b"><span>У журналі контейнера є рядок <code>starting in setup mode</code>.</span></label>
+        <label><input type="checkbox" id="c6c"><span><code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span></code> відкриває сторінку «Vartovyi — налаштування».</span></label>
+      </div>
+      </div>
+
+      <div data-platform="linux pi">
+      <h3>Отримати compose-файл</h3>
+      <p>Завантаж <code>compose.linux.yml</code> у папку проєкту під іменем <code>compose.yml</code>: це імʼя Compose знаходить сам, тож командам нижче не потрібен <code>-f</code>.</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>cd <span class="v" data-v="dir">~/vartovyi</span>
+curl -fsSL https://raw.githubusercontent.com/SorochanRoman/vartovyi-install/HEAD/compose.linux.yml -o compose.yml</pre></div>
+      <p>Або створи файл вручну з таким вмістом: <code>nano compose.yml</code>, встав текст, збережи <b>Ctrl+O</b> і <b>Enter</b>, вийди <b>Ctrl+X</b>.</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre># Vartovyi on Docker for Linux (mini PC, server, Raspberry Pi with a 64-bit OS).
+# Save as compose.yml next to a .env (optional) and run: docker compose up -d
+# Guide: http://&lt;server IP&gt;:8080/guide
+# Media folder: /srv/media by default; another one — put MEDIA_DIR=/path/to/media into a .env file next to this file.
+services:
+  vartovyi:
+    image: ghcr.io/sorochanroman/vartovyi:latest
+    pull_policy: always
+    container_name: vartovyi
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ:-Europe/Kyiv}
+    labels:
+      # automatic updates (watchtower below) apply only to containers with this label
+      - com.centurylinklabs.watchtower.enable=true
+    ports:
+      - &quot;8080:8080&quot;
+    volumes:
+      - ./data:/data
+      - ./config:/config
+      # read-only, only to count free space; the same path as on the host, so Plex paths match
+      - ${MEDIA_DIR:-/srv/media}:${MEDIA_DIR:-/srv/media}:ro
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ:-Europe/Kyiv}
+      - WEBUI_PORT=8090
+      # group-writable files: a Plex on the host in the same group (1000) can delete watched episodes
+      - UMASK=002
+    ports:
+      # web interface; first sign-in: user admin, temporary password in `docker logs qbittorrent`
+      - &quot;8090:8090&quot;
+      - &quot;6881:6881&quot;
+      - &quot;6881:6881/udp&quot;
+    volumes:
+      - ./qbittorrent:/config
+      - ${MEDIA_DIR:-/srv/media}:${MEDIA_DIR:-/srv/media}
+
+  # Every night at 04:00 checks for a new vartovyi:latest image and restarts the container.
+  watchtower:
+    image: nickfedor/watchtower:latest
+    container_name: vartovyi-watchtower
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ:-Europe/Kyiv}
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_SCHEDULE=0 0 4 * * *
+      - WATCHTOWER_CLEANUP=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+</pre></div>
+      <p>Порт 8080 на сервері вже зайнятий? Зміни лише ліве число в <code>"8080:8080"</code>, наприклад <code>"8081:8080"</code>, і вкажи його в «Твоїх даних».</p>
+
+      <h3>Запуск</h3>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>cd <span class="v" data-v="dir">~/vartovyi</span>
+docker compose up -d
+docker compose ps</pre></div>
+      <p>Перший запуск стягує образи: кілька хвилин, на Raspberry Pi довше. <code>ps</code> має показати всі три контейнери — <code>vartovyi</code>, <code>qbittorrent</code> і <code>vartovyi-watchtower</code> — у стані «running» («Up»). Команди <code>docker compose</code> виконуй із <code><span class="v" data-v="dir">~/vartovyi</span></code>: Compose шукає файл у поточній папці.</p>
+
+      <h3>Пароль qBittorrent</h3>
+      <p>Під час першого запуску qBittorrent створює користувача <code>admin</code> з тимчасовим паролем і пише його у свій журнал:</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>docker logs qbittorrent 2&gt;&amp;1 | grep -i password</pre></div>
+      <ol>
+        <li>Відкрий <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:8090</code> і увійди як <code>admin</code> з цим паролем.</li>
+        <li><span class="menu">Tools → Options → Web UI</span> (Інструменти → Налаштування → Web UI), блок «Authentication»: задай постійний пароль і натисни «Save» внизу. <code>admin</code> і цей пароль введеш у майстрі (крок 7).</li>
+        <li>За бажанням на вкладці «Downloads» вкажи «Default Save Path» — <code><span class="v" data-v="media">/srv/media</span></code>: тоді й торенти, додані вручну, потраплять у папку з медіа.</li>
+      </ol>
+      <div class="note"><b>Не відкривай ці порти в інтернет.</b> Не пробрасуй з роутера ні 8080, ні 8090: ззовні — лише через HTTPS (крок 13). Порт 6881 — для пірів торентів; пробрасувати його необовʼязково, це лише пришвидшує завантаження.</div>
+      </div>
+      <div class="check" data-platform="linux pi"><div class="t">✅ Перевір</div>
+        <label><input type="checkbox" id="c6a-linux"><span><code>docker compose ps</code> показує, що vartovyi, qbittorrent і vartovyi-watchtower працюють.</span></label>
+        <label><input type="checkbox" id="c6b-linux"><span>У <code>docker logs vartovyi</code> є рядок <code>starting in setup mode</code>.</span></label>
+        <label><input type="checkbox" id="c6c-linux"><span><code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span></code> відкриває сторінку «Vartovyi — налаштування»; qBittorrent на <code>:8090</code> приймає постійний пароль.</span></label>
+      </div>
+      <p>Через хвилину-дві після запуску стан контейнера стає «healthy» (<span data-platform="synology">у Container Manager — «Справний»</span><span data-platform="linux pi">у <code>docker compose ps</code> — <code>(healthy)</code></span>): образ щохвилини звертається до <code>/healthz</code>. «unhealthy» означає, що вебсервер не відповідає, — дивись журнал.</p>
+      <p class="lead">Якщо контейнер перезапускається по колу, причина буде в журналі. Найчастіше це <code>EACCES</code> (права з кроку 5) або образ, що не стягнувся. Див. <a href="#trouble">Типові проблеми</a>.</p>
+    </section>
+
+    <!-- 7 -->
+    <section id="s7" data-step="7">
+      <div class="stephead"><h2><span class="k">7</span>Майстер налаштування</h2>
+      <p class="lead">Поки налаштування неповні, сервіс працює лише як сторінка майстра. Кожен крок майстер перевіряє живим запитом.</p></div>
+      <ol>
+        <li>Відкрий <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span></code>, сервіс сам перейде на <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/setup</code>.</li>
+        <li><b>Платформа</b> — перший крок: Synology NAS, Docker на Linux або Raspberry Pi. Від неї залежать лише типові значення в наступних кроках і частина цієї інструкції, яку ти бачиш; змінити можна пізніше.</li>
+        <li><b>Пароль для вебінтерфейсу</b> — другий крок. Удома код не потрібен; не з домашньої мережі майстер спершу попросить код із журналу контейнера (<span data-platform="synology"><span class="menu">Container Manager → Контейнер → vartovyi → Журнал</span></span><span data-platform="linux pi"><code>docker logs vartovyi</code></span>, рядок «Код для створення пароля: 1234-5678»). Пароль — щонайменше 8 символів; він потрібен для входу ззовні (<a href="#access">Доступ і пароль</a>).</li>
+        <li>Далі пройди кроки: Plex, Toloka, Telegram, Торент-клієнт, Вільне місце, Правила якості, Завершення. На кожному заповни поля і натисни «Перевірити». «Далі» стає активною після успіху. Чернетка зберігається, сторінку можна закрити й повернутись.</li>
+        <li><b>Telegram:</b> перевірка надсилає тестове повідомлення «Vartovyi підключено ✅». Якщо воно не прийшло, натисни Start у боті і перевір ще раз.</li>
+        <li><b>Торент-клієнт:</b> вибери Download Station, qBittorrent або Transmission і заповни поля (крок 4). Перевірка підключається до клієнта і шукає папки призначення (qBittorrent перевірити папки не дає). Попередження, що Plex не сканує папку, для шляхів у Docker на кшталт <code>/downloads/Series</code> часто хибне.</li>
+        <li><b>Вільне місце:</b> вибери джерело (див. <a href="#space">Вільне місце</a> у кроці 4). Перевірка показує, скільки вільно для кожної папки, або «місце невідоме».</li>
+        <li><b>Правила якості:</b> мінімальна роздільна здатність, як часто синхронізувати Plex і шукати на трекерах (години, типово 24 і 12), обовʼязкова українська озвучка, «Окрема папка для кожного тайтлу». Якщо <code>quality.yaml</code> уже існує, поля лише показують його значення, а зміни тут не застосовуються.</li>
+        <li><b>Зберегти і запустити:</b> майстер записує налаштування в <code>config/settings.json</code> (права 0600: там паролі й токени), контейнер перезапускається в робочому режимі, а сторінка сама відкриває «Головну».</li>
+      </ol>
+      <div class="note" data-platform="linux pi"><b>Майстер на самому сервері просить код.</b> Якщо відкрити його на <code>localhost</code> чи в браузері самого сервера, запит приходить через мережевий міст Docker, тож майстер вважає його не з домашньої мережі й просить код. Візьми його з <code>docker logs vartovyi</code> (рядок «Код для створення пароля: …») або відкрий майстра з іншого пристрою в мережі.</div>
+      <p>У робочому режимі сторінка <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/setup</code> лише для перегляду: поля не редагуються, а «Перевірити ще раз» перевіряє поточні налаштування. Змінити їх — <a href="#s9">крок 9</a>.</p>
+      <div class="note warn"><b>Безпека.</b> Поки пароля немає, сторінку майстра може відкрити будь-хто в локальній мережі. Секрети вона ніколи не показує, а збережений секрет використовує лише для тієї самої адреси й користувача. Налаштовуй у довіреній мережі і не пробрасуй порт <span class="v" data-v="port">8080</span> в інтернет.</div>
+      <div class="check"><div class="t">✅ Перевір</div>
+        <label><input type="checkbox" id="c7a"><span>Усі кроки майстра до «Завершення» мають зелені позначки.</span></label>
+        <label><input type="checkbox" id="c7b"><span>У Telegram прийшло «Vartovyi підключено ✅».</span></label>
+        <label><input type="checkbox" id="c7c"><span>Після «Зберегти і запустити» відкрилась «Головна» Vartovyi.</span></label>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section id="s8" data-step="8">
+      <div class="stephead"><h2><span class="k">8</span>Перевірка роботи</h2>
+      <p class="lead">Останній крок: переконатись, що сервіс бачить усі залежності і відповідає в Telegram.</p></div>
+      <ol>
+        <li>Сторінка Стан (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/status</code>) показує картки перевірок: Plex (watchlist), Plex (сервер), Toloka, Telegram, Торент-клієнт (з назвою клієнта), Сховище, Вільне місце, TMDB (без ключа — «не налаштовано», крок 11). Біля червоної буде текст помилки. «Вільне місце» червоніє, коли вільного менше за поріг <code>storage.minFreeGb</code> (типово 50 ГБ).</li>
+        <li>Напиши боту <code>/status</code> — прийде кількість елементів у watchlist і час останньої та наступної перевірки.</li>
+        <li>Напиши <code>/check</code> — бот запустить перевірку одразу і відповість підсумком.</li>
+        <li>Напиши <code>/watchlist</code> — прийде список тайтлів з кнопками; тайтл відкриває картку із сезонами (<a href="#s3">Команди бота</a>).</li>
+        <li>Якщо у watchlist є щось, чого немає в Plex, а на трекері є роздача, прийде повідомлення з розміром роздачі, вільним місцем і кнопками «Завантажити» та «Ігнорувати роздачу». Перша перевірка може принести кілька таких одразу. «Ігнорувати» ховає роздачу назавжди; ті самі серії з іншої роздачі пропонуються знову, лише якщо вона кращої якості.</li>
+        <li>Після «Завантажити» те саме повідомлення раз на хвилину оновлюється статусом завдання в торент-клієнті. Якщо місця не вистачає, буде ⚠️ «не вистачає місця», і завдання не додасться, поки не звільниш місце. Якщо нові серії влазять, а вся роздача — ні, буде «⚠️ уся роздача не влізе, якщо попередніх серій немає в папці»: «Завантажити» працює, клієнт докачує лише файли, яких немає в папці. Якщо завдання прибрали з клієнта до завершення, буде «⚠️ Завдання видалено з …».</li>
+        <li>Для серіалу є ще кнопка «⭐ Стежити»: вона позначає роздачу улюбленою і одразу її завантажує, а нові серії саме цієї роздачі Vartovyi далі додає сам і пише «⭐ Автоматично додано: …». Зняти позначку — кнопкою «⭐ Не стежити» на сторінці тайтлу, а позначити будь-яку непроігноровану роздачу серіалу — кнопкою «⭐ Стежити й качати автоматично». Якщо додати автоматично не вийшло (не вистачає місця, помилка клієнта, серії не розпізнано), прийде звичайне повідомлення з кнопками і рядком ⭐ з причиною; інші роздачі того самого серіалу автоматично не качаються.</li>
+      </ol>
+      <p><b>Toloka: рушій чи вбудований код.</b> На картці «Toloka · рушій» на сторінці «Стан» є перемикач на «вбудований код» — попередню реалізацію пошуку з тими самими результатами й обліковими даними. Якщо після оновлення Toloka поводиться дивно, перемкни і повідом про проблему.</p>
+      <p>Як щодня користуватись Головною, завислими завантаженнями й видаленням переглянутого — у довідці <a href="#daily">Щоденна робота</a>.</p>
+      <div class="check"><div class="t">✅ Перевір</div>
+        <label><input type="checkbox" id="c8a"><span>Усі перевірки на сторінці «Стан» зелені (або «не налаштовано»).</span></label>
+        <label><input type="checkbox" id="c8b"><span><code>/status</code> відповідає.</span></label>
+        <label><input type="checkbox" id="c8c"><span><code>/check</code> відповідає підсумком «перевірено N, нових M, помилок 0».</span></label>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section id="s9">
+      <div class="stephead"><h2><span class="k">9</span>Оновлення і зміна налаштувань</h2>
+      <p class="lead">Довідка на потім.</p></div>
+      <h3>Автооновлення (Watchtower)</h3>
+      <p data-platform="linux pi"><code>compose.yml</code> уже містить Watchtower (контейнер <code>vartovyi-watchtower</code>): щоночі о 04:00 він перевіряє, чи є новий <code>vartovyi:latest</code>, стягує його і перезапускає Vartovyi. qBittorrent позначки не має й автоматично не оновлюється. Версію видно в журналі (<code>docker logs vartovyi</code>): рядок <code>vartovyi &lt;версія&gt; started</code>.</p>
+      <div data-platform="synology">
+      <p>Зупини проєкт (<span class="menu">Проєкт → vartovyi → Дія → Зупинити</span>), у YAML проєкту додай до сервісу <code>vartovyi</code> позначку і наприкінці — сервіс Watchtower, потім «Зберегти» → «Зібрати». Він щодня о 04:00 стягує новий <code>:latest</code> і перезапускає лише контейнери з позначкою.</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>    labels:                 <span class="c"># у сервіс vartovyi</span>
+      - com.centurylinklabs.watchtower.enable=true
+
+  watchtower:               <span class="c"># наприкінці, на рівні vartovyi:</span>
+    image: nickfedor/watchtower:latest
+    container_name: vartovyi-watchtower
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Kyiv
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_SCHEDULE=0 0 4 * * *
+      - WATCHTOWER_CLEANUP=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock</pre></div>
+      <p>У <code>image:</code> сервісу <code>vartovyi</code> має бути <code>:latest</code> і рядок <code>pull_policy: always</code> (як у кроці 6), інакше «Зібрати» може запустити стару версію з кешу. Версію видно в журналі: рядок <code>vartovyi &lt;версія&gt; started</code>.</p>
+      </div>
+      <p>Щоб Watchtower писав про оновлення в Telegram, додай у його <code>environment:</code> рядок <code>- WATCHTOWER_NOTIFICATION_URL=telegram://&lt;ТОКЕН_БОТА&gt;@telegram?chats=&lt;CHAT_ID&gt;</code> (токен бота і chat_id з кроку 3). Розклад <code>0 0 4 * * *</code> — щодня о 04:00 (секунди, хвилини, години, день, місяць, день тижня). Використовується <code>nickfedor/watchtower</code> — підтримуваний форк: оригінальний <code>containrrr/watchtower</code> не розвивається і не працює з новими версіями Docker. Watchtower має доступ до <code>/var/run/docker.sock</code>, тому він окремий сервіс, а сам Vartovyi цього доступу не має. Тестові версії (з дефісом у номері, як <code>0.2.0-rc.1</code>) публікуються лише під своїм номером, тож Watchtower їх не встановить.</p>
+      <h3>Оновити вручну</h3>
+      <div data-platform="linux pi">
+      <p>Стягує нові образи всіх трьох контейнерів (і qBittorrent) і перестворює ті, що змінились:</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose pull &amp;&amp; docker compose up -d</pre></div>
+      <p>Папки <code>data</code> і <code>config</code> при оновленні не чіпаються, база мігрує сама; перед зміною схеми Vartovyi кладе копію бази в <code>data/backups</code> (три останні). Щоб відкотитись, заміни в <code>compose.yml</code> <code>:latest</code> на попередню версію, наприклад <code>:0.34.1</code>, поверни копію бази з <code>data/backups</code> і виконай <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code>.</p>
+      </div>
+      <div data-platform="synology">
+      <ol>
+        <li><span class="menu">Container Manager → Образ</span>: якщо біля <code>ghcr.io/sorochanroman/vartovyi</code> є позначка оновлення, натисни «Оновити».</li>
+        <li>Якщо позначки немає, а новий реліз вийшов: <span class="menu">Проєкт → vartovyi → Дія → Зупинити</span>, потім <span class="menu">Образ → vartovyi → Видалити</span>, потім <span class="menu">Проєкт → vartovyi → Дія → Зібрати</span>.</li>
+        <li>Або через SSH у папці <code>/<span class="v" data-v="vol">volume1</span>/docker/vartovyi</code>: <code>sudo docker compose -p vartovyi pull &amp;&amp; sudo docker compose -p vartovyi up -d</code>.</li>
+      </ol>
+      <p>Папки <code>data</code> і <code>config</code> при оновленні не чіпаються, база мігрує сама; перед зміною схеми Vartovyi кладе копію бази в <code>data/backups</code> (три останні). Щоб відкотитись, заміни <code>:latest</code> на попередню версію, наприклад <code>:0.34.1</code>, поверни копію бази з <code>data/backups</code> і знову «Зібрати».</p>
+      </div>
+      <p>Відновити копію бази: зупини Vartovyi, видали <code>data/vartovyi.sqlite-wal</code> і <code>data/vartovyi.sqlite-shm</code> і поклади потрібну копію (<code>data/backups/vartovyi-schema-&lt;схема&gt;-&lt;дата&gt;.sqlite</code>) на місце <code>data/vartovyi.sqlite</code>. Watchtower оновлює лише тег з <code>image:</code>, тож з конкретною версією він нічого не змінить, поки не повернеш <code>:latest</code>. Після оновлення переконайся на сторінці «Стан», що всі перевірки зелені.</p>
+      <h3>Змінити налаштування</h3>
+      <p>Розклад (блок «Розклад»: «Кожні N годин» — від 1 до 168, або «У вказаний час» — <code>ГГ:ХХ</code>, кілька через кому, наприклад «07:00, 19:00»; діє одразу, без перезапуску), окрема папка для тайтлів і вхід змінюються прямо на сторінці Стан (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/status</code>), трекери — на Трекери (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/trackers</code>), сповіщення — на Сповіщення (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/notifications</code>). Для облікових даних (пароль DSM, токен, кукі Toloka) — майстер:</p>
+      <ol data-platform="linux pi">
+        <li>У <code><span class="v" data-v="dir">~/vartovyi</span>/compose.yml</code> додай рядок <code>- SETUP_MODE=1</code> у блок <code>environment:</code> сервісу <code>vartovyi</code> (<code>nano compose.yml</code>).</li>
+        <li>Застосуй: <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code> — Compose перестворить контейнер із новою змінною.</li>
+        <li>Відкрий <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/setup</code> і пройди всі кроки через «Перевірити». Секрети можна не вводити знову, якщо адреса і користувач не змінились.</li>
+        <li>«Зберегти і запустити», потім прибери <code>SETUP_MODE=1</code> і знову виконай <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code>. Поки змінна є, сервіс відкриватиме майстра після кожного перезапуску.</li>
+      </ol>
+      <p data-platform="linux pi">Змінив <code>config/quality.yaml</code> вручну? Досить перезапуску: <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose restart vartovyi</code>. Зміна в <code>environment:</code> потребує <code>up -d</code>: <code>restart</code> лишає старі змінні.</p>
+      <ol data-platform="synology">
+        <li><span class="menu">Проєкт → vartovyi → Дія → Зупинити</span>.</li>
+        <li>У конфігурації YAML в блок <code>environment:</code> додай рядок <code>- SETUP_MODE=1</code>, збережи і «Зібрати».</li>
+        <li>Відкрий <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/setup</code> і пройди всі кроки через «Перевірити». Секрети можна не вводити знову, якщо адреса і користувач не змінились.</li>
+        <li>«Зберегти і запустити», потім зупини проєкт, прибери <code>SETUP_MODE=1</code> і знову «Зібрати». Поки змінна є, сервіс відкриватиме майстра після кожного перезапуску.</li>
+      </ol>
+      <h3>Резервна копія і доступ до образу</h3>
+      <div data-platform="linux pi">
+      <p>Зберігай копію папок <code><span class="v" data-v="dir">~/vartovyi</span>/data</code> і <code><span class="v" data-v="dir">~/vartovyi</span>/config</code>: там база і налаштування з паролями, тож тримай копію надійно. Наприклад, архів із датою в домашній папці (Vartovyi зупиняється на кілька секунд, щоб копія бази була цілісною):</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>cd <span class="v" data-v="dir">~/vartovyi</span>
+docker compose stop vartovyi
+tar czf ~/vartovyi-backup-$(date +%F).tar.gz data config
+docker compose start vartovyi</pre></div>
+      <p>Якщо <code>id -u</code> показує не 1000 (крок 5), папки належать uid 1000, а не тобі: додай <code>sudo</code> перед <code>tar</code>.</p>
+      <p>Пакет у GHCR має бути публічним. Якщо він приватний: на GitHub створи токен із правом <code>read:packages</code> і виконай <code>docker login ghcr.io</code> — логін GitHub, пароль — токен.</p>
+      </div>
+      <div data-platform="synology">
+      <p>Додай папку <code>docker/vartovyi</code> у завдання Hyper Backup: там база і налаштування з паролями, тож зберігай копію надійно.</p>
+      <p>Пакет у GHCR має бути публічним. Якщо він приватний: на GitHub створи токен із правом <code>read:packages</code>, потім <span class="menu">Container Manager → Реєстр → Параметри → Додати</span>, адреса <code>https://ghcr.io</code>, логін GitHub, пароль — токен.</p>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section id="s10" data-step="10">
+      <div class="stephead"><h2><span class="k">10</span>Застосунок на iPhone</h2>
+      <p class="lead">Vartovyi можна поставити на початковий екран iPhone і відкривати як звичайний застосунок.</p></div>
+      <ol>
+        <li>На iPhone, підключеному до домашньої Wi‑Fi, відкрий у <b>Safari</b> адресу <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span></code>.</li>
+        <li>Натисни «Поділитися» <svg class="share-ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9H6a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10a1 1 0 0 0-1-1h-2"/><path d="M12 3v12"/><path d="M8.5 6.5 12 3l3.5 3.5"/></svg> → «На початковий екран» → «Додати». У новому компактному вигляді Safari кнопка «Поділитися» схована під кнопкою «…».</li>
+        <li>Відкривай Vartovyi з іконки на початковому екрані: він працює на весь екран, знизу вкладки «Головна», «Медіа», «Підбірки», «Стан». Щоб оновити дані, потягни сторінку вниз. «Трекери», «Сповіщення» й ця інструкція відкриваються зі сторінки «Стан».</li>
+      </ol>
+      <div class="note"><b>Працює лише в домашній мережі.</b> Поза домом (або коли сервер недоступний) застосунок покаже «Немає зв'язку з сервером» і кнопку «Спробувати ще раз». Сповіщення приходять у Telegram, а через HTTPS — ще й push (крок 13).</div>
+      <div class="check"><div class="t">✅ Перевір</div>
+        <label><input type="checkbox" id="c10a"><span>На початковому екрані iPhone є іконка Vartovyi.</span></label>
+        <label><input type="checkbox" id="c10b"><span>З іконки Vartovyi відкривається на весь екран, з вкладками «Головна», «Медіа», «Підбірки», «Стан» знизу.</span></label>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section id="s11">
+      <div class="stephead"><h2><span class="k">11</span>Підбірки (TMDB)</h2>
+      <p class="lead">Необовʼязково. Ключ TMDB вмикає вкладку «Підбірки», «План релізів» на Головній і перевірку, чи завершено серіал.</p></div>
+      <p>На вкладці «Підбірки» — «Популярне зараз», «Схоже на твоє» (за watchlist і нещодавно доданим у Plex), «Нові сезони» серіалів з твоєї бібліотеки і добірки за жанром. Те, що вже є в Plex, не пропонується; тайтли з watchlist позначені «✓ у watchlist».</p>
+      <p><b>Бейджі наявності на трекерах.</b> Під кожним постером — що є на увімкнених трекерах (найкращий результат серед них): «🇺🇦 1080p WEB-DL» (є з українською озвучкою в потрібній якості), «🇺🇦 лише 720p» (з озвучкою, але нижче твоїх вимог до якості), «немає з укр.» або «ще не перевірено». Бейджі заповнюються поступово й лише разом із пошуком на трекерах: після кожного пошуку (раз на <code>tolokaHours</code>, типово 12 годин) Vartovyi робить ще до 5 запитів до трекерів. Тайтл перевіряється на всіх увімкнених трекерах по черзі, тож з одним трекером це до 5 тайтлів, з двома — до 2; уже перевірений тайтл повторно — не раніше ніж за день (свіжі релізи) чи за тиждень (решта). Коли відкриваєш картку тайтлу, він перевіряється одразу (якщо настав час), а в блоці «На трекерах» видно до 5 найкращих тем з усіх трекерів з посиланнями. Якщо трекер недоступний, перевірки на ньому стають на паузу на 2 години; бейдж тоді показує результат тих трекерів, що відповіли, разом із раніше знайденими темами решти. Якщо жоден трекер не увімкнено, бейджі не оновлюються.</p>
+      <h3>Отримати ключ TMDB</h3>
+      <ol>
+        <li>Зареєструйся на <a href="https://www.themoviedb.org/signup" target="_blank" rel="noopener">themoviedb.org</a> і підтверди пошту.</li>
+        <li>Натисни на аватар → <span class="menu">Settings → API</span> і створи ключ: тип використання <b>Personal</b>, коротко опиши призначення.</li>
+        <li>Скопіюй <b>API Read Access Token</b> (довгий рядок). Коротший «API Key» теж підійде.</li>
+      </ol>
+      <h3>Додати ключ у Vartovyi</h3>
+      <p>Відкрий вкладку Підбірки (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/discover</code>): без ключа там картка «Підбірки з TMDB» з полем для ключа. Встав ключ і натисни «Перевірити і зберегти» — перезапуск не потрібен. Інший спосіб: рядок <code>TMDB_TOKEN=…</code> у <code>.env</code> (або в <code>environment:</code> проєкту) і перезапуск; такий ключ має пріоритет. Картка «TMDB» на «Стан» показує «не налаштовано», «ключ ок» або помилку.</p>
+      <h3>Додати у watchlist</h3>
+      <p>Відкрий тайтл і натисни «+ У watchlist»: він потрапить у watchlist Plex. Vartovyi підхопить його на наступній синхронізації з Plex (типово раз на 24 години) або одразу після «Перевірити зараз» чи «Оновити» на сторінці «Медіа».</p>
+    </section>
+
+    <!-- trackers -->
+    <section id="trackers">
+      <div class="stephead"><h2><span class="k">12</span>Інші трекери</h2>
+      <p class="lead">Необовʼязково. Крім вбудованої Toloka, Vartovyi шукає й на інших трекерах — за їхнім описом у форматі Cardigann (як у Prowlarr і Jackett). Усе робиться на сторінці Трекери (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/trackers</code>).</p></div>
+      <ol>
+        <li>Відкрий «Трекери» (верхнє меню, а на телефоні — посилання на сторінці «Стан»).</li>
+        <li>У блоці «Каталог трекерів» знайди трекер: пошук за назвою, фільтри за мовою (зокрема українська), типом (публічні, напівприватні, приватні) і «лише підтримувані».</li>
+        <li>Натисни «Додати», заповни форму (логін, пароль чи кукі, інші параметри з опису) і «Зберегти». Трекер додається <b>вимкненим</b>.</li>
+        <li>Натисни «Перевірити»: Vartovyi увійде на трекер і пошукає «1080p». Перша успішна перевірка вмикає трекер; помилка показується під ним.</li>
+      </ol>
+      <ul>
+        <li><b>Каталог</b> береться з <a href="https://github.com/Prowlarr/Indexers" target="_blank" rel="noopener">Prowlarr/Indexers</a> і оновлюється раз на 7 днів або кнопкою «Оновити каталог». Трекера немає в каталозі — встав його <code>.yml</code>-опис у «Додати трекер» і натисни «Розібрати». Опис — на GitHub у Prowlarr/Indexers, папка <code>definitions/v11</code>, файл <code>&lt;назва&gt;.yml</code> → Raw. Якщо GitHub недоступний чи обмежив запити, показується останній збережений каталог.</li>
+        <li><b>«Не підтримується»</b> — опис використовує те, чого Vartovyi не вміє (наприклад, обхід Cloudflare); причину видно в рядку каталогу. Також потрібне поле <code>details</code> (сторінка роздачі).</li>
+        <li><b>Порядок</b> (кнопки ↑ і ↓) — пріоритет: якщо ті самі серії є на вищому трекері, сповіщення про роздачу з нижчого не приходить. Правила якості спільні для всіх.</li>
+        <li><b>Адреса в локальній мережі</b> — Vartovyi попросить підтвердження: додавай такий опис, лише якщо це твій власний трекер.</li>
+        <li><b>Вхід за кукі</b> — скопіюй заголовок <code>Cookie</code> з браузера (DevTools → Network); коли кукі протухнуть, прийде повідомлення — встав нові в «Налаштувати».</li>
+        <li><b>Оновити опис</b> — бере найновіший опис з каталогу: значення налаштувань, що лишились у новому описі, зберігаються, зниклі прибираються, нові поля отримують типові значення; якщо новий опис не підтримується, лишається старий. Мітка «є новіша версія» біля назви — у каталозі новіший опис. Після оновлення натисни «Перевірити».</li>
+        <li><b>Налаштувати</b> відкриває ту саму форму: паролі й кукі показано як «••••», незмінене поле лишає збережене значення. <b>Видалити</b> прибирає трекер разом із сесією; знайдені на ньому роздачі лишаються в історії.</li>
+        <li>Toloka вбудована: її можна вимкнути чи пересунути, але не видалити. Після збою трекер стає на паузу («пауза до …»), інші шукають далі.</li>
+      </ul>
+      <p>На сторінці тайтлу «🔎 Шукати зараз» шукає цей тайтл на всіх увімкнених трекерах одразу (у порядку пріоритету, трекери на паузі пропускаються; для одного тайтлу — не частіше ніж раз на 5 хвилин, а якщо вже йде перевірка, тайтл перевіряється в ній), а «Відкрити на трекері ▾» веде на сторінку пошуку трекера (трекери з пошуком через POST чи API посилання не мають — ключі й паролі в посилання не потрапляють).</p>
+    </section>
+
+    <!-- push -->
+    <section id="push">
+      <div class="stephead"><h2><span class="k">13</span>Сповіщення і push</h2>
+      <p class="lead">Необовʼязково. Яку подію куди надсилати — у Telegram, push на телефон чи компʼютер, або нікуди.</p></div>
+      <p>Сторінка Сповіщення (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/notifications</code>) (верхнє меню, а на телефоні — посилання на сторінці «Стан») — таблиця «подія × канал»: для кожної події окремо вмикаються <b>Telegram</b> і <b>Push</b>. Зміни зберігаються одразу.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Подія</th><th>Коли приходить</th><th>Типово</th></tr></thead>
+        <tbody>
+          <tr><td>Нова роздача</td><td data-l="Коли">знайдено роздачу, кнопки «Завантажити» / «Ігнорувати»</td><td data-l="Типово">Telegram</td></tr>
+          <tr><td>⭐ Автозавантаження</td><td data-l="Коли">роздачу улюбленого серіалу додано в завантаження автоматично</td><td data-l="Типово">Telegram</td></tr>
+          <tr><td>Завантажено</td><td data-l="Коли">торент-клієнт докачав роздачу</td><td data-l="Типово">вимкнено (у Telegram статус і так оновлюється в повідомленні роздачі)</td></tr>
+          <tr><td>Не завантажилось</td><td data-l="Коли">помилка торент-клієнта або завдання видалено</td><td data-l="Типово">вимкнено (так само)</td></tr>
+          <tr><td>Завантаження зависло / не завантажилось</td><td data-l="Коли">без прогресу <code>downloads.stallHours</code> годин або помилка клієнта; кнопки «Замінити» / «Чекати далі» (<a href="#stalled">Завислі завантаження</a>)</td><td data-l="Типово">Telegram; push — коли push налаштовано</td></tr>
+          <tr><td>Премʼєра сезону</td><td data-l="Коли">вийшов новий сезон серіалу з watchlist</td><td data-l="Типово">Telegram</td></tr>
+          <tr><td>Переглянуте можна видалити</td><td data-l="Коли">сезон (чи завершений серіал) переглянуто повністю; кнопки «🗑 Видалити» / «Залишити» (<a href="#watched">Видалити переглянуте</a>)</td><td data-l="Типово">Telegram; push — коли push налаштовано</td></tr>
+          <tr><td>Проблеми</td><td data-l="Коли">трекер недоступний, вхід, мало місця, збої перевірки</td><td data-l="Типово">Telegram</td></tr>
+        </tbody>
+      </table></div>
+      <p>Push вимкнено, поки немає жодного пристрою. Коли перший пристрій увімкне push, push вмикається для всіх подій — вимкни зайве в таблиці. Якщо вимкнути Telegram для «Нова роздача», роздача однаково чекає рішення: кнопки «Завантажити» / «Ігнорувати» є на сторінці тайтлу і на Головній.</p>
+
+      <h3>Що потрібно для push</h3>
+      <ul>
+        <li><b>HTTPS з довіреним сертифікатом.</b> Браузери дають push лише сайтам з HTTPS. За адресою <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span></code> сторінка покаже «Push працює лише через HTTPS — інструкція». <span data-platform="synology">Як зробити HTTPS на Synology — нижче.</span><span data-platform="linux pi">Як зробити HTTPS через Caddy — нижче.</span></li>
+        <li><b>iPhone і iPad:</b> iOS / iPadOS 16.4 або новіша, і Vartovyi відкритий <b>з іконки на початковому екрані</b>, доданої з HTTPS-адреси: Safari → «Поділитися» → «На початковий екран» → «Додати». Іконка, додана раніше з <code>http://</code>-адреси (крок 10), не підходить: додай нову з HTTPS-адреси.</li>
+        <li><b>Android, компʼютер:</b> Chrome, Edge, Firefox або Safari на Mac — досить відкрити HTTPS-адресу.</li>
+        <li><b>Інтернет на <span data-platform="synology">NAS</span><span data-platform="linux pi">сервері</span>.</b> Сповіщення йдуть через служби push виробників браузерів (Apple, Google, Mozilla, Microsoft). Відкривати Vartovyi в інтернет для цього не треба.</li>
+      </ul>
+
+      <h3>Що працює вдома, а що будь-де</h3>
+      <ul>
+        <li><b>Push приходить будь-де</b>, де телефон має інтернет.</li>
+        <li><b>Натиснути на сповіщення, кнопки «Завантажити» / «Ігнорувати» і сама сторінка Vartovyi працюють лише вдома</b> (або через домашній VPN): Vartovyi доступний тільки в домашній мережі. Поза домом кнопка покаже «Немає звʼязку з Vartovyi».</li>
+        <li><b>На iPhone, iPad і в Safari на Mac у push-сповіщенні немає кнопок.</b> Натисни на сповіщення — відкриється сторінка тайтлу, рішення там. Кнопки в самому сповіщенні є в Chrome, Edge і Firefox.</li>
+      </ul>
+
+      <div data-platform="synology">
+      <h3>HTTPS через зворотний проксі Synology (DSM 7)</h3>
+      <p>Потрібне доменне імʼя. Найпростіше — безкоштовне DDNS-імʼя Synology: <span class="menu">Панель керування → Зовнішній доступ → DDNS → Додати</span>, постачальник Synology, імʼя на кшталт <code>vartovyi-home.synology.me</code>. Далі в прикладах — <code>&lt;DDNS-імʼя&gt;</code>.</p>
+      <ol>
+        <li><b>Сертифікат.</b> <span class="menu">Панель керування → Безпека → Сертифікат → Додати</span> → «Додати новий сертифікат» → «Отримати сертифікат від Let's Encrypt». Доменне імʼя — <code>&lt;DDNS-імʼя&gt;</code>, пошта — твоя. DSM сам поновлює сертифікат. Якщо видача не вдається з помилкою перевірки домену, Let's Encrypt не достукався до NAS через порт 80 роутера. <b>Якщо для видачі знадобився порт 80, він потрібен і для кожного автоматичного поновлення</b> (приблизно раз на 2–3 місяці). Протухлий сертифікат не заважає доставці push, але сторінка Vartovyi за HTTPS не відкриється, поки його не поновлено.</li>
+        <li><b>Профіль контролю доступу — обовʼязково.</b> <span class="menu">Панель керування → Портал входу → Додатково → Контроль доступу → Створити</span>: назва <code>Домашня мережа</code>; правило «Дозволити» — твоя домашня мережа, напр. <code>192.168.1.0/24</code> (або <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>); правило «Заборонити» — усі інші адреси. Без цього правило на порт 443 може бути досяжним з інтернету навіть без переадресації портів — через IPv6.</li>
+        <li><b>Зворотний проксі.</b> <span class="menu">Панель керування → Портал входу → Додатково → Зворотний проксі → Створити</span>:
+          <ul>
+            <li>Опис: <code>Vartovyi</code>.</li>
+            <li>Джерело: протокол <b>HTTPS</b>, імʼя хоста <code>&lt;DDNS-імʼя&gt;</code>, порт <b>443</b>.</li>
+            <li>Призначення: протокол <b>HTTP</b>, імʼя хоста <b>localhost</b>, порт <b><span class="v" data-v="port">8080</span></b> (зовнішній порт контейнера з <code>ports:</code>).</li>
+            <li>Профіль контролю доступу: <code>Домашня мережа</code> (з пункту 2).</li>
+            <li>Користувацькі заголовки (WebSocket) не потрібні. «Зберегти».</li>
+          </ul></li>
+        <li><b>Привʼяжи сертифікат.</b> <span class="menu">Панель керування → Безпека → Сертифікат → Налаштування</span>: у рядку <code>&lt;DDNS-імʼя&gt;</code> вибери сертифікат із пункту 1.</li>
+        <li><b>Додай імʼя в <code>WEB_ALLOWED_HOSTS</code></b>: рядок <code>WEB_ALLOWED_HOSTS=&lt;DDNS-імʼя&gt;</code> у <code>.env</code> (або в <code>environment:</code> проєкту), потім перезапусти контейнер. Без цього сторінка відкриється, але дані не завантажаться (помилка 403 «невідома адреса сервера»).</li>
+        <li><b>Перевір у домашній мережі.</b> На телефоні в домашній Wi‑Fi відкрий <code>https://&lt;DDNS-імʼя&gt;</code>: замок без попереджень і сторінка Vartovyi (з входом за паролем). Якщо не відкривається, роутер не повертає запити на зовнішню адресу в домашню мережу — додай у DNS роутера запис <code>&lt;DDNS-імʼя&gt;</code> → <code><span class="v" data-v="ip">&lt;NAS_IP&gt;</span></code>.</li>
+      </ol>
+      <div class="note warn"><b>Вхід із паролем не робить Vartovyi сервісом для інтернету. Ніколи не переадресовуй порт 443 з роутера на NAS заради Vartovyi</b> — push працює і без цього, а профіль контролю доступу з пункту 2 тримай у правилі завжди.</div>
+      </div>
+
+      <div data-platform="linux pi">
+      <h3>HTTPS через Caddy</h3>
+      <p>Для push потрібен HTTPS з доменним імʼям, що вказує на твій роутер. Підійде безкоштовне DDNS-імʼя (наприклад від <a href="https://www.duckdns.org" target="_blank" rel="noopener">DuckDNS</a>); далі в прикладах — <code>vartovyi.example.com</code>, а в «Увімкнути push на пристрої» — <code>&lt;DDNS-імʼя&gt;</code>. Caddy сам отримує сертифікат Let's Encrypt і сам його поновлює.</p>
+      <ol>
+        <li><b>Порт 80 для сертифіката.</b> У роутері переадресуй порт 80 на порт 80 сервера (<code><span class="v" data-v="ip">&lt;NAS_IP&gt;</span></code>): через нього Let's Encrypt перевіряє домен під час видачі сертифіката і при кожному поновленні (приблизно раз на 2 місяці). Порт 443 переадресовувати не треба.</li>
+        <li><b>Caddyfile.</b> У <code><span class="v" data-v="dir">~/vartovyi</span></code> створи файл <code>Caddyfile</code> (<code>nano Caddyfile</code>) зі своїм доменом. Перші два рядки всередині пускають лише домашню мережу:
+          <div class="pre"><button class="copy" type="button">Копіювати</button><pre>vartovyi.example.com {
+  @outside not remote_ip private_ranges
+  respond @outside 403
+  reverse_proxy 127.0.0.1:<span class="v" data-v="port">8080</span>
+}</pre></div></li>
+        <li><b>Запусти Caddy</b> з тієї самої папки:
+          <div class="pre"><button class="copy" type="button">Копіювати</button><pre>docker run -d --name caddy --restart unless-stopped --network host -v caddy_data:/data -v $PWD/Caddyfile:/etc/caddy/Caddyfile caddy:2</pre></div>
+          <code>docker logs caddy</code> покаже, чи видано сертифікат (<code>certificate obtained successfully</code>).</li>
+        <li><b>Додай домен у <code>WEB_ALLOWED_HOSTS</code></b> (<a href="#access">Доступ і пароль</a>): рядок <code>- WEB_ALLOWED_HOSTS=vartovyi.example.com</code> у блоці <code>environment:</code> сервісу <code>vartovyi</code> в <code>compose.yml</code>, потім <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code>. Без цього сторінка відкриється, але дані не завантажаться (помилка 403 «невідома адреса сервера»). Якщо проксі працює на іншій машині, так само додай її адресу в <code>WEB_TRUSTED_PROXIES</code>.</li>
+        <li><b>Перевір у домашній мережі.</b> На телефоні в домашній Wi‑Fi відкрий <code>https://vartovyi.example.com</code>: замок без попереджень і сторінка Vartovyi (з входом за паролем). Якщо не відкривається, роутер не повертає запити на зовнішню адресу в домашню мережу — додай у DNS роутера запис <code>vartovyi.example.com</code> → <code><span class="v" data-v="ip">&lt;NAS_IP&gt;</span></code>.</li>
+      </ol>
+      <div class="note warn"><b>Вхід із паролем не робить Vartovyi сервісом для інтернету.</b> Переадресовуй лише порт 80 для сертифіката — ніколи 443, 8080 чи 8090: push працює і без цього. Рядки <code>remote_ip private_ranges</code> у Caddyfile не прибирай.</div>
+      <p><b>Без власного домену:</b> Tailscale (<code>sudo tailscale serve --bg --https=443 http://127.0.0.1:<span class="v" data-v="port">8080</span></code>) дає HTTPS-адресу всередині твоєї tailnet; спершу ввімкни MagicDNS і HTTPS-сертифікати в адмін-консолі tailnet (сторінка DNS); її імʼя <code>….ts.net</code> теж додай у <code>WEB_ALLOWED_HOSTS</code>.</p>
+      </div>
+
+      <h3>Увімкнути push на пристрої</h3>
+      <ol>
+        <li>Відкрий <code>https://&lt;DDNS-імʼя&gt;/notifications</code> (на iPhone — з іконки на початковому екрані).</li>
+        <li>За бажанням введи назву пристрою, натисни «Увімкнути на цьому пристрої» і дозволь сповіщення.</li>
+        <li>Біля пристрою в списку «Пристрої з push» натисни «Надіслати тестове» — має прийти «🔔 Vartovyi: Тестове сповіщення: push на цьому пристрої працює».</li>
+      </ol>
+      <p>Повтори на кожному телефоні чи компʼютері (найбільше 20 пристроїв). Прибрати пристрій — «Видалити» в списку «Пристрої з push» (з будь-якого пристрою) або «Вимкнути на цьому пристрої» на ньому самому; недійсні підписки Vartovyi прибирає сам.</p>
+    </section>
+
+    <!-- daily -->
+    <section id="daily">
+      <div class="stephead"><h2>Щоденна робота</h2>
+      <p class="lead">Коротко про те, що Vartovyi робить після встановлення і де це в застосунку.</p></div>
+      <h3>Головна</h3>
+      <p>Головна (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/</code>) (перша вкладка) збирає щоденне на одному екрані; «Медіа» з усіма тайтлами — на <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/media</code>. Зверху — смуга уваги, лише про те, що не так зараз: «🔔 N роздач чекають рішення», залежність, що не працює, «⏸ Toloka на паузі до 14:30», «⚠️ Зависло: …», «🗑 … переглянуто», «⬇️ N завантажуються». Кожну картку можна сховати кнопкою <b>×</b> — вона повернеться, коли зміниться її зміст. Минулі збої — на сторінці «Помилки». Далі блоки «Готове до перегляду» (непереглянуте в Plex), «Зараз завантажується», «Чекає рішення», «План релізів» (серії на 14 днів і премʼєри сезонів на ~3 місяці, з TMDB — крок 11; дані кешуються на 12 годин, тож одразу після запуску блок кілька секунд пише «Завантажую дати з TMDB…») і «Популярне зараз». Сторінка оновлюється щохвилини; якщо один блок не завантажився (скажімо, TMDB недоступний), він показує свою помилку, а решта працює.</p>
+      <p><b>Непереглянуте.</b> Раз на 30 хвилин Vartovyi оновлює бібліотеку Plex-сервера і запамʼятовує переглянуті серії (лише власника токена): на картці в «Медіа» значок «▶ 3», а фільтр «▶ Є непереглянуте» лишає такі тайтли. На сітці сезонів переглянуте приглушене, а оновлення приходить із затримкою до 30 хвилин.</p>
+
+      <h3 id="stalled">Завислі завантаження</h3>
+      <p>Завантаження <b>зависло</b>, коли клієнт качає, а нових даних немає <code>downloads.stallHours</code> годин (типово 6; черга, перевірка файлів і пауза не рахуються), або клієнт повідомив про помилку завдання. Приходить «⚠️ Зависло: Назва S01E01–E03 · без прогресу 7 год» з кнопками <b>🔁 Замінити</b> і <b>⏳ Чекати далі</b>; ті самі кнопки — на Головній і на сторінці тайтлу. Помилка, прибрана кнопкою «Прибрати помилку», зависанням не вважається; коли завантаження рушить чи завершиться, зависання знімається само. Поріг <code>downloads.stallHours</code> (1–168) задається в <code>quality.yaml</code>, після зміни перезапусти контейнер.</p>
+      <ul>
+        <li><b>Замінити</b> — бере збережену роздачу того самого тайтлу з усіма потрібними серіями (спершу оновлену версію тієї самої теми, далі за порядком трекерів і якістю); якщо такої немає, один раз шукає на трекерах. Зависле завдання прибирається з клієнта без видалення файлів: Download Station видаляє недокачане, qBittorrent і Transmission лишають часткові файли. Пошук на трекерах — не частіше ніж раз на 12 годин для тайтлу і не більше 5 тайтлів на годину; якщо зависло кілька завантажень одразу або це помилка диска чи папки, Vartovyi на трекерах не шукає — справа, схоже, в торент-клієнті. В історії тайтлу зʼявляється запис про заміну; якщо заміну додати не вдалося, зависле завдання повертається в клієнт.</li>
+        <li><b>Чекати далі</b> — 24 години без нагадувань; якщо завантаження так і не рушить, Vartovyi нагадає знову з новим підбором заміни.</li>
+        <li>На сторінці тайтлу є ще «🗑 Прибрати з клієнта» і «🔄 Оновити торент і перекачати» (обидві з підтвердженням). «Прибрати з клієнта» прибирає завдання без видалення файлів (Download Station видаляє недокачане), і роздачу можна завантажити ще раз. «Оновити торент» заново бере торент теми з трекера: якщо тему перезалили, новий торент додається в ту саму папку як нове завдання того самого завантаження; якщо торент той самий — «Торент на трекері не змінився», і зʼявляється «↻ Перезапустити завдання». На трекер, що на паузі після збою, Vartovyi не йде; повторно оновити торент тієї самої роздачі можна не раніше ніж за 3 хвилини.</li>
+      </ul>
+
+      <h3 id="watched">Видалити переглянуте</h3>
+      <p>Коли сезон у Plex переглянуто повністю, Vartovyi пропонує звільнити місце — <b>нічого не видаляється без твого «так»</b>: «🗑 Silo — сезон 2 переглянуто (8 серій, ≈ 34 ГБ)» з кнопками <b>🗑 Видалити</b> / <b>Залишити</b> (у Telegram — ще підтвердження «Так, видалити назавжди»). Пропонується лише сезон, що вже вийшов повністю; весь серіал — коли він завершений (за TMDB) або прибраний з watchlist; фільми — ніколи. На сторінці тайтлу в переглянутому сезоні завжди є «🗑 Видалити сезон».</p>
+      <ul>
+        <li><b>Потрібно в Plex:</b> <span class="menu">Налаштування → Бібліотека → «Дозволити видалення медіа»</span> (Settings → Library → Allow media deletion) і токен власника сервера (крок 1). Інакше Vartovyi відповість, що саме ввімкнути, і нічого не змінить.</li>
+        <li>Plex видаляє файли всіх копій сезону, Vartovyi прибирає з клієнта свої завдання лише цього сезону і більше не шукає видалені серії. «Повернути» на сторінці тайтлу знімає позначку (файли не відновлюються).</li>
+        <li>За одне оновлення бібліотеки — не більше 5 нових пропозицій; після «Залишити» той самий сезон не пропонується, доки в ньому не зʼявляться нові серії. Підтвердження в Telegram діє 10 хвилин. Якщо серіал лежить у кількох бібліотеках (наприклад, «TV» і «TV 4K»), сезон вважається переглянутим, лише коли переглянуто кожну копію. Поки серії сезону ще качаються, пропозицій немає. Дрібні супровідні файли (субтитри, .nfo) і порожні папки можуть лишитися.</li>
+        <li><b>Видалив у самому Plex?</b> Наступне оновлення бібліотеки помітить, що переглянуті серії зникли, і позначить їх «переглянуто й видалено» — Vartovyi більше не пропонуватиме їх завантажити («🗑 Сезон 2 видалено в Plex після перегляду…» в історії тайтлу). Непереглянуте, що зникло, шукається як і раніше; «Повернути» знімає позначку, а якщо серії знову зʼявились у Plex — вона знімається сама. Кошик Plex — ще не видалення: позначка ставиться, лише коли серії зникнуть і з кошика, а поки переглянуті серії лежать у кошику, Vartovyi їх не шукає й не пропонує. Якщо бібліотека раптово зменшилась (недоступний диск, збій Plex — понад 30% серій чи порожня секція), цього разу нічого не позначається і на «Помилки» буде попередження.</li>
+        <li><b>Безпека:</b> видаляти може кожен, хто відкриває сайт. У режимах «Вхід: лише ззовні» і «вимкнено» (<code>WEB_LOGIN_MODE=off</code>) це будь-хто в домашній мережі — вибери «Вхід: завжди», якщо треба (<a href="#access">Доступ і пароль</a>).</li>
+      </ul>
+
+      <div data-platform="linux pi">
+      <p><b>Plex на самому сервері і «Видалити переглянуте».</b> Plex, встановлений на сервері (не в Docker), працює від користувача <code>plex</code>, а завантажені файли належать uid 1000 (qBittorrent). <code>compose.yml</code> робить їх доступними на запис для групи (<code>UMASK=002</code>): додай <code>plex</code> у групу 1000 і перезапусти Plex, інакше Plex не зможе їх видалити. <code>getent group 1000</code> має показати групу; якщо він нічого не виводить, у uid 1000 немає групи з тим самим id — постав групу свого користувача (<code>id -gn</code>) замість <code>$(getent group 1000 | cut -d: -f1)</code>. Перший рядок дає групі запис і для папок та файлів, що вже є в <code><span class="v" data-v="media">/srv/media</span></code>:</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>sudo chmod -R g+w <span class="v" data-v="media">/srv/media</span>
+sudo usermod -aG $(getent group 1000 | cut -d: -f1) plex
+sudo systemctl restart plexmediaserver</pre></div>
+      </div>
+
+      <h3 id="folders">Папки тайтлів і відповідність у Plex</h3>
+      <p>Нові завантаження йдуть у папку тайтлу з підказкою для Plex: <code>video/Series/House of the Dragon (2022) {tmdb-94997}</code>. Назва — оригінальна, якщо вона латиницею, інакше — з watchlist; без TMDB id підказка <code>{tvdb-…}</code> чи <code>{imdb-tt…}</code>. Папка запамʼятовується в роздачі: нові серії, «Завантажити ще раз» і «Замінити» кладуть туди ж. <span data-platform="synology">Download Station сам папок не створює — Vartovyi робить це через <b>File Station</b> під тим самим користувачем DSM (дозвіл з кроку 4); без доступу роздача йде в корінь папки, а на «Стан» зʼявляється попередження. </span>qBittorrent і Transmission створюють папки самі. Наявні файли не переносяться: роздачі, завантажені раніше в корінь, там і лишаються. Вимкнути: перемикач «Окрема папка для кожного тайтлу» на «Стан», прапорець у майстрі або <code>downloads.perTitleFolder: false</code>.</p>
+      <p>Якщо Plex зіставив завантажене з іншим тайтлом, однозначні випадки Vartovyi виправляє сам («Fix match», запис в історії тайтлу), інакше на сторінці тайтлу зʼявляється блок «Відповідність у Plex» з кнопкою «Виправити в Plex» і причиною (в елементі файли кількох тайтлів, роздача розкладена по кількох елементах, бібліотека на старому агенті Plex, стара роздача в корені папки) — перед натисканням перевір елемент у Plex. Якщо відповідність після виправлення змінили в самому Plex, Vartovyi її більше не чіпає. Для «Fix match» потрібен токен власника сервера, інакше Plex відповідає 401 (запис у «Помилках»).</p>
+
+      <h3>Точні й можливі збіги</h3>
+      <p><b>Точний збіг</b> (та сама назва і відповідний рік) дає сповіщення і статус «чекає рішення». <b>Можливий збіг</b> (рік відрізняється на 2–3 роки) зберігається без сповіщення — у розділі «Можливі збіги» на сторінці тайтлу, звідки його можна завантажити чи проігнорувати. Для серіалу так зберігається лише тема з позначкою сезону. Під час кожного пошуку Vartovyi заново перевіряє збережені роздачі без рішення: ті, що зовсім не відповідають тайтлу, ігнорує («🔕 Не відповідає тайтлу: …» у Telegram), а точні й можливі позначає наново.</p>
+
+      <h3>Кеш постерів</h3>
+      <p>Постери й фони Vartovyi зберігає в <code>data/image-cache</code> (до 500 МБ, найдавніші видаляються самі). Щоб очистити, зупини проєкт і видали цю теку.</p>
+    </section>
+
+    <!-- access -->
+    <section id="access">
+      <div class="stephead"><h2>Доступ і пароль</h2>
+      <p class="lead">Удома (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span></code>) Vartovyi відкривається без пароля; ззовні — через HTTPS-проксі — лише після входу. Telegram-бот і push працюють незалежно від входу: кнопки «Завантажити» / «Ігнорувати» в push мають власний одноразовий токен.</p></div>
+      <h3>Режими входу</h3>
+      <p>На сторінці Стан (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/status</code>), блок «Доступ»:</p>
+      <ul>
+        <li><b>«Вхід: лише ззовні (HTTPS)»</b> — типово. Без пароля — лише запит із домашньої мережі: без заголовків проксі (<code>X-Forwarded-For</code>, <code>X-Forwarded-Proto</code>, <code>X-Real-IP</code>, <code>Forwarded</code>…), за приватною IP сервера, <code>localhost</code> чи домашнім імʼям (без крапки, <code>.local</code>, <code>.lan</code>, <code>.home</code>, <code>.home.arpa</code>, <code>.internal</code> або з <code>WEB_LOCAL_HOSTS</code>), з приватної адреси пристрою, що не є шлюзом Docker чи адресою з <code>WEB_TRUSTED_PROXIES</code>. Tailscale / CGNAT і глобальні IPv6 — з паролем.</li>
+        <li><b>«Вхід: завжди»</b> — пароль і вдома.</li>
+        <li><b>«Вхід: вимкнено»</b> — без пароля звідусіль, зокрема через HTTPS-проксі. Те саме змінною <code>WEB_LOGIN_MODE=off</code> у compose (переважає налаштування — на випадок, коли не можеш увійти). Вибрати «вимкнено» на «Стан», коли пароль уже є, можна лише ввівши його — навіть удома. Якщо зворотний проксі доступний з інтернету, у цьому режимі Vartovyi відкритий усім.</li>
+      </ul>
+      <p>«Доступ» показує для поточного запиту «Ваша адреса: … — домашня мережа, вхід не потрібен» або «… — потрібен вхід (причина: …)». Якщо запити приходять напряму з публічної адреси (порт відкритий в інтернет), «Доступ» показує попередження з останньою такою адресою, а «Журнал помилок» — «Запит до сайту напряму з інтернету». Якщо сервер показує всі домашні пристрої адресою шлюзу Docker (буває на деяких збірках DSM у мережі bridge), Vartovyi безпечно вимагає вхід завжди — причину видно в тому самому рядку.</p>
+      <div class="note warn"><b>Проксі без <code>X-Forwarded-For</code> і проброс порту з SNAT виглядають як домашня мережа.</b> nginx з простим <code>proxy_pass</code>, stunnel, HAProxy <code>mode tcp</code>, frp, тунель, а також проброс порту на роутері з підміною адреси (SNAT, NAT loopback — відправником стає LAN-адреса роутера) дають будь-кому з інтернету доступ без пароля. Для них вибери «Вхід: завжди» або додай адресу проксі чи роутера в <code>WEB_TRUSTED_PROXIES</code> (через кому, можна підмережі). <span data-platform="synology">Зворотний проксі DSM заголовки додає — з ним усе гаразд.</span><span data-platform="linux pi">Caddy заголовки додає — з ним усе гаразд.</span></div>
+      <p>Найкраще — щоб твій проксі додавав <code>X-Forwarded-For</code> і <code>X-Forwarded-Proto</code> (у nginx: <code>proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto $scheme;</code>). Кукі сесії позначається <code>Secure</code>, лише коли запит прийшов через HTTPS — напряму або від проксі з <code>X-Forwarded-Proto: https</code>; без цього заголовка вхід працює, але кукі без позначки <code>Secure</code>.</p>
+      <p><b>Імена хостів.</b> <code>WEB_ALLOWED_HOSTS</code> — імена, за якими сайт відкривають ззовні (DDNS для HTTPS, крок 13); <code>WEB_LOCAL_HOSTS</code> — свій домен, за яким відкриваєш Vartovyi удома (split DNS), щоб він не питав пароль (імʼя, за яким Vartovyi доступний ззовні, туди не додавай). API сайту (<code>/api/…</code>) відповідає лише на запити за IP-адресою, <code>localhost</code>, імʼям без крапки, з домашнім суфіксом (<code>.local</code>, <code>.home.arpa</code>, <code>.internal</code>, <code>.lan</code>, <code>.home</code>) або з <code>WEB_ALLOWED_HOSTS</code> (кілька імен через кому) — це захист від DNS rebinding; інакше сторінки відкриваються, але дані не завантажуються (403 «невідома адреса сервера»).</p>
+      <h3>Пароль</h3>
+      <p>Новий Vartovyi просить пароль на кроці майстра «Пароль». Удома його можна створити чи змінити на «Стан» → «Доступ» без коду. Ззовні, поки пароля немає, будь-яка сторінка відкриє «Створи пароль»: потрібен код із журналу — <span data-platform="synology"><span class="menu">Container Manager → Контейнер → vartovyi → Журнал</span></span><span data-platform="linux pi"><code>docker logs vartovyi</code></span>, рядок «Код для створення пароля: 1234-5678» (новий після кожного перезапуску; через SSH: <code>sudo docker logs vartovyi 2&gt;&amp;1 | grep "Код для"</code>). Рядок може бути в журналі двічі (звичайним рядком і JSON-записом) — це той самий код; після створення пароля код більше не діє.</p>
+      <p>Вхід запамʼятовується на 30 днів. Застосунок з іконки на iPhone має окреме від Safari сховище — увійди в ньому окремо. На «Стан» → «Доступ» — список сесій, «Вийти» біля кожної, «Вийти на всіх пристроях» і «Змінити пароль». «Вийти» є й у верхній панелі.</p>
+      <h3>Забув пароль</h3>
+      <ol data-platform="linux pi">
+        <li>У <code>compose.yml</code> додай <code>- WEB_PASSWORD=новий-пароль</code> (щонайменше 8 символів) у блок <code>environment:</code> сервісу <code>vartovyi</code> і виконай <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code>. Пароль зміниться, усі пристрої вийдуть.</li>
+        <li>Увійди з новим паролем, прибери рядок і знову виконай <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code> — пароль лишиться.</li>
+      </ol>
+      <ol data-platform="synology">
+        <li><span class="menu">Проєкт → vartovyi → Дія → Зупинити</span>, у <code>environment:</code> додай <code>- WEB_PASSWORD=новий-пароль</code> (щонайменше 8 символів), «Зібрати». Пароль зміниться, усі пристрої вийдуть.</li>
+        <li>Увійди з новим паролем, прибери рядок і знову «Зібрати» — пароль лишиться.</li>
+      </ol>
+      <p>Поки <code>WEB_PASSWORD</code> задано, на «Стан» висить нагадування прибрати змінну, а змінити пароль у вебінтерфейсі не можна. Значення ніде не показується й не пишеться в журнал. Якщо воно збігається з поточним паролем, перезапуск нікого не виводить — для цього є «Вийти на всіх пристроях».</p>
+      <h3>Невдалі спроби</h3>
+      <p>Після кожного невірного пароля чи коду наступна спроба з тієї самої адреси — через 1, 2, 4, 8 … с, затримка подвоюється до 15 хв і скидається після входу або доби без помилок. Затримка своя для кожної адреси (за проксі — з <code>X-Forwarded-For</code>), тож чужі спроби не зачиняють вхід тобі. Окремо після 50 невдалих спроб за годину з будь-яких адрес кожен вхід із нової зовнішньої адреси сповільнюється на кілька секунд, але не відхиляється; адреси з успішним входом за останні 30 днів і домашню мережу це не сповільнює. Кожна спроба — у «Журналі помилок» як «Невдала спроба входу».</p>
+      <div class="note warn"><b>Ніколи не відкривай порт <span class="v" data-v="port">8080</span> в інтернет — ні IPv4-пробросом, ні по IPv6.</b> <span data-platform="synology">Ззовні — лише через зворотний проксі DSM по HTTPS (крок 13); у брандмауері DSM дозволь <span class="v" data-v="port">8080</span> лише домашній мережі.</span><span data-platform="linux pi">Ззовні — лише по HTTPS через Caddy або Tailscale (крок 13).</span> Удома будь-хто у твоїй мережі (гостьовий Wi-Fi теж) відкриє Vartovyi без пароля — якщо це не годиться, вибери «Вхід: завжди».</div>
+    </section>
+
+    <!-- trouble -->
+    <section id="trouble">
+      <div class="stephead"><h2>Типові проблеми</h2></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Симптом</th><th>Що робити</th></tr></thead>
+        <tbody>
+          <tr><td>«Створи пароль», а коду не знайти</td><td>Рядок «Код для створення пароля» — після останнього запуску контейнера (код новий щоразу). Або задай <code>WEB_PASSWORD</code> (<a href="#access">Доступ і пароль</a>).</td></tr>
+          <tr><td>Забув пароль</td><td><code>WEB_PASSWORD</code> у compose, <span data-platform="synology">«Зібрати»</span><span data-platform="linux pi"><code>up -d</code></span>, увійди, прибери змінну (<a href="#access">Доступ і пароль</a>).</td></tr>
+          <tr><td>«Забагато невдалих спроб — спробуй через N с»</td><td>Після невірних паролів діє затримка (до 15 хв). Багато «Невдала спроба входу» в «Журналі помилок» — якийсь пристрій вводить старий пароль.</td></tr>
+          <tr><td>На iPhone з іконки знову просить увійти</td><td>Застосунок з іконки має окреме від Safari сховище — увійди в ньому один раз. Якщо просить щоразу, перевір, чи не ввімкнено «Блокувати всі кукі» (Параметри → Safari).</td></tr>
+          <tr data-platform="linux pi"><td><code>permission denied</code> у <code>docker logs vartovyi</code></td><td>Папки <code>data</code>/<code>config</code> недоступні на запис для uid 1000: <code>sudo chown -R 1000:1000 <span class="v" data-v="dir">~/vartovyi</span>/data <span class="v" data-v="dir">~/vartovyi</span>/config <span class="v" data-v="dir">~/vartovyi</span>/qbittorrent</code>, потім <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose restart vartovyi</code> (крок 5).</td></tr>
+          <tr data-platform="linux pi"><td>Майстер пише, що qBittorrent не приймає логін</td><td>Тимчасовий пароль із <code>docker logs qbittorrent</code> змінюється при кожному запуску, поки не задаси постійний (крок 6).</td></tr>
+          <tr data-platform="linux pi"><td><code>exec format error</code> на Raspberry Pi</td><td>32-бітна система: <code>dpkg --print-architecture</code> показує <code>armhf</code> (<code>uname -m</code> може й далі показувати <code>aarch64</code>). Перевстанови 64-бітну; див. крок 0.</td></tr>
+          <tr data-platform="linux pi"><td><code>no matching manifest for linux/arm/v7</code> під час стягування образів</td><td>32-бітна система: Docker просить 32-бітний образ, а Vartovyi збирається лише для <code>amd64</code> і <code>arm64</code>. Перевстанови 64-бітну систему; див. крок 0.</td></tr>
+          <tr data-platform="linux pi"><td>qBittorrent завантажує, а Plex цього не показує</td><td>Папки в бібліотеках Plex мають бути саме <code><span class="v" data-v="media">/srv/media</span>/Series</code> і <code><span class="v" data-v="media">/srv/media</span>/Movies</code> (крок 4).</td></tr>
+          <tr data-platform="linux pi"><td>Завантаження зупиняються з «Permission denied» або висять на 0%</td><td>Папка з медіа недоступна на запис для uid 1000: <code>sudo chown -R 1000:1000 <span class="v" data-v="media">/srv/media</span></code> (крок 5).</td></tr>
+          <tr data-platform="linux pi"><td><code>ls -ln</code> після <code>chown</code> не показує <code>1000</code> або <code>chown: … Operation not permitted</code></td><td>Диск в exFAT чи NTFS: вони не зберігають власників Linux. Відформатуй його в ext4 або змонтуй з <code>uid=1000,gid=1000</code> (крок 0).</td></tr>
+          <tr data-platform="linux pi"><td>Контейнери працюють, але <code>:<span class="v" data-v="port">8080</span></code> не відкривається</td><td><code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose ps</code> показує порт <code>vartovyi</code> (<code>0.0.0.0:8080-&gt;8080/tcp</code>): ліве число має збігатися з «Твоїми даними». Відкривай адресу з пристрою в тій самій мережі.</td></tr>
+          <tr data-platform="linux pi"><td>Caddy не запускається: «address already in use»</td><td>Порти 80 чи 443 зайняті іншою службою (Pi-hole, nginx, Apache): <code>sudo ss -tlnp | grep -E ':(80|443)\b'</code> покаже, якою саме. Зупини її або постав Vartovyi за той проксі замість Caddy (крок 13).</td></tr>
+          <tr data-platform="linux pi"><td><code>docker compose pull</code>: <code>denied</code> або <code>unauthorized</code></td><td>Пакет у GHCR приватний: <code>docker login ghcr.io</code> (крок 9).</td></tr>
+          <tr data-platform="synology"><td>Container Manager не може стягнути образ</td><td>Пакет у GHCR приватний (крок 9).</td></tr>
+          <tr data-platform="synology"><td>У журналі <code>exec format error</code></td><td>Образ не для процесора NAS. Потрібен реліз зі збіркою <code>arm64</code> (крок 0).</td></tr>
+          <tr data-platform="synology"><td>У журналі <code>EACCES</code> / <code>permission denied</code> на <code>/data</code></td><td>Папки недоступні на запис для uid 1000 (крок 5).</td></tr>
+          <tr data-platform="synology"><td>Контейнер працює, але <code>:<span class="v" data-v="port">8080</span></code> не відкривається</td><td>Брандмауер DSM блокує порт (крок 6), або на NAS інший порт у <code>ports:</code>.</td></tr>
+          <tr><td>Сторінка відкривається, але дані не вантажаться (403 «невідома адреса сервера»)</td><td>Сайт відкрито за імʼям, якого немає в <code>WEB_ALLOWED_HOSTS</code> (крок 13).</td></tr>
+          <tr data-platform="synology"><td>Перевірка Download Station: помилка сертифіката</td><td>Вказано <code>https://…:5001</code>. Використай <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:5000</code> (крок 4).</td></tr>
+          <tr data-platform="synology"><td>Завдання в Download Station вічно «У черзі», 0 байт</td><td>У користувача <code><span class="v" data-v="svc">vartovyi</span></code> не задано папку за замовчуванням у Download Station. Vartovyi задає її сам (картка «Торент-клієнт (Download Station)» на «Стан»). Якщо не вийшло: увійди в DSM під <code><span class="v" data-v="svc">vartovyi</span></code>, відкрий Download Station і вибери будь-яку папку.</td></tr>
+          <tr data-platform="synology"><td>Download Station: помилка OTP / двофакторна автентифікація</td><td>Вимкни 2FA для <code><span class="v" data-v="svc">vartovyi</span></code>.</td></tr>
+          <tr data-platform="synology"><td>На «Стан»: «Немає доступу до File Station»</td><td>Дай користувачу <code><span class="v" data-v="svc">vartovyi</span></code> доступ до File Station (крок 4) — інакше роздачі кладуться в корінь папки.</td></tr>
+          <tr><td>Після «Завантажити» в повідомленні ❌ «Не вистачає місця»</td><td>Нові серії (або фільм) більші за вільне місце в папці призначення. Звільни місце на диску і натисни «Завантажити» знову.</td></tr>
+          <tr><td>Бот пише «💾 На диску лишилось … вільного»</td><td>Вільного місця менше за поріг (попередження — не частіше ніж раз на 4 години). Звільни місце або зміни <code>storage.minFreeGb</code> у <code>quality.yaml</code> і перезапусти контейнер.</td></tr>
+          <tr data-platform="synology"><td>Завдання додалось, але файли в іншій папці</td><td>Download Station: папку призначення вказано з <code>/volume1</code> на початку. qBittorrent і Transmission: папку вказано шляхом NAS, а не так, як її бачить клієнт у своєму контейнері (крок 4).</td></tr>
+          <tr><td>qBittorrent або Transmission: «невірний логін або пароль», і після виправлення Vartovyi ще якийсь час не підключається</td><td>Після невдалого входу Vartovyi 15 хвилин не пробує знову, щоб qBittorrent не забанив IP. Зачекай або перезапусти контейнер Vartovyi; у майстрі можна перевіряти одразу.</td></tr>
+          <tr><td>qBittorrent: «доступ заблоковано (забагато невдалих входів)»</td><td>qBittorrent забанив IP. Зачекай (тривалість бану — у <span class="menu">Налаштування → Web UI</span>) або перезапусти qBittorrent.</td></tr>
+          <tr><td>Transmission відповів HTTP 403</td><td>IP Vartovyi не входить у <code>rpc-whitelist</code>. Додай підмережу домашньої мережі і Docker, наприклад <code>192.168.1.*,172.*.*.*</code>, або вимкни whitelist і задай логін і пароль RPC (крок 4).</td></tr>
+          <tr><td>Transmission відповів HTTP 421</td><td>Спрацював <code>rpc-host-whitelist</code>. Вкажи в адресі IP: <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:9091/transmission/rpc</code>, або додай імʼя в <code>rpc-host-whitelist</code>.</td></tr>
+          <tr><td>Майстер: «Не знайдено бібліотеки Plex зі шляхом /downloads/…»</td><td>Шлях у контейнері клієнта відрізняється від шляху в Plex, хоча файли ті самі. Якщо папка є в бібліотеці Plex, попередження можна ігнорувати (крок 4).</td></tr>
+          <tr><td>Крок «Вільне місце»: «місце невідоме»</td><td>Найчастіше це «Synology через DSM» з qBittorrent чи Transmission. Вибери «Сам торент-клієнт» або «Папка в контейнері Vartovyi». Завантаження при цьому не блокуються.</td></tr>
+          <tr><td>«Папка в контейнері Vartovyi»: «Папка … недоступна у контейнері»</td><td>Папку не змонтовано в контейнер Vartovyi або шлях у майстрі інший, ніж у <code>volumes:</code> (крок 4).</td></tr>
+          <tr><td>Серії вже завантажені, а Vartovyi далі про них повідомляє</td><td>Папка призначення не сканується Plex. Додай її до бібліотеки.</td></tr>
+          <tr><td>Видалене в Plex лишається в бібліотеці як недоступне</td><td>У Plex вимкнено <b>Empty trash automatically after every scan</b> (Settings → Library): видалене лежить у кошику, доки його не очистять (<b>…</b> біля бібліотеки → <b>Empty Trash</b>). Vartovyi вважає елементи в кошику видаленими: їх немає «в Plex», серії знову можна завантажити.</td></tr>
+          <tr><td>Серіал у watchlist, але повідомлень немає</td><td>Відкрий тайтл у «Медіа»: розділ «Відхилено» на сторінці тайтлу показує причину, наприклад «роздільна здатність 720p &lt; 1080p».</td></tr>
+          <tr><td>«Видалити» переглянуте: «Увімкни в Plex …» або 401</td><td>У Plex вимкнено «Дозволити видалення медіа», або токен не власника сервера (<a href="#watched">Видалити переглянуте</a>).</td></tr>
+          <tr><td><code>Plex недоступний</code> у журналі</td><td>Адреса Plex вказує на <code>localhost</code> замість IP сервера, або Plex вимкнений.</td></tr>
+          <tr><td><code>Plex 401</code></td><td>Токен Plex недійсний. Візьми новий (крок 1) і зміни через майстра (крок 9).</td></tr>
+          <tr><td><code>Логін на Toloka не вдався</code> (рушій: <code>Toloka: вхід не вдався</code>)</td><td>Неправильний пароль або капча при вході. Спробуй режим «Кукі з браузера» (крок 2).</td></tr>
+          <tr><td>Бот не відповідає на <code>/status</code></td><td>Не натиснуто Start або неправильний chat_id.</td></tr>
+          <tr><td>Майстер відкривається знову після збереження</td><td>У compose лишився <code>SETUP_MODE=1</code>. Прибери і <span data-platform="synology">«Зібрати»</span><span data-platform="linux pi">виконай <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code></span>.</td></tr>
+          <tr><td>«Зберегти і запустити» дає помилку запису</td><td>Папка <code>config</code> недоступна на запис для uid 1000 (крок 5).</td></tr>
+          <tr><td>Помилка про <code>quality.yaml</code> або сервіс відкриває майстра замість роботи</td><td>Файл невалідний: при синтаксичній помилці текст іде від YAML-парсера (з номером рядка), при неправильних значеннях — «Невалідний quality.yaml». Майстер наявний файл не перезаписує: виправ його вручну або видали, тоді майстер створить новий.</td></tr>
+          <tr><td>Контейнер перезапускається, у журналі «Не вдалося прочитати файл конфігурації …quality.yaml»</td><td>Файл існує, але недоступний на читання для uid 1000 (крок 5).</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Журнал і діагностика</h3>
+      <p>Сторінка «Помилки» (Стан → Проблем за добу (<code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:<span class="v" data-v="port">8080</span>/errors</code>)) показує всі збої з причинами: джерело, скільки разів повторилось, коли вперше й востаннє, і подробиці. Однакові збої за добу згруповано в одну проблему. Почни з неї, а журнал контейнера відкривай, коли потрібні подробиці кожного запиту.</p>
+      <p>Журнал: <span data-platform="synology"><span class="menu">Container Manager → Контейнер → vartovyi → Журнал</span></span><span data-platform="linux pi"><code>docker logs vartovyi</code> (наживо: <code>docker logs -f --tail 100 vartovyi</code>)</span>. Кожен мережевий збій має причину, наприклад <code>Трекер Toloka недоступний: fetch failed: ENOTFOUND toloka.to</code> або рядок <code>http failed</code> з полем <code>reason</code>. Під час простою попереджає лише перший збій (однакові повтори йдуть у <code>debug</code>), а коли сервіс знову відповідає — рядок <code>http recovered</code>. Щоб бачити кожен запит і кожне рішення циклу, увімкни докладний журнал:</p>
+      <ol data-platform="linux pi">
+        <li>У <code>compose.yml</code> додай рядок <code>- LOG_LEVEL=debug</code> у блок <code>environment:</code> сервісу <code>vartovyi</code> і виконай <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code>.</li>
+        <li>Дочекайся наступної перевірки (або <code>/check</code> у боті) і подивись журнал: <code>docker logs -f vartovyi</code>.</li>
+        <li>Після діагностики прибери рядок і знову виконай <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code>: у режимі <code>debug</code> журнал швидко росте.</li>
+      </ol>
+      <ol data-platform="synology">
+        <li><span class="menu">Проєкт → vartovyi → Дія → Зупинити</span>.</li>
+        <li>У конфігурації YAML в блок <code>environment:</code> додай рядок <code>- LOG_LEVEL=debug</code>, збережи і «Зібрати».</li>
+        <li>Дочекайся наступної перевірки (або <code>/check</code> у боті) і подивись журнал.</li>
+        <li>Після діагностики прибери рядок і знову «Зібрати»: у режимі <code>debug</code> журнал швидко росте.</li>
+      </ol>
+      <p>Секрети (токени, паролі, кукі, <code>_sid</code>) у журнал не потрапляють і на рівні <code>debug</code>.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Причина в <code>http failed</code></th><th>Що це</th></tr></thead>
+        <tbody>
+          <tr><td><code>ENOTFOUND &lt;хост&gt;</code></td><td>Контейнер не може розвʼязати імʼя (DNS у контейнері). <span data-platform="synology">Перевір DNS у <span class="menu">Панель керування → Мережа</span> або мережу проєкту.</span><span data-platform="linux pi">Перевір DNS на сервері (<code>/etc/resolv.conf</code>) або мережу Docker.</span></td></tr>
+          <tr><td><code>ECONNREFUSED &lt;адреса:порт&gt;</code></td><td>Зʼєднання відхилено: неправильний порт, сервіс не слухає або фаєрвол.</td></tr>
+          <tr><td><code>ETIMEDOUT</code>, <code>UND_ERR_CONNECT_TIMEOUT</code>, <code>таймаут</code></td><td>Відповіді немає: мережа, фаєрвол або блокування провайдером.</td></tr>
+          <tr><td><code>CERT_…</code> (напр. <code>CERT_HAS_EXPIRED</code>), <code>DEPTH_ZERO_SELF_SIGNED_CERT</code>, <code>SELF_SIGNED_CERT_IN_CHAIN</code></td><td>Проблема з сертифікатом: прострочений, самопідписаний або HTTPS перехоплює антивірус чи проксі на роутері.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Перевірка зсередини контейнера: <span data-platform="synology">увійди на NAS по SSH (крок 5)</span><span data-platform="linux pi">відкрий термінал на сервері</span> і виконай команду. <code>HTTP 200</code> означає, що Toloka з контейнера доступна; інакше буде та сама причина, що й у журналі.</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>sudo docker exec vartovyi node -e "fetch('https://toloka.to/').then(r=&gt;console.log('HTTP',r.status)).catch(e=&gt;console.log(e.message, e.cause))"</pre></div>
+    </section>
+
+    <!-- manual -->
+    <section id="manual">
+      <div class="stephead"><h2>Налаштування без майстра</h2>
+      <p class="lead">Для тих, хто хоче все задати файлом.</p></div>
+      <p><span data-platform="synology">Поклади файл <code>.env</code> у <code>docker/vartovyi</code> (зручно редагувати пакетом Text Editor) і додай до сервісу в compose рядок <code>env_file: .env</code>.</span><span data-platform="linux pi">Запиши змінні у файл <code>.env</code> у <code><span class="v" data-v="dir">~/vartovyi</span></code> (той самий, що для <code>MEDIA_DIR</code>, крок 5), додай до сервісу <code>vartovyi</code> в <code>compose.yml</code> рядок <code>env_file: .env</code> і виконай <code>cd <span class="v" data-v="dir">~/vartovyi</span> &amp;&amp; docker compose up -d</code>.</span> Змінні з <code>.env</code> мають пріоритет над налаштуваннями з майстра. Значення, що приходять зі змінних, майстер у <code>settings.json</code> не записує: перш ніж прибрати змінну з <code>.env</code>, введи значення в майстрі, інакше після перезапуску його не буде. Якщо задано всі обовʼязкові, майстер не знадобиться.</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>PLEX_TOKEN=
+PLEX_SERVER_URL=http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:32400
+
+TOLOKA_USERNAME=
+TOLOKA_PASSWORD=
+<span class="c"># або замість логіна й пароля:</span>
+<span class="c"># TOLOKA_COOKIE=</span>
+
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
+
+<span class="c"># торент-клієнт: downloadstation | qbittorrent | transmission</span>
+TORRENT_CLIENT=downloadstation
+DSM_URL=http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:5000
+DSM_USERNAME=<span class="v" data-v="svc">vartovyi</span>
+DSM_PASSWORD=
+DSM_DESTINATION_SHOWS=<span class="v" data-v="shows">video/Series</span>
+DSM_DESTINATION_MOVIES=<span class="v" data-v="movies">video/Movies</span>
+<span class="c"># qBittorrent замість Download Station (папки — як їх бачить qBittorrent):</span>
+<span class="c"># TORRENT_CLIENT=qbittorrent</span>
+<span class="c"># QBIT_URL=http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:8090</span>
+<span class="c"># QBIT_USERNAME=</span>
+<span class="c"># QBIT_PASSWORD=</span>
+<span class="c"># DSM_DESTINATION_SHOWS=/downloads/Series</span>
+<span class="c"># DSM_DESTINATION_MOVIES=/downloads/Movies</span>
+<span class="c"># і нижче заміни SPACE_SOURCE=synology на SPACE_SOURCE=client</span>
+<span class="c"># або Transmission (логін і пароль — лише якщо задані в Transmission):</span>
+<span class="c"># TORRENT_CLIENT=transmission</span>
+<span class="c"># TRANSMISSION_URL=http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:9091/transmission/rpc</span>
+<span class="c"># TRANSMISSION_USERNAME=</span>
+<span class="c"># TRANSMISSION_PASSWORD=</span>
+<span class="c"># і нижче заміни SPACE_SOURCE=synology на SPACE_SOURCE=client</span>
+
+<span class="c"># джерело вільного місця: synology | client | path | none</span>
+SPACE_SOURCE=synology
+<span class="c"># лише для SPACE_SOURCE=path:</span>
+<span class="c"># SPACE_PATH=/media</span>
+
+<span class="c"># необовʼязково: ключ TMDB (крок 11)</span>
+<span class="c"># TMDB_TOKEN=</span>
+<span class="c"># вхід і імена хостів (розділ «Доступ і пароль»)</span>
+<span class="c"># WEB_ALLOWED_HOSTS=vartovyi.example.com</span>
+<span class="c"># WEB_LOCAL_HOSTS=nas.example.com</span>
+<span class="c"># WEB_TRUSTED_PROXIES=192.168.1.2</span>
+<span class="c"># WEB_LOGIN_MODE=off</span>
+
+<span class="c"># PLATFORM=synology   # synology | linux | pi — лише для інтерфейсу (типові значення майстра й інструкція)</span>
+TZ=Europe/Kyiv</pre></div>
+      <p data-platform="linux pi">На Linux і Raspberry Pi з qBittorrent із <code>compose.yml</code> рядки торент-клієнта і вільного місця такі (рядки <code>DSM_URL</code>, <code>DSM_USERNAME</code> і <code>DSM_PASSWORD</code> не потрібні; ключі папок лишаються з тими самими назвами):</p>
+      <div class="pre" data-platform="linux pi"><button class="copy" type="button">Копіювати</button><pre>TORRENT_CLIENT=qbittorrent
+QBIT_URL=http://qbittorrent:8090
+QBIT_USERNAME=admin
+QBIT_PASSWORD=
+DSM_DESTINATION_SHOWS=<span class="v" data-v="media">/srv/media</span>/Series
+DSM_DESTINATION_MOVIES=<span class="v" data-v="media">/srv/media</span>/Movies
+SPACE_SOURCE=path
+SPACE_PATH=<span class="v" data-v="media">/srv/media</span></pre></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Ключ</th><th>Що це</th></tr></thead>
+        <tbody>
+          <tr><td><code>TORRENT_CLIENT</code></td><td><code>downloadstation</code> (типово, якщо ключа немає), <code>qbittorrent</code> або <code>transmission</code>.</td></tr>
+          <tr><td><code>DSM_URL</code>, <code>DSM_USERNAME</code>, <code>DSM_PASSWORD</code></td><td>Download Station, а також джерело місця <code>synology</code>.</td></tr>
+          <tr><td><code>QBIT_URL</code>, <code>QBIT_USERNAME</code>, <code>QBIT_PASSWORD</code></td><td>Web UI qBittorrent, наприклад <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:8090</code>. Усі три обовʼязкові.</td></tr>
+          <tr><td><code>TRANSMISSION_URL</code>, <code>TRANSMISSION_USERNAME</code>, <code>TRANSMISSION_PASSWORD</code></td><td>RPC Transmission, наприклад <code>http://<span class="v" data-v="ip">&lt;NAS_IP&gt;</span>:9091/transmission/rpc</code>. Логін і пароль необовʼязкові.</td></tr>
+          <tr><td><code>DSM_DESTINATION_SHOWS</code>, <code>DSM_DESTINATION_MOVIES</code></td><td>Папки для серіалів і фільмів для будь-якого клієнта: для Download Station — <code>video/Series</code>, для інших — шлях, як його бачить клієнт.</td></tr>
+          <tr><td><code>SPACE_SOURCE</code></td><td><code>synology</code>, <code>client</code>, <code>path</code> або <code>none</code> (крок 4, «Вільне місце»). Якщо ключа немає: <code>synology</code>, коли задано <code>DSM_URL</code>, інакше <code>none</code>.</td></tr>
+          <tr><td><code>SPACE_PATH</code></td><td>Для <code>path</code>: папка, змонтована в контейнер Vartovyi, наприклад <code>/media</code>.</td></tr>
+          <tr><td><code>TOLOKA_COOKIE</code></td><td>Замість <code>TOLOKA_USERNAME</code> і <code>TOLOKA_PASSWORD</code> (крок 2): поки кукі задано, логін і пароль ігноруються, і Vartovyi сам не перелогінюється — коли сесія протухне, прийде алерт, і кукі треба оновити.</td></tr>
+          <tr><td><code>PLATFORM</code></td><td><code>synology</code>, <code>linux</code> або <code>pi</code> — лише для інтерфейсу: типові значення майстра й розділи цієї інструкції.</td></tr>
+          <tr><td><code>WEB_ALLOWED_HOSTS</code>, <code>WEB_LOCAL_HOSTS</code>, <code>WEB_TRUSTED_PROXIES</code>, <code>WEB_LOGIN_MODE</code></td><td>Імена ззовні, домашні імена, проксі без <code>X-Forwarded-For</code> і аварійне <code>off</code> для входу (<a href="#access">Доступ і пароль</a>).</td></tr>
+        </tbody>
+      </table></div>
+      <p>Файл <code>config/quality.yaml</code> у цьому разі створи сам:</p>
+      <div class="pre"><button class="copy" type="button">Копіювати</button><pre>quality:
+  minResolution: 1080p          <span class="c"># 720p | 1080p | 2160p</span>
+  preferredResolution: 1080p    <span class="c"># з якої роздільної здатності брати роздачу першою (типово = minResolution)</span>
+  preferredSources: [WEB-DL, BluRay]   <span class="c"># порядок = пріоритет джерел</span>
+  rejectSources: [CAMRip, TS, TC]
+  requireUkrainianAudio: true
+  notify: best                  <span class="c"># best | all</span>
+
+schedule:
+  plexHours: 24                 <span class="c"># як часто синхронізувати watchlist із хмарою Plex, год (1–168)</span>
+  tolokaHours: 12               <span class="c"># як часто шукати роздачі на трекерах, год (1–168)</span>
+  <span class="c"># plexTimes: ["04:00"]          # або синхронізувати Plex у вказаний час (ГГ:ХХ, через кому) — замість plexHours</span>
+  <span class="c"># trackerTimes: ["07:00", "19:00"]   # або шукати на трекерах у вказаний час — замість tolokaHours</span>
+
+storage:
+  minFreeGb: 50                 <span class="c"># поріг попередження про вільне місце на диску, ГБ</span>
+
+downloads:
+  stallHours: 6                 <span class="c"># скільки годин без прогресу — «завантаження зависло» (1–168)</span>
+  perTitleFolder: true          <span class="c"># окрема папка «Назва (Рік) {tmdb-id}» для кожного тайтлу (перемикач і на «Стан»)</span></pre></div>
+      <p><b>Розклад.</b> Vartovyi прокидається кожні 30 хвилин: надсилає ненадіслані повідомлення й оновлює бібліотеку Plex-сервера. Watchlist із хмари Plex Vartovyi синхронізує раз на <code>plexHours</code> годин (типово 24), а роздачі на трекерах шукає раз на <code>tolokaHours</code> годин (типово 12); нові тайтли з watchlist шукаються одразу. «Оновити» на «Медіа», «Перевірити зараз» чи <code>/check</code> запускають усе негайно. Обидва інтервали можна змінити й на сторінці «Стан» у блоці «Розклад» — діють одразу і зберігаються в <code>quality.yaml</code>. Старе поле <code>intervalMinutes</code> більше не діє і ігнорується.</p>
+      <p><b>У вказаний час.</b> Замість «кожні N годин» — <code>plexTimes</code> і <code>trackerTimes</code>: списки часу <code>ГГ:ХХ</code> (до 24 значень без повторів), наприклад <code>trackerTimes: ["07:00", "19:00"]</code>. Час — місцевий час контейнера, тобто змінна <code>TZ</code>. Якщо час пропущено (сервер був вимкнений), після старту буде один запуск, а не по одному за кожен пропущений. Ручний запуск розклад не зсуває: наступний — у найближчий вказаний час. Запуск у вказаний час починається вчасно (за кілька секунд), а не на наступному 30-хвилинному кроці; режим задається для кожного каналу окремо; пауза пошуку після збою трекера тоді не довша за найкоротший проміжок між часами.</p>
+      <p><b>Вибір роздачі.</b> <code>preferredSources</code> — порядок джерел (раніше = краще), <code>preferredResolution</code> — роздільна здатність, яку брати першою. <code>notify: best</code> (типово) — у Telegram лише найкраща роздача, решта лишаються на сторінці тайтлу; <code>notify: all</code> — сповіщення про кожну. Назви джерел: BluRay, HDDVDRip, WEB-DLRip, WEB-DL, WEBRip, BDRip, HDTV, DVDRip, SATRip, HDRip, TVRip, CAMRip, TS, TC (регістр неважливий; ті самі назви — у <code>rejectSources</code>; <code>HD-DVDRip</code> — це HDDVDRip). Джерела не зі списку йдуть після перелічених, невідоме — останнє; вищі роздільні здатності — після <code>preferredResolution</code>. За рівних джерела й роздільної здатності перемагає роздача, про яку вже повідомляли, далі — з більшою кількістю нових серій, далі — менша. Розмір у повідомленні й перевірка місця: якщо роздачу ще не завантажували — уся роздача, а якщо попередню версію вже завантажено — лише нові серії. Після ручної зміни <code>quality.yaml</code> перезапусти контейнер.</p>
+    </section>
+  </main>
+  </div>
+</div>
+
+
+<script>
+const I18N_LANG = "uk";
+const I18N_MSGS = {"guide.progress":"{done} з {n} перевірок","guide.copy":"Копіювати","guide.copied":"Скопійовано","guide.selected":"Виділено — скопіюй","guide.adminEmpty":"\u003cадмін_DSM\u003e"};
+
+var I18N_PLURAL = typeof Intl === 'object' && Intl.PluralRules ? new Intl.PluralRules(I18N_LANG) : null;
+var I18N_LOCALE = I18N_LANG === 'uk' ? 'uk-UA' : 'en-GB';
+function pluralForm(n, forms) {
+  var cat = I18N_PLURAL ? I18N_PLURAL.select(n) : (n === 1 ? 'one' : 'other');
+  return forms[cat] != null ? forms[cat] : forms.other;
+}
+function i18nFill(s, params, map) {
+  if (!params) return s;
+  return s.replace(/[{]([A-Za-z0-9_]+)[}]/g, function (m, name) {
+    return Object.prototype.hasOwnProperty.call(params, name) ? map(String(params[name])) : m;
+  });
+}
+function i18nMsg(key, params) {
+  var m = Object.prototype.hasOwnProperty.call(I18N_MSGS, key) ? I18N_MSGS[key] : key;
+  if (typeof m === 'string') return m;
+  var n = params && typeof params.n === 'number' ? params.n : NaN;
+  return isNaN(n) ? m.other : pluralForm(n, m);
+}
+function t(key, params) { return i18nFill(i18nMsg(key, params), params, function (v) { return v; }); }
+function th(key, params) {
+  return i18nFill(i18nMsg(key, params), params, function (v) {
+    return v.replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });
+  });
+}
+function fmtNum(n, digits) {
+  var o = digits == null ? {} : { minimumFractionDigits: digits, maximumFractionDigits: digits };
+  return new Intl.NumberFormat(I18N_LOCALE, o).format(n);
+}
+
+(function () {
+  var KEY = 'vartovyi-nas-guide-v1';
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.check input[type=checkbox]'));
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { saved = {}; }
+  boxes.forEach(function (b) { b.checked = !!saved[b.id]; });
+  var jump = document.getElementById('jump');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('nav.steps a[href^="#"]'));
+
+  // --- Платформа: ?platform= → платформа сервера → вибір у цьому браузері → Synology ---
+  var PKEY = 'vartovyi-guide-platform-v1';
+  function validP(p) { return p === 'synology' || p === 'linux' || p === 'pi'; }
+  var cur = (new URLSearchParams(location.search)).get('platform');
+  if (!validP(cur)) { try { cur = localStorage.getItem(PKEY); } catch (e) { cur = null; } }
+  if (!validP(cur)) cur = 'synology';
+  /** Елемент видно на поточній платформі (найближчий предок із data-platform її містить). */
+  function shown(el) { var b = el.closest('[data-platform]:not(body)'); return !b || b.getAttribute('data-platform').split(' ').indexOf(cur) >= 0; }
+  function setPlatform(p, remember) {
+    cur = p;
+    document.body.setAttribute('data-platform', p);
+    document.querySelectorAll('[data-set-platform]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-set-platform') === p)); });
+    if (jump) Array.prototype.forEach.call(jump.options, function (o) { var l = o.getAttribute(p === 'synology' ? 'data-t-synology' : 'data-t-linux'); if (l) { o.removeAttribute('data-label'); o.textContent = l; } });
+    if (remember) {
+      try { localStorage.setItem(PKEY, p); } catch (e) {}
+      try { var u = new URL(location.href); u.searchParams.set('platform', p); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {}
+    }
+    syncLang(); fillInputs(); applyVars(); update();
+  }
+  /* Сайт: перемикач мови веде на ту саму платформу і той самий крок іншою мовою (?platform= і #…). */
+  function syncLang() {
+    var a = document.querySelector('.sitebar .langsw');
+    if (!a) return;
+    if (!a.hasAttribute('data-base')) a.setAttribute('data-base', a.getAttribute('href'));
+    a.setAttribute('href', a.getAttribute('data-base') + location.search + location.hash);
+  }
+  window.addEventListener('hashchange', syncLang);
+  document.querySelectorAll('[data-set-platform]').forEach(function (b) { b.addEventListener('click', function () { setPlatform(b.getAttribute('data-set-platform'), true); }); });
+
+  function update() {
+    var visible = boxes.filter(shown);
+    var done = visible.filter(function (b) { return b.checked; }).length;
+    document.getElementById('barFill').style.width = (visible.length ? done / visible.length * 100 : 0) + '%';
+    document.getElementById('progressText').textContent = t('guide.progress', { done: done, n: visible.length });
+    navLinks.forEach(function (a) {
+      var step = a.getAttribute('data-step');
+      if (step === null) return;
+      var sec = document.querySelector('section[data-step="' + step + '"]');
+      var own = sec ? Array.prototype.filter.call(sec.querySelectorAll('.check input'), shown) : [];
+      var all = own.length > 0 && Array.prototype.every.call(own, function (i) { return i.checked; });
+      a.classList.toggle('done', all);
+      var opt = jump ? jump.querySelector('option[value="' + a.getAttribute('href').slice(1) + '"]') : null;
+      if (opt) {
+        var base = opt.getAttribute('data-label') || opt.textContent;
+        opt.setAttribute('data-label', base);
+        opt.textContent = all ? base + ' ✓' : base;
+      }
+    });
+  }
+  function save() {
+    var s = {};
+    boxes.forEach(function (b) { if (b.checked) s[b.id] = true; });
+    try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
+  }
+  boxes.forEach(function (b) { b.addEventListener('change', function () { save(); update(); }); });
+  document.getElementById('reset').addEventListener('click', function () {
+    boxes.forEach(function (b) { b.checked = false; }); save(); update();
+  });
+
+  // --- Поточний крок: підсвічування в змісті й у списку «Крок» (телефон) ---
+  var sections = navLinks.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
+  var current = null;
+  function setCurrent(i) {
+    if (i === current) return;
+    current = i;
+    navLinks.forEach(function (a, k) { if (k === i) a.setAttribute('aria-current', 'step'); else a.removeAttribute('aria-current'); });
+    if (jump && i !== null && sections[i]) jump.value = sections[i].id;
+    var link = i !== null ? navLinks[i] : null;
+    var side = document.querySelector('.side');
+    if (link && side && side.scrollHeight > side.clientHeight) {
+      var r = link.getBoundingClientRect(), s = side.getBoundingClientRect();
+      if (r.top < s.top || r.bottom > s.bottom) side.scrollTop += r.top - s.top - s.height / 3;
+    }
+  }
+  var ticking = false;
+  function spy() {
+    ticking = false;
+    var bar = document.querySelector('.topbar, .sitebar');
+    var j = document.querySelector('.jump');
+    var line = (bar ? bar.getBoundingClientRect().bottom : 0) + (j && j.offsetParent !== null ? j.offsetHeight : 0) + 40;
+    var found = 0;
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i] && sections[i].getBoundingClientRect().top <= line) found = i;
+    }
+    setCurrent(found);
+  }
+  window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(spy); } }, { passive: true });
+  window.addEventListener('resize', spy);
+  if (jump) jump.addEventListener('change', function () {
+    var el = document.getElementById(jump.value);
+    if (!el) return;
+    el.scrollIntoView({ block: 'start' });
+    try { history.replaceState(null, '', location.pathname + location.search + '#' + jump.value); } catch (e) {}
+    syncLang();
+  });
+
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var pre = btn.parentNode.querySelector('pre');
+      var text = pre.innerText;
+      function done(ok) { btn.textContent = t(ok ? 'guide.copied' : 'guide.selected'); setTimeout(function () { btn.textContent = t('guide.copy'); }, 1800); }
+      function selectIt() { var r = document.createRange(); r.selectNodeContents(pre); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); done(false); }
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, selectIt);
+        else selectIt();
+      } catch (e) { selectIt(); }
+    });
+  });
+
+  // --- Твої дані: підстановка значень у текст ---
+  var VKEY = 'vartovyi-nas-guide-vars-v1';
+  var DEFAULTS_BY = {
+    synology: { ip: '', port: '8080', admin: '', svc: 'vartovyi', vol: 'volume1', share: 'video', shows: 'video/Series', movies: 'video/Movies', dir: '~/vartovyi', media: '/srv/media' },
+    linux: { ip: '', port: '8080', admin: '', svc: 'vartovyi', vol: 'volume1', share: 'video', shows: '/srv/media/Series', movies: '/srv/media/Movies', dir: '~/vartovyi', media: '/srv/media' }
+  };
+  function defs() { return DEFAULTS_BY[cur === 'synology' ? 'synology' : 'linux']; }
+  var EMPTY = { ip: '<NAS_IP>', admin: t('guide.adminEmpty') };
+  /*
+   * Значення, що залежать від платформи (папки серіалів і фільмів, порт), — окремо для Synology і для Linux / Pi
+   * (у byPlatform; Pi ділить їх із Linux), решта — спільні. Той самий ключ VKEY; старі плоскі shows/movies/port
+   * один раз переносяться в byPlatform.synology (до перемикача платформи «Інструкція» була лише для Synology).
+   */
+  var PER_PLATFORM = ['shows', 'movies', 'port'];
+  function pgroup(p) { return p === 'synology' ? 'synology' : 'linux'; }
+  /* Пошкоджене сховище (не обʼєкт, масив) — як порожнє: скрипт «Інструкції» не має падати. */
+  function obj(x) { return x && typeof x === 'object' && !Array.isArray(x) ? x : {}; }
+  function migrateVars(v) {
+    v = obj(v);
+    v.byPlatform = obj(v.byPlatform);
+    var syn = obj(v.byPlatform.synology);
+    PER_PLATFORM.forEach(function (k) { if (k in v) { if (!(k in syn)) syn[k] = v[k]; delete v[k]; } });
+    v.byPlatform.synology = syn;
+    v.byPlatform.linux = obj(v.byPlatform.linux);
+    return v;
+  }
+  function getVar(v, p, k) { return PER_PLATFORM.indexOf(k) >= 0 ? v.byPlatform[pgroup(p)][k] : v[k]; }
+  function setVar(v, p, k, x) { if (PER_PLATFORM.indexOf(k) >= 0) v.byPlatform[pgroup(p)][k] = x; else v[k] = x; }
+  var vals = {};
+  try { vals = JSON.parse(localStorage.getItem(VKEY) || '{}') || {}; } catch (e) { vals = {}; }
+  vals = migrateVars(vals);
+  try { localStorage.setItem(VKEY, JSON.stringify(vals)); } catch (e) {}
+  var host = location.hostname;
+  if (!vals.ip && host && !/^(localhost|127\.|\[?::1)/.test(host) && /^[0-9.]+$|\.local$|^[a-z0-9-]+$/i.test(host) && location.protocol !== 'https:' && location.port) {
+    vals.ip = host; if (!getVar(vals, cur, 'port')) setVar(vals, cur, 'port', location.port);
+  }
+  // На Synology папки — відносно спільної папки (без «/» і «volumeN/»); на Linux / Pi — абсолютні шляхи, як є.
+  function norm(k, v) { v = (v || '').trim(); if (cur === 'synology' && (k === 'shows' || k === 'movies')) v = v.replace(/^\/+/, '').replace(/^volume\d+\//, ''); if (k === 'vol') v = v.replace(/^\/+|\/+$/g, ''); return v; }
+  function applyVars() {
+    EMPTY.ip = cur === 'synology' ? '<NAS_IP>' : '<SERVER_IP>';
+    ['shows', 'movies'].forEach(function (k) { var inp = document.querySelector('#vars input[data-k="' + k + '"]'); if (inp) inp.placeholder = defs()[k]; });
+    document.querySelectorAll('[data-v]').forEach(function (el) {
+      var k = el.getAttribute('data-v');
+      var v = norm(k, getVar(vals, cur, k)) || defs()[k];
+      el.textContent = v || EMPTY[k] || '';
+      el.classList.toggle('unset', !v);
+    });
+  }
+  /* Поля показують значення поточної платформи; викликається і при перемиканні платформи. */
+  function fillInputs() {
+    document.querySelectorAll('#vars input').forEach(function (inp) { inp.value = getVar(vals, cur, inp.getAttribute('data-k')) || ''; });
+  }
+  document.querySelectorAll('#vars input').forEach(function (inp) {
+    var k = inp.getAttribute('data-k');
+    inp.addEventListener('input', function () {
+      setVar(vals, cur, k, inp.value);
+      try { localStorage.setItem(VKEY, JSON.stringify(vals)); } catch (e) {}
+      applyVars();
+    });
+  });
+  setPlatform(cur, false);
+  spy();
+})();
+</script>
+</body>
+</html>
