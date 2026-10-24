@@ -396,6 +396,7 @@ dpkg --print-architecture</pre></div>
       <ol>
         <li><b>Створи бота.</b> Напиши <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a> команду <code>/newbot</code>, задай імʼя і username. У відповідь прийде токен вигляду <code>123456789:AAF…</code>.</li>
         <li><b>Дізнайся свій chat_id.</b> Напиши <a href="https://t.me/userinfobot" target="_blank" rel="noopener">@userinfobot</a>, він відповість числом <code>Id</code>. Бот реагуватиме лише на цей chat_id.</li>
+        <li><b>Груповий чат замість особистого?</b> Тоді кнопки («Завантажити», «Так, видалити назавжди») бачать усі учасники, тож у групі бот слухає лише тих, хто є в <b>Дозволені user id</b> (<code>TELEGRAM_ALLOWED_USER_IDS</code>, user id з @userinfobot через кому); з порожнім переліком — нікого. В особистому чаті перелік не потрібен.</li>
         <li><b>Відкрий свого бота і натисни Start.</b> Без цього бот не зможе написати тобі першим.</li>
       </ol>
       <h3>Команди бота</h3>
@@ -1131,6 +1132,8 @@ TOLOKA_PASSWORD=
 
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_CHAT_ID=
+<span class="c"># лише для групового чату: хто може керувати ботом (user id через кому)</span>
+<span class="c"># TELEGRAM_ALLOWED_USER_IDS=</span>
 
 <span class="c"># торент-клієнт: downloadstation | qbittorrent | transmission</span>
 TORRENT_CLIENT=downloadstation

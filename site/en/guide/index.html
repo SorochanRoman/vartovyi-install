@@ -396,6 +396,7 @@ dpkg --print-architecture</pre></div>
       <ol>
         <li><b>Create a bot.</b> Send <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a> the <code>/newbot</code> command, set a name and a username. The reply contains a token like <code>123456789:AAF…</code>.</li>
         <li><b>Find out your chat_id.</b> Write to <a href="https://t.me/userinfobot" target="_blank" rel="noopener">@userinfobot</a>, it replies with the <code>Id</code> number. The bot will only respond to this chat_id.</li>
+        <li><b>A group chat instead of your own?</b> Then every member sees the buttons (“Download”, “Yes, delete for good”), so in a group the bot obeys only the people listed in <b>Allowed user IDs</b> (<code>TELEGRAM_ALLOWED_USER_IDS</code>, user ids from @userinfobot separated by commas); with the list empty it obeys nobody there. In a personal chat the list isn’t needed.</li>
         <li><b>Open your bot and press Start.</b> Without this the bot cannot write to you first.</li>
       </ol>
       <h3>Bot commands</h3>
@@ -1131,6 +1132,8 @@ TOLOKA_PASSWORD=
 
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_CHAT_ID=
+<span class="c"># only for a group chat: who may use the bot (user ids, comma-separated)</span>
+<span class="c"># TELEGRAM_ALLOWED_USER_IDS=</span>
 
 <span class="c"># torrent client: downloadstation | qbittorrent | transmission</span>
 TORRENT_CLIENT=downloadstation
